@@ -20,6 +20,7 @@
 
 **Live Application:** [https://arbitrage-inc.exchange](https://arbitrage-inc.exchange)  
 **Public API Docs:** [docs/API.md](./docs/API.md)  
+**DappBay Project Whitepaper:** [docs/WHITEPAPER.md](./docs/WHITEPAPER.md)
 **Security & CSP Policy:** [docs/SECURITY.md](./docs/SECURITY.md)  
 **DeFiLlama Protocol:** [https://defillama.com/protocol/arbitrage-inc](https://defillama.com/protocol/arbitrage-inc)  
 **Awesome-Web3 Directory:** [Listed in Open Source Project (Line 407)](https://github.com/ahmet/awesome-web3/blob/main/README.md#L407) ([Merged PR #796](https://github.com/ahmet/awesome-web3/pull/796))  
