@@ -34,7 +34,6 @@ const ACCUMULATOR_WALLET = "0x4c1caA917FD012b285Ba35E93535675e5B59806C";
 const SWAP_LINK = `/swap-all?tokenOut=${CONTRACT_ADDRESS}`;
 const TOKEN_SNIFFER_LINK = `https://tokensniffer.com/token/bsc/${CONTRACT_ADDRESS}`;
 const ALL_POOLS_LINK = `https://pancakeswap.finance/info/tokens/${CONTRACT_ADDRESS}`;
-const volume30d = 206000;
 
 const HomePageClient = () => {
 	const [mounted, setMounted] = useState(false);
@@ -212,6 +211,7 @@ const HomePageClient = () => {
 							</span>
 
 							<div
+								className="data-panel epoch-panel"
 								style={{
 									background: "rgba(250, 204, 21, 0.1)",
 									border: "1px solid rgba(250, 204, 21, 0.3)",
@@ -240,6 +240,7 @@ const HomePageClient = () => {
 							</div>
 
 							<div
+								className="data-panel accumulator-panel"
 								style={{
 									background: "rgba(168, 85, 247, 0.05)",
 									border: "1px solid rgba(168, 85, 247, 0.2)",
@@ -314,6 +315,7 @@ const HomePageClient = () => {
 							</S.LiveIndicator>
 						</div>
 						<div
+							className="data-panel volume-panel"
 							style={{
 								display: "flex",
 								flexDirection: "column",
@@ -379,6 +381,7 @@ const HomePageClient = () => {
 							>
 								<span style={{ fontSize: "0.75rem", color: "#94a3b8" }}>
 									Estimated Community Rewards APR
+									{data.aprPeriodDays ? ` (${data.aprPeriodDays}d)` : ""}
 								</span>
 								<span
 									style={{
@@ -391,7 +394,9 @@ const HomePageClient = () => {
 									{data.globalApr}
 								</span>
 								<span style={{ fontSize: "0.68rem", color: "#64748b" }}>
-									Volume-based estimate across returned pools; not guaranteed.
+									{data.aprPeriodDays
+										? "Best observed historical fee window"
+										: data.aprSource || "Historical fee estimate"}; not guaranteed.
 								</span>
 							</div>
 						</div>
@@ -412,6 +417,7 @@ const HomePageClient = () => {
 						</a>
 
 						<div
+							className="data-panel secondary-panel"
 							style={{
 								background: "rgba(0,0,0,0.3)",
 								border: "1px solid rgba(255,255,255,0.05)",
@@ -429,8 +435,8 @@ const HomePageClient = () => {
 									marginBottom: "4px",
 								}}
 							>
-								<span style={{ color: "#64748b", textTransform: "uppercase" }}>
-									DefiLlama Stats
+									<span style={{ color: "#64748b", textTransform: "uppercase" }}>
+										DeFiLlama Fee Data
 								</span>
 							</div>
 							<div
@@ -440,9 +446,15 @@ const HomePageClient = () => {
 									fontSize: "0.8rem",
 								}}
 							>
-								<span style={{ color: "#94a3b8" }}>30d Volume</span>
+										<span style={{ color: "#94a3b8" }}>
+											{data.aprPeriodDays ? `${data.aprPeriodDays}d Fees` : "Observed Fees"}
+										</span>
 								<span style={{ color: "white", fontWeight: "bold" }}>
-									${volume30d.toLocaleString()}
+											{data.aprPeriodFeesUsd !== null
+												? `$${data.aprPeriodFeesUsd.toLocaleString(undefined, {
+														maximumFractionDigits: 2,
+													})}`
+												: "..."}
 								</span>
 							</div>
 						</div>
@@ -463,6 +475,7 @@ const HomePageClient = () => {
 							<FaShieldAlt style={{ color: "#22c55e" }} />
 						</div>
 						<div
+							className="data-panel balance-panel"
 							style={{
 								background: "rgba(0,0,0,0.3)",
 								border: "1px solid rgba(255,255,255,0.05)",
@@ -489,6 +502,7 @@ const HomePageClient = () => {
 							</div>
 						</div>
 						<div
+							className="data-panel health-panel"
 							style={{
 								background: "rgba(34, 197, 94, 0.05)",
 								border: "1px solid rgba(34, 197, 94, 0.2)",
@@ -548,6 +562,7 @@ const HomePageClient = () => {
 							</div>
 						</div>
 						<div
+							className="notice-panel"
 							style={{
 								background: "rgba(250, 204, 21, 0.15)",
 								border: "1px solid rgba(250, 204, 21, 0.4)",

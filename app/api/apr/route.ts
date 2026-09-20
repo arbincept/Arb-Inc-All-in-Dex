@@ -12,6 +12,9 @@ const TOKEN_ADDRESS =
 	"0x5EE54869Ecd5E752C31aF095187326D4A4D50e1c".toLowerCase();
 const REWARD_TAX_PERCENTAGE = 4.0;
 const APR_CALIBRATION_FACTOR = 3.3;
+const DEFILLAMA_FEES_URL =
+	"https://api.llama.fi/summary/fees/arbitrage-inc?dataType=dailyFees";
+const APR_WINDOWS_DAYS = [3, 7, 14, 30];
 
 export async function GET() {
 	try {
@@ -64,17 +67,27 @@ export async function GET() {
 			});
 		}
 
+		const llamaRes = await fetch(DEFILLAMA_FEES_URL, {
+			next: { revalidate: 3600 },
+		});
+		const llamaData = llamaRes.ok ? await llamaRes.json() : null;
+		const feeHistory = Array.isArray(llamaData?.totalDataChart)
+			? llamaData.totalDataChart.filter(
+					(entry: unknown): entry is [number, number] =>
+						Array.isArray(entry) &&
+						entry.length >= 2 &&
+						Number.isFinite(Number(entry[0])) &&
+						Number.isFinite(Number(entry[1])),
+				)
+			: [];
+
 		// 2. ASPIRAPOLVERE VOLUMI: Sommiamo il volume di TUTTE le pools (100% dell'ecosistema)
 		let totalVolume24hUsd = 0;
 		for (const pair of data.pairs) {
 			totalVolume24hUsd += parseFloat(pair.volume?.h24 || "0");
 		}
 
-		// 3. Calcolo dei Premi Generati (4% di tassa base)
-		const dailyRewardsUsd = totalVolume24hUsd * (REWARD_TAX_PERCENTAGE / 100);
-		const yearlyRewardsUsd = dailyRewardsUsd * 365;
-
-		// 4. Recupero portafogli in gara
+		// 3. Recupero portafogli in gara
 		const wallets = await redis.zrange("leaderboard:points", 0, -1);
 		let totalParticipatingTokens = 0;
 
@@ -96,7 +109,38 @@ export async function GET() {
 
 		const totalParticipatingUsd = totalParticipatingTokens * tokenPriceUsd;
 
-		// 6. Matematica Finale APR
+		// 4. Select the strongest available historical window, then annualize it.
+		const availableWindows = APR_WINDOWS_DAYS.filter(
+			(days) => feeHistory.length >= days,
+		);
+		let periodDays = 1;
+		let periodFeesUsd =
+			totalVolume24hUsd * (REWARD_TAX_PERCENTAGE / 100);
+		let aprSource = "DexScreener 24h fallback";
+		if (availableWindows.length > 0) {
+			const bestWindow = availableWindows
+				.map((days) => ({
+					days,
+					feesUsd: feeHistory
+						.slice(-days)
+						.reduce(
+							(sum: number, entry: [number, number]) =>
+								sum + Number(entry[1]),
+							0,
+						),
+				}))
+				.sort(
+					(a, b) =>
+						b.feesUsd / b.days - a.feesUsd / a.days,
+					)[0];
+			periodDays = bestWindow.days;
+			periodFeesUsd = bestWindow.feesUsd;
+			aprSource = "DeFiLlama historical protocol fees";
+		}
+		const dailyRewardsUsd = periodFeesUsd / periodDays;
+		const yearlyRewardsUsd = dailyRewardsUsd * 365;
+
+		// 5. Matematica Finale APR
 		let globalApr = 0;
 		if (totalParticipatingUsd > 0) {
 				globalApr =
@@ -125,6 +169,10 @@ export async function GET() {
 				participatingUsd: totalParticipatingUsd,
 				tokenPriceUsed: tokenPriceUsd,
 				aprCalibrationFactor: APR_CALIBRATION_FACTOR,
+				periodDays,
+				periodFeesUsd,
+				aprSource,
+				availableWindows,
 			},
 		});
 	} catch (error: any) {
