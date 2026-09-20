@@ -447,11 +447,13 @@ const HomePageClient = () => {
 								}}
 							>
 										<span style={{ color: "#94a3b8" }}>
-											{data.aprPeriodDays ? `${data.aprPeriodDays}d Fees` : "Observed Fees"}
+											{data.aprPeriodDays
+												? `${data.aprPeriodDays}d Calibrated APR Basis`
+												: "Calibrated APR Basis"}
 										</span>
 								<span style={{ color: "white", fontWeight: "bold" }}>
-											{data.aprPeriodFeesUsd !== null
-												? `$${data.aprPeriodFeesUsd.toLocaleString(undefined, {
+											{data.aprCalibratedFeesUsd !== null
+												? `$${data.aprCalibratedFeesUsd.toLocaleString(undefined, {
 														maximumFractionDigits: 2,
 													})}`
 												: "..."}

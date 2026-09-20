@@ -137,15 +137,16 @@ export async function GET() {
 			periodFeesUsd = bestWindow.feesUsd;
 			aprSource = "DeFiLlama historical protocol fees";
 		}
-		const dailyRewardsUsd = periodFeesUsd / periodDays;
+		const calibratedPeriodFeesUsd =
+			periodFeesUsd / APR_CALIBRATION_FACTOR;
+		const dailyRewardsUsd = calibratedPeriodFeesUsd / periodDays;
 		const yearlyRewardsUsd = dailyRewardsUsd * 365;
 
 		// 5. Matematica Finale APR
 		let globalApr = 0;
 		if (totalParticipatingUsd > 0) {
 				globalApr =
-					((yearlyRewardsUsd / totalParticipatingUsd) * 100) /
-					APR_CALIBRATION_FACTOR;
+					(yearlyRewardsUsd / totalParticipatingUsd) * 100;
 		} else {
 			return NextResponse.json({
 				apr: "0.00",
@@ -171,6 +172,7 @@ export async function GET() {
 				aprCalibrationFactor: APR_CALIBRATION_FACTOR,
 				periodDays,
 				periodFeesUsd,
+				calibratedPeriodFeesUsd,
 				aprSource,
 				availableWindows,
 			},

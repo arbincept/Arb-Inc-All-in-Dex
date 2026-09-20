@@ -14,7 +14,7 @@ export const useProtocolData = (
 		protocolDebt: "...",
 		globalApr: "...",
 		aprPeriodDays: null as number | null,
-		aprPeriodFeesUsd: null as number | null,
+		aprCalibratedFeesUsd: null as number | null,
 		aprSource: "",
 		timerDisplay: "...",
 		isProcessing: false,
@@ -103,7 +103,8 @@ export const useProtocolData = (
 					protocolDebt: sData.protocolDebt || "0.0000",
 					globalApr: aData.apr ? aData.apr + "%" : "...",
 					aprPeriodDays: aData.metrics?.periodDays || null,
-					aprPeriodFeesUsd: aData.metrics?.periodFeesUsd || null,
+					aprCalibratedFeesUsd:
+						aData.metrics?.calibratedPeriodFeesUsd || null,
 					aprSource: aData.metrics?.aprSource || "",
 				}));
 			} catch (e) {
