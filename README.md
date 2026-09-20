@@ -22,7 +22,7 @@
 **Public API Docs:** [docs/API.md](./docs/API.md)  
 **DappBay Project Whitepaper:** [docs/WHITEPAPER.md](./docs/WHITEPAPER.md)
 **Security & CSP Policy:** [docs/SECURITY.md](./docs/SECURITY.md)  
-**Deployment:** Vercel deployment is connected to the `main` branch of this repository.
+**Deployment:** Vercel deployments are triggered from pushes to the `main` branch of this repository.
 **DeFiLlama Protocol:** [https://defillama.com/protocol/arbitrage-inc](https://defillama.com/protocol/arbitrage-inc)  
 **Awesome-Web3 Directory:** [Listed in Open Source Project (Line 407)](https://github.com/ahmet/awesome-web3/blob/main/README.md#L407) ([Merged PR #796](https://github.com/ahmet/awesome-web3/pull/796))  
 **Automated Security Scan:** [HashDit Bot - Zero Issues Detected (BNB Chain PR #98)](https://github.com/bnb-chain/developer-tools-list/pull/98#issuecomment-5652788720)  
