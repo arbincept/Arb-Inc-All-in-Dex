@@ -263,7 +263,9 @@ const HomePageClient = () => {
 								<div
 									style={{
 										display: "flex",
+										flexWrap: "wrap",
 										justifyContent: "space-between",
+										gap: "4px",
 										fontSize: "0.85rem",
 										marginBottom: "6px",
 									}}
@@ -274,7 +276,9 @@ const HomePageClient = () => {
 								<div
 									style={{
 										display: "flex",
+										flexWrap: "wrap",
 										justifyContent: "space-between",
+										gap: "4px",
 										fontSize: "0.85rem",
 									}}
 								>
@@ -430,7 +434,9 @@ const HomePageClient = () => {
 							<div
 								style={{
 									display: "flex",
+									flexWrap: "wrap",
 									justifyContent: "space-between",
+									gap: "4px",
 									fontSize: "0.8rem",
 									marginBottom: "4px",
 								}}
@@ -442,7 +448,9 @@ const HomePageClient = () => {
 							<div
 								style={{
 									display: "flex",
+									flexWrap: "wrap",
 									justifyContent: "space-between",
+									gap: "4px",
 									fontSize: "0.8rem",
 								}}
 							>
@@ -527,7 +535,9 @@ const HomePageClient = () => {
 							<div
 								style={{
 									display: "flex",
+									flexWrap: "wrap",
 									justifyContent: "space-between",
+									gap: "4px",
 									fontSize: "0.85rem",
 									marginBottom: "6px",
 								}}
@@ -540,7 +550,9 @@ const HomePageClient = () => {
 							<div
 								style={{
 									display: "flex",
+									flexWrap: "wrap",
 									justifyContent: "space-between",
+									gap: "4px",
 									fontSize: "0.85rem",
 									marginBottom: "6px",
 								}}
@@ -553,7 +565,9 @@ const HomePageClient = () => {
 							<div
 								style={{
 									display: "flex",
+									flexWrap: "wrap",
 									justifyContent: "space-between",
+									gap: "4px",
 									fontSize: "0.85rem",
 								}}
 							>
