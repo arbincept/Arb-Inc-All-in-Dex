@@ -465,7 +465,7 @@ export default function RewardsClient() {
 							</span>
 						</div>
 
-						{/* Regulatory & MiCA Recital 22 / OAM Notice */}
+														{/* Regulatory notice */}
 						<div
 							style={{
 								marginTop: "16px",
@@ -479,8 +479,8 @@ export default function RewardsClient() {
 								lineHeight: "1.5",
 								maxWidth: "700px",
 							}}
-						>
-							⚖️ <b>Regulatory Notice (MiCA Recital 22 & Post-July 2026 CASP Framework):</b> This referral mechanism is an autonomous, non-custodial software gamification and community incentive program. Community points are non-monetary, non-transferable protocol metrics used by self-executing smart contracts to calculate proportional community reward distribution. Following the definitive cessation of the national OAM transitional register on 1 July 2026 (D.Lgs. 129/2024 / CONSOB / Banca d&apos;Italia), regulated crypto-asset services are strictly reserved to authorized CASPs. Points and interface interactions do not constitute financial instruments, investment contracts, dividends, or commissions under Regulation (EU) 2023/1114 (MiCA). The protocol operates strictly self-custodial and peer-to-contract without central custody or intermediation.
+														>
+														⚖️ <b>Project Notice:</b> This referral mechanism is a non-custodial software gamification and community incentive program. Community points are non-monetary, non-transferable protocol metrics used by the hosted rewards service to track eligible activity and calculate possible proportional claims. The program is not a promise of income, dividend, investment return or guaranteed payout. Trading remains wallet-signed, while points and pending balances are maintained through hosted infrastructure.
 						</div>
 					</div>
 				)}
@@ -512,7 +512,7 @@ export default function RewardsClient() {
 					The Treasury is fueled by 3 powerful streams:{" "}
 					<b>4% Token Tax (Buy/Sell)</b>, <b>0.5% DEX Fees</b>, and{" "}
 					<b>Free Tasks Income</b>.<br />
-					<b>100% On-Chain</b>: Programmatically routed to community leaderboard rewards and protocol development.
+														Reward accounting is off-chain; qualifying BNB claims may be signed and sent on-chain by the operational rewards service.
 					<br />
 					<br />
 					<b>
@@ -554,7 +554,7 @@ export default function RewardsClient() {
 					</div>
 					<div style={{ fontSize: "38px", color: "#fff", fontWeight: "900" }}>
 						{globalApr} 🔥
-				<p style={{ color: "#94a3b8", fontSize: "11px", marginTop: "6px", fontStyle: "italic" }}>* Annualized estimate based on 24h distribution cycles ÷ proportional token stake. Past performance does not guarantee future results. Risk of total or partial loss.</p>
+				<p style={{ color: "#94a3b8", fontSize: "11px", marginTop: "6px", fontStyle: "italic" }}>* Modelled annualized estimate based on observed volume and proportional participation. RevShare reward rounds and this hosted claim service are separate processes. Past performance does not guarantee future results. Risk of total or partial loss.</p>
 					</div>
 				</div>
 
