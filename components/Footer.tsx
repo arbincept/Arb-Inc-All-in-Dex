@@ -202,8 +202,9 @@ export default function Footer() {
 					textAlign: "center",
 				}}
 			>
-				APR is estimated based on protocol revenue and is not guaranteed. This
-				interface is open-source and decentralized. No IP tracking is performed.
+				Protocol metrics are informational and are not guaranteed returns. This
+				interface uses no analytics or behavioral profiling; hosting providers may
+				process technical request logs for security and delivery.
 			</p>
 		</FooterContainer>
 	);

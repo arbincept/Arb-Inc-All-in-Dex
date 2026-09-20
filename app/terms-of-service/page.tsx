@@ -99,18 +99,19 @@ export default function TermsOfServicePage() {
 					</ul>
 					<p>
 						No individual or entity behind this project custodies, holds, or
-						controls user funds. All transactions are executed directly on-chain
-						via the user&apos;s own wallet. Pursuant to Recital 22 of Regulation (EU) 2023/1114 (MiCA),
-						fully decentralized peer-to-peer interactions without intermediaries fall outside the scope
-						of crypto-asset service regulations.
+						controls user trading funds. Trading transactions are signed by the
+						user&apos;s wallet and sent to third-party on-chain protocols. The hosted
+						rewards service is a separate operational component and may process
+						points, balances and optional claim requests.
 					</p>
 
 					<h2>3. Decentralized Architecture & Open-Source Contributors</h2>
 					<p>
-						Arbitrage Inception operates as an autonomous, decentralized protocol on the BNB Smart Chain.
-						The smart contracts are self-executing and immutable, with ownership permanently renounced
-						to the null address (<code>0x000000000000000000000000000000000000dEaD</code>). There are zero
-						administrative backdoors, mint functions, or operator privileges.
+						Arbitrage Inception is an open-source interface combining on-chain
+						third-party protocols with hosted operational services. The ARB INC
+						contract disclosures state that ownership is renounced and that no mint,
+						blacklist, pause or tax-parameter administration is available after
+						deployment; users should verify the deployed contract independently.
 					</p>
 					<p>
 						The frontend client interface is developed, maintained, and published as free, open-source
@@ -120,20 +121,25 @@ export default function TermsOfServicePage() {
 
 					<h2>3.1 Community Rewards, Referral Points & Regulatory Exclusion</h2>
 					<p>
-						The Platform features an autonomous, non-custodial community reward and referral mechanism.
-						Points and leaderboard scores are non-monetary software gamification metrics calculated through
-						open telemetry and self-executing smart contracts. Programmatic rewards claimable in native BNB
-						are distributed autonomously from on-chain fee reflections without human discretion, custody,
-						or escrow management.
+						The Platform features an optional community-points and referral mechanism.
+						Points and leaderboard scores are non-monetary software metrics maintained
+						through hosted infrastructure. Where eligibility and reserves permit, a
+						user may request a native BNB claim. Claims may be signed and broadcast by
+						an operational rewards service and are not automatic, guaranteed or held
+						in custody for users.
 					</p>
 					<p>
-						Users sharing referral links act solely as independent peer participants sharing open-source web
-						interface hyperlinks. They do not act as commercial brokers, financial agents (<em>agenti o mediatori creditizi ex D.Lgs. 141/2010</em>),
-						or representatives of any entity. Referral bonuses are internal protocol points and do not represent
-						commissions, dividends, securities, or commercial revenue-sharing agreements.
+						Users sharing referral links act solely as participants sharing an
+						open-source web-interface hyperlink. Referral attribution may affect
+						internal points under the published rules; it is not a commission,
+						dividend, security, guaranteed income or commercial representation.
 					</p>
 					<p>
-						Pursuant to <strong>Recital 22 of Regulation (EU) 2023/1114 (MiCA)</strong> and Italian transposing legislation (<em>Decreto Legislativo 5 settembre 2024, n. 129</em>, following the definitive expiration of the national OAM transitional regime on <strong>1 July 2026</strong> as confirmed by CONSOB and Banca d&apos;Italia), the provision of crypto-asset services in Italy and the EU is reserved exclusively to authorized CASPs registered with ESMA. This project is not a CASP, custodian, or financial intermediary. Fully decentralized, self-custodial peer-to-contract software interactions conducted without centralized custody or discretionary fund management remain excluded from CASP authorization requirements.
+						MiCA and other financial-services rules may apply differently depending on
+						jurisdiction, service and facts. This project does not provide a legal
+						classification or claim an exemption. Users must determine whether the
+						interface and token are available and lawful for them and must not use the
+						interface where authorization or other legal requirements are not met.
 					</p>
 
 					<h2>4. Eligibility</h2>
@@ -164,8 +170,8 @@ export default function TermsOfServicePage() {
 						<li>Past performance is not indicative of future results</li>
 						<li>Smart contracts may contain bugs or vulnerabilities</li>
 						<li>
-							Displayed APR is an estimate based on historical protocol revenue
-							— it is not guaranteed
+							Any displayed protocol metric is informational and is not a user
+							return, APR, payout rate or claim quote
 						</li>
 						<li>
 							No party associated with this project is liable for any financial

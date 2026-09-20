@@ -41,10 +41,10 @@ export default function EEADisclaimer() {
 
   // Definiamo l'array con il tipo esplicito
   const items: { key: CheckKeys; label: React.ReactNode }[] = [
-    { key:'risk', label:<><strong style={{color:'#f3ba2f'}}>I understand the risks.</strong> Crypto-assets are highly volatile. I may lose all capital. APR figures are historical estimates, not guaranteed returns. I am financially sophisticated enough to evaluate these risks independently.</> },
-    { key:'jurisdiction', label:<><strong style={{color:'#f3ba2f'}}>I confirm my jurisdiction.</strong> I represent that I am not a citizen or resident of any jurisdiction where access to DeFi interfaces is prohibited or requires regulatory authorization not held by this project (including MiCA-regulated jurisdictions). I am solely responsible for compliance with my local laws.</> },
+    { key:'risk', label:<><strong style={{color:'#f3ba2f'}}>I understand the risks.</strong> Crypto-assets and blockchain transactions can be highly volatile and I may lose all capital. Any protocol metrics are informational only and are not guaranteed returns, payout rates or claim quotes.</> },
+    { key:'jurisdiction', label:<><strong style={{color:'#f3ba2f'}}>I confirm my jurisdiction.</strong> I will check whether this interface and token are available and lawful where I live. I will not use the interface where applicable law prohibits it or requires authorization that is not available.</> },
     { key:'sanctions', label:<><strong style={{color:'#f3ba2f'}}>I am not subject to sanctions.</strong> I represent that I am not subject to economic or trade sanctions by any governmental authority, and am not on any prohibited-parties list (including the OFAC SDN List).</> },
-    { key:'terms', label:<><strong style={{color:'#f3ba2f'}}>I have read the Terms of Service.</strong> I agree to the <a href="/terms-of-service" target="_blank" rel="noopener noreferrer" style={{color:'#a855f7'}}>Terms of Service</a> and <a href="/privacy-policy" target="_blank" rel="noopener noreferrer" style={{color:'#a855f7'}}>Privacy Policy</a>, including data sharing with offer providers. This interface is MIT-licensed open-source software with no warranties.</> },
+    { key:'terms', label:<><strong style={{color:'#f3ba2f'}}>I have read the Terms of Service.</strong> I agree to the <a href="/terms-of-service" target="_blank" rel="noopener noreferrer" style={{color:'#a855f7'}}>Terms of Service</a> and <a href="/privacy-policy" target="_blank" rel="noopener noreferrer" style={{color:'#a855f7'}}>Privacy Policy</a>. This interface is MIT-licensed open-source software with no warranties.</> },
   ];
 
   return (

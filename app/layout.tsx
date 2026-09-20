@@ -31,7 +31,7 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
 	metadataBase: new URL(DAPP_URL),
 	title: "Arbitrage Inception | DEX Aggregator",
-	description: "Swap and earn BNB rewards on BNB Chain.",
+	description: "Swap, bridge and create limit orders through a non-custodial interface on BNB Chain.",
 	icons: { icon: "/logo.jpg", apple: "/logo.jpg", shortcut: "/favicon.ico" },
 	manifest: "/manifest.json",
 };

@@ -85,13 +85,14 @@ const HomePageClient = () => {
 				<S.Hero>
 					<S.Badge>Official Token: ARB Inc</S.Badge>
 					<S.Title>
-						Unlocking Meritocratic
+						Open DeFi Tools
 						<br />
-						DeFi Yields
+						for BNB Chain
 					</S.Title>
 					<S.Subtitle>
-						Powered by 3 sustainable revenue streams. 100% non-custodial
-						and programmatically allocated to community rewards and ecosystem growth.
+						A non-custodial interface for swaps, bridges, limit orders and
+						optional community points. Trading is wallet-signed; hosted services
+						are separate and may be unavailable.
 					</S.Subtitle>
 					<S.ButtonGroup>
 						<S.PrimaryButton href={SWAP_LINK}>
@@ -159,7 +160,7 @@ const HomePageClient = () => {
 								fontWeight: "bold",
 							}}
 						>
-							<FaTasks /> Free Tasks Income
+							<FaTasks /> Free Task Partner Fees
 						</div>
 					</div>
 
@@ -201,13 +202,13 @@ const HomePageClient = () => {
 						style={{ display: "flex", flexDirection: "column", gap: "12px" }}
 					>
 						<S.PulseCard $isProcessing={data.isProcessing}>
-							<span className="label">Next Payout Cycle</span>
+							<span className="label">Next Rewards Epoch</span>
 							<span className="value">
 								{data.isProcessing && <FaSpinner className="fa-spin" />}
 								{data.timerDisplay}
 							</span>
 							<span className="sub" style={{ marginBottom: "15px" }}>
-								Global Sync (BRT)
+								Points and accounting only; no payout is scheduled
 							</span>
 
 							<div
@@ -230,11 +231,11 @@ const HomePageClient = () => {
 										gap: "5px",
 									}}
 								>
-									<FaCalendarAlt /> Season Schedule
+										<FaCalendarAlt /> Epoch schedule
 								</div>
 								<div style={{ fontSize: "0.85rem", color: "white" }}>
-									Leaderboard resets on the <strong>1st</strong> and{" "}
-									<strong>15th</strong>
+										This reset applies to points and accounting only. It does not
+										trigger or guarantee a BNB payout.
 								</div>
 							</div>
 
@@ -533,22 +534,9 @@ const HomePageClient = () => {
 								textAlign: "center",
 							}}
 						>
-							<div
-								style={{
-									fontSize: "0.8rem",
-									color: "#facc15",
-									textTransform: "uppercase",
-									marginBottom: "5px",
-									fontWeight: "bold",
-								}}
-							>
-								Current Global APR
-							</div>
-							<div
-								style={{ fontSize: "2.5rem", fontWeight: "900", color: "#fff" }}
-							>
-								{data.globalApr} 🔥
-				<p style={{ color: "#94a3b8", fontSize: "11px", marginTop: "6px", fontStyle: "italic" }}>* Modelled estimate based on available protocol volume and accounting data. It is not a promised return or evidence of a completed payout. Risk of total or partial loss.</p>
+							<div style={{ fontSize: "0.85rem", color: "#cbd5e1", lineHeight: 1.5 }}>
+								Protocol activity figures are informational only. They are not a
+								return, APR, payout rate or claim quote.
 							</div>
 						</div>
 
@@ -572,7 +560,7 @@ const HomePageClient = () => {
 				</S.LivePulseSection>
 
 				<S.YieldEngineSection>
-					<h2>The Ultimate Rewards Engine</h2>
+					<h2>Community Points Service</h2>
 					<div className="grid-3">
 						<div className="yield-card">
 							<div className="icon-head">
@@ -604,8 +592,9 @@ const HomePageClient = () => {
 								<h3>Free Point Tasks</h3>
 							</div>
 							<p>
-								No capital? No problem. Complete <strong>Free Tasks</strong> and
-								invite friends to earn a <strong>10% Lifetime Bonus</strong>.
+									Complete eligible <strong>Free Tasks</strong> and invite friends to
+									participate. Referral attribution may affect points; no income or
+									payout is guaranteed.
 							</p>
 						</div>
 					</div>
@@ -652,7 +641,7 @@ const HomePageClient = () => {
 							The Treasury is fueled by 3 distinct streams: a{" "}
 							<strong>4% Token Tax</strong> (Buy/Sell), a highly competitive{" "}
 							<strong>0.5% DEX Fee</strong>, and{" "}
-							<strong>Free Tasks Income</strong>.
+									<strong>Free Task partner fees</strong> where enabled.
 						</p>
 					</S.FeatureCard>
 					<S.FeatureCard>

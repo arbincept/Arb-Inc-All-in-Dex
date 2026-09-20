@@ -62,9 +62,11 @@ export default function PrivacyPolicyPage() {
 
 					<h2>1. Data Controller & Open-Source Architecture</h2>
 					<p>
-						This website is a decentralized, non-custodial client interface published under the MIT License
-						by independent open-source software contributors, with no centralized corporate ownership or custodial control.
-						For technical or privacy-related requests, reach the contributors via:{" "}
+						This website is an open-source, non-custodial client interface published
+						under the MIT License. It does not run analytics, advertising profiles or
+						behavioral tracking. Hosting and infrastructure providers may process
+						technical request data, such as an IP address, for security and delivery.
+						For privacy-related requests, contact the contributors via:{" "}
 						<a
 							href="https://t.me/ArbitrageInception"
 							target="_blank"
@@ -80,7 +82,7 @@ export default function PrivacyPolicyPage() {
 						>
 							GitHub Issues
 						</a>
-						. We will respond within 30 days as required by Art. 12 GDPR.
+						. Requests are handled within the time required by applicable law.
 					</p>
 					<p>
 						No Data Protection Officer (DPO) has been appointed as the
@@ -92,30 +94,32 @@ export default function PrivacyPolicyPage() {
 
 					<h3>2.1 Technical Navigation Data</h3>
 					<p>
-						Systems automatically collect data implicit in internet
-						communications:
+						Hosting and security systems may process data implicit in internet
+						communications for delivery, abuse prevention and reliability. The
+						application does not use this data to build analytics or advertising
+						profiles:
 					</p>
 					<ul>
-						<li>IP address (used only for security and abuse prevention; no analytics tracking is performed)</li>
+						<li>IP address and request metadata in provider-managed technical logs</li>
 						<li>Browser type and version</li>
 						<li>Operating system and device type</li>
-						<li>Pages visited and time spent</li>
-						<li>Referring website</li>
 					</ul>
 					<p>
 						<strong>Legal basis:</strong> Legitimate interest (Art. 6(1)(f)
 						GDPR) — platform security and functionality.
 					</p>
 					<p>
-						<strong>Retention:</strong> Maximum 12 months, unless required by
-						law.
+						<strong>Retention:</strong> Technical-log retention is controlled by the
+						applicable hosting and infrastructure providers and may vary for security,
+						legal or operational reasons.
 					</p>
 
 					<h3>2.2 Blockchain Wallet Address</h3>
 					<p>
 						When you connect a crypto wallet, the public address becomes visible
-						to the interface. Wallet addresses are publicly available on-chain.
-						We process this data solely to enable the service you requested.
+						to the interface and may be processed to load balances, points,
+						referral attribution or a requested claim. Wallet addresses are public
+						on-chain identifiers; we do not use them for advertising profiles.
 					</p>
 					<p>
 						<strong>Legal basis:</strong> Performance of requested service (Art.
@@ -132,14 +136,15 @@ export default function PrivacyPolicyPage() {
 
 					<h2>4. Data Sharing</h2>
 					<p>
-						Personal data is not sold or transferred to third parties for
-						commercial purposes. Data may be shared with:
+						Personal data is not sold or used for advertising. Data may be processed
+						by the following categories of service providers only as needed:
 					</p>
 					<ul>
 						<li>
-							Technical service providers (hosting, CDN) to the extent strictly
-							necessary
+							Hosting, CDN and database providers for delivery and hosted rewards
+							accounting
 						</li>
+						<li>Wallet, RPC, bridge, routing and offer providers when the user requests those features</li>
 						<li>Public authorities upon lawful request</li>
 						
 					</ul>
