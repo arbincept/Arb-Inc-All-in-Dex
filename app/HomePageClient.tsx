@@ -207,7 +207,7 @@ const HomePageClient = () => {
 								{data.timerDisplay}
 							</span>
 							<span className="sub" style={{ marginBottom: "15px" }}>
-								Points and accounting only; no payout is scheduled
+								BNB distribution cycle; amounts are not guaranteed
 							</span>
 
 							<div
@@ -234,8 +234,11 @@ const HomePageClient = () => {
 										<FaCalendarAlt /> Epoch schedule
 								</div>
 								<div style={{ fontSize: "0.85rem", color: "white" }}>
-										This reset applies to points and accounting only. It does not
-										trigger or guarantee a BNB payout.
+										Every 24 hours the protocol attempts to process a BNB
+										distribution from the accumulator to eligible participants.
+										Amounts, timing and eligibility are not guaranteed and depend
+										on reserves, gas and service availability. Community points
+										reset separately on the 1st and 15th of each month.
 								</div>
 							</div>
 
