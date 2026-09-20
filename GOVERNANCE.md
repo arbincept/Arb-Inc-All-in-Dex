@@ -1,6 +1,10 @@
 # Protocol Governance
 
-Arbitrage Inception operates as permissionless open-source software with no central authority.
+Arbitrage Inception is maintained as permissionless open-source software. The repository
+does not identify a legal issuer or central governance body. The separate hosted
+Protocol Community Rewards Service uses off-chain Redis accounting and an operational
+hot signer, so it must not be described as fully decentralised or as an entirely
+on-chain distribution mechanism.
 
 ## Smart Contract
 The token contract (TaxableToken on BSCScan) was deployed with immutable parameters
@@ -13,5 +17,8 @@ Changes are proposed via Pull Requests. The codebase is MIT-licensed and anyone
 can fork, deploy, and run their own instance.
 
 ## Treasury
-The treasury address and all distributions are on-chain and publicly verifiable.
-No party can unilaterally redirect or freeze funds.
+The treasury and confirmed BNB payouts are on-chain and publicly verifiable where a
+transaction is executed. Reward points, eligibility and pending balances are maintained
+off-chain by the hosted service. The token contract has no disclosed administrative
+function for changing its tax parameters; this does not remove operational risks from
+the hosted rewards service or its signer.

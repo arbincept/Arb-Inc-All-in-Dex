@@ -6,7 +6,7 @@
   "description": "Open-source, non-custodial decentralized exchange aggregator and cross-chain bridge suite on BNB Smart Chain.",
   "license": "MIT",
   "homepage": "https://arbitrage-inc.exchange",
-  "repository": "https://github.com/arbincept/Arb-Inc-All-in-Dex",
+  "repository": "https://github.com/Lukecele/Arb-Inc-All-in-Dex",
   "network": {
     "name": "BNB Smart Chain",
     "short_name": "BSC",
@@ -19,7 +19,7 @@
   },
   "architecture": {
     "custody_model": "Non-custodial (peer-to-contract)",
-    "regulatory_framework": "MiCA Regulation (EU) 2023/1114 Recital 22 & Italian D.Lgs. 129/2024 non-custodial exemption",
+    "regulatory_framework": "MiCA Regulation (EU) 2023/1114 analysis required; no exemption claimed",
     "swap_aggregator": "KyberSwap Aggregator API v1",
     "swap_routing_fee_bps": 50,
     "cross_chain_bridge": "Mayan Finance Protocol",
@@ -49,10 +49,10 @@
     }
   },
   "documentation": {
-    "api": "https://github.com/arbincept/Arb-Inc-All-in-Dex/blob/main/docs/API.md",
-    "security": "https://github.com/arbincept/Arb-Inc-All-in-Dex/blob/main/docs/SECURITY.md",
-    "whitepaper": "https://github.com/arbincept/Arb-Inc-All-in-Dex/blob/main/docs/WHITEPAPER.md",
-    "audit_disclosures": "https://github.com/arbincept/Arb-Inc-All-in-Dex/blob/main/AUDIT.md"
+    "api": "https://github.com/Lukecele/Arb-Inc-All-in-Dex/blob/main/docs/API.md",
+    "security": "https://github.com/Lukecele/Arb-Inc-All-in-Dex/blob/main/docs/SECURITY.md",
+    "whitepaper": "https://github.com/Lukecele/Arb-Inc-All-in-Dex/blob/main/docs/WHITEPAPER.md",
+    "audit_disclosures": "https://github.com/Lukecele/Arb-Inc-All-in-Dex/blob/main/AUDIT.md"
   },
   "community": {
     "telegram": "https://t.me/ArbitrageInception",
