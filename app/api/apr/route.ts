@@ -11,6 +11,7 @@ const redis = new Redis({
 const TOKEN_ADDRESS =
 	"0x5EE54869Ecd5E752C31aF095187326D4A4D50e1c".toLowerCase();
 const REWARD_TAX_PERCENTAGE = 4.0;
+const APR_CALIBRATION_FACTOR = 3.3;
 
 export async function GET() {
 	try {
@@ -98,7 +99,9 @@ export async function GET() {
 		// 6. Matematica Finale APR
 		let globalApr = 0;
 		if (totalParticipatingUsd > 0) {
-			globalApr = (yearlyRewardsUsd / totalParticipatingUsd) * 100;
+				globalApr =
+					((yearlyRewardsUsd / totalParticipatingUsd) * 100) /
+					APR_CALIBRATION_FACTOR;
 		} else {
 			return NextResponse.json({
 				apr: "0.00",
@@ -121,6 +124,7 @@ export async function GET() {
 				participatingTokens: totalParticipatingTokens,
 				participatingUsd: totalParticipatingUsd,
 				tokenPriceUsed: tokenPriceUsd,
+				aprCalibrationFactor: APR_CALIBRATION_FACTOR,
 			},
 		});
 	} catch (error: any) {

@@ -500,7 +500,7 @@ export default function RewardsClient() {
 					The project reports three documented revenue sources:{" "}
 					<b>4% Token Tax (Buy/Sell)</b>, <b>0.5% DEX Fees</b>, and{" "}
 					<b>Free Task partner revenue</b> where enabled.<br />
-																Points and reward accounting are maintained by hosted infrastructure. Eligible users may request a BNB claim; availability, amount and timing are not guaranteed.
+																Points and BNB reward accounting are maintained by hosted infrastructure. Eligible users may request a BNB claim through the BNB Chain tools; availability, amount and timing are not guaranteed.
 					<br />
 					<br />
 					<b>
@@ -542,7 +542,7 @@ export default function RewardsClient() {
 					</div>
 					<div style={{ fontSize: "38px", color: "#fff", fontWeight: "900" }}>
 						Hosted rewards accounting
-					<p style={{ color: "#94a3b8", fontSize: "11px", marginTop: "6px", fontStyle: "italic" }}>This is not an APR, return, payout rate or investment product. Claims depend on eligibility, recorded balances, reserves, gas and service availability.</p>
+					<p style={{ color: "#94a3b8", fontSize: "11px", marginTop: "6px", fontStyle: "italic" }}>Claimable BNB is not an APR, return or payout rate. Claims depend on eligibility, recorded balances, reserves, gas and service availability.</p>
 					</div>
 				</div>
 
