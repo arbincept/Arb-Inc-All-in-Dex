@@ -28,6 +28,7 @@ export class HardCancelFlow {
 		cancelledOrders: string[];
 		failedOrders: string[];
 		gasUsed?: string;
+		error?: string;
 	}> {
 		try {
 			// Step 1: Get encoded data for batch cancellation
@@ -65,6 +66,7 @@ export class HardCancelFlow {
 				success: false,
 				cancelledOrders: [],
 				failedOrders: orderIds,
+				error: error instanceof Error ? error.message : "Hard cancellation failed",
 			};
 		}
 	}
@@ -130,6 +132,7 @@ export class HardCancelFlow {
 		success: boolean;
 		transactionHash?: string;
 		gasUsed?: string;
+		error?: string;
 	}> {
 		const result = await this.cancel(signer, [orderId]);
 

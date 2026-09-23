@@ -700,6 +700,7 @@ export default function BetaSwapClient() {
         );
       }
       setRewardMessage("100 points added for this completed swap.");
+      window.setTimeout(() => window.location.reload(), 1500);
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Swap failed");
     } finally {

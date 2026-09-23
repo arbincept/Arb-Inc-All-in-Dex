@@ -198,11 +198,11 @@ export class LimitOrderMaker {
 		const requestBody = {
 			chainId: this.client.getChainId().toString(),
 			orderIds: orderIds.map((orderId) => {
-				const numericOrderId = Number(orderId);
-				if (!Number.isSafeInteger(numericOrderId) || numericOrderId < 0) {
+				const normalizedOrderId = String(orderId);
+				if (!/^\d+$/.test(normalizedOrderId)) {
 					throw new Error(`Invalid Kyber order ID: ${orderId}`);
 				}
-				return numericOrderId;
+				return normalizedOrderId;
 			}),
 			maker: signerAddress,
 		};
@@ -227,11 +227,11 @@ export class LimitOrderMaker {
 		orderIds: string[],
 	): Promise<boolean> {
 		const normalizedOrderIds = orderIds.map((orderId) => {
-			const numericOrderId = Number(orderId);
-			if (!Number.isSafeInteger(numericOrderId) || numericOrderId < 0) {
+			const normalizedOrderId = String(orderId);
+			if (!/^\d+$/.test(normalizedOrderId)) {
 				throw new Error(`Invalid Kyber order ID: ${orderId}`);
 			}
-			return numericOrderId;
+			return normalizedOrderId;
 		});
 
 		// Step 1: Get unsigned cancel message
@@ -274,11 +274,11 @@ export class LimitOrderMaker {
 	async getCancelBatchOrdersEncodedData(orderIds: string[]): Promise<string> {
 		const body = {
 			orderIds: orderIds.map((orderId) => {
-				const numericOrderId = Number(orderId);
-				if (!Number.isSafeInteger(numericOrderId) || numericOrderId < 0) {
+				const normalizedOrderId = String(orderId);
+				if (!/^\d+$/.test(normalizedOrderId)) {
 					throw new Error(`Invalid Kyber order ID: ${orderId}`);
 				}
-				return numericOrderId;
+				return normalizedOrderId;
 			}),
 		};
 

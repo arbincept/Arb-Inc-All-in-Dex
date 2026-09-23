@@ -282,28 +282,30 @@ export default function ClientWrapper() {
 
   useEffect(() => { if (walletAddress && maker) loadOrders(); }, [walletAddress, maker, loadOrders]);
 
-  const handleCancel = async (orderId: string) => {
+  const handleGaslessCancel = async (orderId: string) => {
     if (!provider || !walletAddress || !maker) return;
-    if (!confirm("Cancel this order?")) return;
+    if (!confirm("Cancel this order gaslessly? You will only sign a message; no gas is required.")) return;
     setCancellingId(orderId);
     try {
       const prov = new ethers.providers.Web3Provider(provider);
       const signer = await prov.getSigner();
-      let gaslessCancelled = false;
-      try {
-        gaslessCancelled = await maker.cancelOrders(signer, [orderId]);
-      } catch (gaslessError) {
-        console.warn("Gasless cancel failed; hard cancel is available.", gaslessError);
-      }
-      if (gaslessCancelled) {
-        alert("Order cancelled gaslessly.");
-        loadOrders();
-        return;
-      }
-      if (!confirm("Gasless cancellation was not accepted by KyberSwap. Send a hard cancel transaction on-chain? Gas will be charged.")) return;
+      await maker.cancelOrders(signer, [orderId]);
+      alert("Order cancelled gaslessly. Kyber may take up to 5 minutes to update the order status.");
+      loadOrders();
+    } catch (e: any) { alert(e.message || "Failed to cancel order"); }
+    finally { setCancellingId(null); }
+  };
+
+  const handleHardCancel = async (orderId: string) => {
+    if (!provider || !walletAddress || !maker) return;
+    if (!confirm("Hard cancel this order on-chain? This is immediate but requires gas.")) return;
+    setCancellingId(orderId);
+    try {
+      const prov = new ethers.providers.Web3Provider(provider);
+      const signer = await prov.getSigner();
       const hardCancel = createHardCancelFlow(limitOrderContract, getDefaultClient());
       const result = await hardCancel.cancelSingle(signer, orderId);
-      if (!result.success) throw new Error("Hard cancellation failed");
+      if (!result.success) throw new Error(result.error || "Hard cancellation failed");
       alert(`Order cancelled on-chain. Tx: ${result.transactionHash}`);
       loadOrders();
     } catch (e: any) { alert(e.message || "Failed to cancel order"); }
@@ -629,7 +631,10 @@ export default function ClientWrapper() {
                   <div><div style={{ color: "#fff", fontWeight: 500 }}>{getSym(o.makerAsset)} → {getSym(o.takerAsset)}</div><div style={{ color: "#a1a1aa", fontSize: 13 }}>{formatNumber(o.makingAmount)} {getSym(o.makerAsset)}</div></div>
                   <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
                     <div style={{ textAlign: "right" }}><div style={{ color: "#F472B6", fontWeight: 500 }}>{(parseFloat(o.takingAmount) / parseFloat(o.makingAmount)).toFixed(8)} {getSym(o.takerAsset)}</div><div style={{ color: o.status.toLowerCase() === "filled" ? "#22c55e" : "#20B8CD", fontSize: 12 }}>{o.status}</div></div>
-                    {o.status.toLowerCase() !== "filled" && <button onClick={() => handleCancel(o.id)} disabled={cancellingId === o.id} style={{ padding: "6px 12px", background: "#ef4444", border: "none", borderRadius: 6, color: "#fff", fontSize: 12, cursor: "pointer" }}>{cancellingId === o.id ? "..." : "Cancel"}</button>}
+                    {o.status.toLowerCase() !== "filled" && <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", justifyContent: "flex-end" }}>
+                      <button onClick={() => handleGaslessCancel(o.id)} disabled={cancellingId === o.id} style={{ padding: "6px 10px", background: "#20B8CD", border: "none", borderRadius: 6, color: "#fff", fontSize: 12, cursor: "pointer" }}>{cancellingId === o.id ? "..." : "Gasless cancel"}</button>
+                      <button onClick={() => handleHardCancel(o.id)} disabled={cancellingId === o.id} style={{ padding: "6px 10px", background: "#ef4444", border: "none", borderRadius: 6, color: "#fff", fontSize: 12, cursor: "pointer" }}>{cancellingId === o.id ? "..." : "Hard cancel (gas)"}</button>
+                    </div>}
                   </div>
                 </div>
               ))}
