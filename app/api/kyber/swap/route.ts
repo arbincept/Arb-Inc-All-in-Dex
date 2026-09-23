@@ -29,6 +29,14 @@ const ALLOWED_QUERY_PARAMS = [
 ];
 
 export async function GET(request: Request) {
+	const apiKey = process.env.KYBER_API_KEY;
+	if (!apiKey) {
+		return NextResponse.json(
+			{ error: "Kyber API key is not configured" },
+			{ status: 503 },
+		);
+	}
+
 	const incoming = new URL(request.url).searchParams;
 	const upstream = new URL(KYBER_SWAP_URL);
 
@@ -55,7 +63,7 @@ export async function GET(request: Request) {
 		const response = await fetch(upstream, {
 			headers: {
 				Accept: "application/json",
-				"X-Api-Key": process.env.KYBER_API_KEY || "",
+				"X-Api-Key": apiKey,
 				"x-client-id": "arb-inc",
 			},
 			cache: "no-store",
