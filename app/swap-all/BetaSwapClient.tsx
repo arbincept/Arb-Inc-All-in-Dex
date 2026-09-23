@@ -380,6 +380,22 @@ const formatUsd = (value: string | number | undefined) => {
     ? `$${amount.toLocaleString(undefined, { maximumFractionDigits: 6 })}`
     : "-";
 };
+const formatLivePrice = (
+  usdValue: string | number | undefined,
+  rawAmount: string | undefined,
+  decimals: number,
+) => {
+  if (usdValue === undefined || !rawAmount) return "-";
+  try {
+    const usd = Number(usdValue);
+    const amount = Number(ethers.utils.formatUnits(rawAmount, decimals));
+    if (!Number.isFinite(usd) || !Number.isFinite(amount) || amount <= 0)
+      return "-";
+    return formatUsd(usd / amount);
+  } catch {
+    return "-";
+  }
+};
 const shortAddress = (address: string) =>
   `${address.slice(0, 6)}...${address.slice(-4)}`;
 
@@ -564,14 +580,10 @@ export default function BetaSwapClient() {
       const reserve = isNativeAddress(tokenIn.address)
         ? ethers.utils.parseEther(GAS_RESERVE)
         : ethers.constants.Zero;
-      const available = raw.gt(reserve)
-        ? raw.sub(reserve)
-        : ethers.constants.Zero;
+      const spendable = raw.gt(reserve) ? raw.sub(reserve) : ethers.constants.Zero;
+      const amount = spendable.mul(percentage).div(100);
       setAmountIn(
-        formatInputUnits(
-          available.mul(percentage).div(100),
-          tokenIn.decimals,
-        ),
+        formatInputUnits(amount, tokenIn.decimals),
       );
     } catch {
       setAmountIn("");
@@ -714,6 +726,16 @@ export default function BetaSwapClient() {
   const routeSummary = quote?.routeSummary;
   const inputUsd = formatUsd(routeSummary?.amountInUsd);
   const outputUsd = formatUsd(routeSummary?.amountOutUsd);
+  const inputPrice = formatLivePrice(
+    routeSummary?.amountInUsd,
+    quote?.amountIn,
+    tokenIn.decimals,
+  );
+  const outputPrice = formatLivePrice(
+    routeSummary?.amountOutUsd,
+    quote?.amountOut,
+    tokenOut.decimals,
+  );
   return (
     <>
       <GlobalStyle />
@@ -893,6 +915,14 @@ export default function BetaSwapClient() {
                   use the selected setting.
                 </Notice>
                 <Meta>
+                  <MetaLine>
+                    <span>Live {tokenIn.symbol} price</span>
+                    <span>{inputPrice}</span>
+                  </MetaLine>
+                  <MetaLine>
+                    <span>Live {tokenOut.symbol} price</span>
+                    <span>{outputPrice}</span>
+                  </MetaLine>
                   <MetaLine>
                     <span>Quoted input value</span>
                     <span>{inputUsd}</span>
