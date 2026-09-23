@@ -188,7 +188,7 @@ export class LimitOrderMaker {
 	 */
 	async getUnsignedCancelOrder(
 		signer: ethers.Signer,
-		orderIds: string[],
+		orderIds: Array<string | number>,
 	): Promise<{
 		requestBody: any;
 		returnedData: any;
@@ -197,7 +197,13 @@ export class LimitOrderMaker {
 
 		const requestBody = {
 			chainId: this.client.getChainId().toString(),
-			orderIds,
+			orderIds: orderIds.map((orderId) => {
+				const numericOrderId = Number(orderId);
+				if (!Number.isSafeInteger(numericOrderId) || numericOrderId < 0) {
+					throw new Error(`Invalid Kyber order ID: ${orderId}`);
+				}
+				return numericOrderId;
+			}),
 			maker: signerAddress,
 		};
 
@@ -220,10 +226,18 @@ export class LimitOrderMaker {
 		signer: ethers.Signer,
 		orderIds: string[],
 	): Promise<boolean> {
+		const normalizedOrderIds = orderIds.map((orderId) => {
+			const numericOrderId = Number(orderId);
+			if (!Number.isSafeInteger(numericOrderId) || numericOrderId < 0) {
+				throw new Error(`Invalid Kyber order ID: ${orderId}`);
+			}
+			return numericOrderId;
+		});
+
 		// Step 1: Get unsigned cancel message
 		const { requestBody, returnedData } = await this.getUnsignedCancelOrder(
 			signer,
-			orderIds,
+			normalizedOrderIds,
 		);
 
 		// Step 2: Sign the cancel message
@@ -244,6 +258,9 @@ export class LimitOrderMaker {
 		// Step 4: Submit cancel
 		try {
 			const response = await this.client.cancelOrder(signedBody);
+			if (!response.data?.success) {
+				throw new Error(response.message || "Kyber rejected the cancellation");
+			}
 			return response.data.success;
 		} catch (error) {
 			console.error("Failed to cancel orders:", error);
@@ -256,8 +273,13 @@ export class LimitOrderMaker {
 	 */
 	async getCancelBatchOrdersEncodedData(orderIds: string[]): Promise<string> {
 		const body = {
-			chainId: this.client.getChainId().toString(),
-			orderIds,
+			orderIds: orderIds.map((orderId) => {
+				const numericOrderId = Number(orderId);
+				if (!Number.isSafeInteger(numericOrderId) || numericOrderId < 0) {
+					throw new Error(`Invalid Kyber order ID: ${orderId}`);
+				}
+				return numericOrderId;
+			}),
 		};
 
 		try {

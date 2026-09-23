@@ -13,7 +13,8 @@ import { createLimitOrderMaker } from "../../lib/limit-order/maker";
 const BSC_CHAIN_ID = 56;
 const USDT_ADDRESS = "0x55d398326f99059fF775485246999027B3197955";
 const FALLBACK_LIMIT_ORDER_CONTRACT = "0xcab2FA2eeab7065B45CBcF6E3936dDE2506b4f6C";
-const KYBER_LIMIT_ORDER_URL = "https://kyberswap.com/limit/?chainId=56";
+const KYBER_LIMIT_ORDER_URL = "https://kyberswap.com/limit/bnb?chainId=56";
+const KYBER_MY_ORDERS_URL = "https://kyberswap.com/limit/bnb?chainId=56&tab=my_order";
 
 interface Token {
   address: string;
@@ -306,7 +307,7 @@ export default function ClientWrapper() {
       alert(`Order cancelled on-chain. Tx: ${result.transactionHash}`);
       loadOrders();
     } catch (e: any) { alert(e.message || "Failed to cancel order"); }
-    setCancellingId(null);
+    finally { setCancellingId(null); }
   };
 
   const checkApproval = useCallback(async (): Promise<boolean> => {
@@ -573,7 +574,7 @@ export default function ClientWrapper() {
       <DescriptionCard>Place limit orders on BSC with the best rates. Powered by <strong>KyberSwap</strong>.</DescriptionCard>
       <ExternalLinks>
         <a href={KYBER_LIMIT_ORDER_URL} target="_blank" rel="noreferrer">Open KyberSwap Limit Order Book ↗</a>
-        <a href={KYBER_LIMIT_ORDER_URL} target="_blank" rel="noreferrer">Manage My Orders on KyberSwap ↗</a>
+        <a href={KYBER_MY_ORDERS_URL} target="_blank" rel="noreferrer">Manage My Orders on KyberSwap ↗</a>
       </ExternalLinks>
       <MainGrid>
         <Card>
