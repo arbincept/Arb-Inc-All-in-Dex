@@ -7,11 +7,13 @@ import styled from "styled-components";
 import Footer from "../../components/Footer";
 import Header from "../../components/Header";
 import { getDefaultClient } from "../../lib/limit-order/api-client";
+import { createHardCancelFlow } from "../../lib/limit-order/cancel-hard";
 import { createLimitOrderMaker } from "../../lib/limit-order/maker";
 
 const BSC_CHAIN_ID = 56;
 const USDT_ADDRESS = "0x55d398326f99059fF775485246999027B3197955";
 const FALLBACK_LIMIT_ORDER_CONTRACT = "0xcab2FA2eeab7065B45CBcF6E3936dDE2506b4f6C";
+const KYBER_LIMIT_ORDER_URL = "https://kyberswap.com/limit/?chainId=56";
 
 interface Token {
   address: string;
@@ -148,6 +150,7 @@ const TokenItem = styled.div`display: flex; justify-content: space-between; alig
 const TokenName = styled.div`font-weight: 500; color: #fff;`;
 const TokenBal = styled.div`color: #a1a1aa; font-size: 13px;`;
 const LiveStatus = styled.div`display: flex; align-items: center; gap: 6px; color: #a1a1aa; font-size: 11px; margin: -6px 0 14px; &::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 8px #22c55e; }`;
+const ExternalLinks = styled.div`display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 16px; font-size: 12px; a { color: #67e8f9; text-decoration: none; &:hover { text-decoration: underline; } }`;
 
 const formatNumber = (num: string | number) => {
   const n = typeof num === "string" ? parseFloat(num) : num;
@@ -285,8 +288,22 @@ export default function ClientWrapper() {
     try {
       const prov = new ethers.providers.Web3Provider(provider);
       const signer = await prov.getSigner();
-      await maker.cancelOrders(signer, [orderId]);
-      alert("Order cancelled!");
+      let gaslessCancelled = false;
+      try {
+        gaslessCancelled = await maker.cancelOrders(signer, [orderId]);
+      } catch (gaslessError) {
+        console.warn("Gasless cancel failed; hard cancel is available.", gaslessError);
+      }
+      if (gaslessCancelled) {
+        alert("Order cancelled gaslessly.");
+        loadOrders();
+        return;
+      }
+      if (!confirm("Gasless cancellation was not accepted by KyberSwap. Send a hard cancel transaction on-chain? Gas will be charged.")) return;
+      const hardCancel = createHardCancelFlow(limitOrderContract, getDefaultClient());
+      const result = await hardCancel.cancelSingle(signer, orderId);
+      if (!result.success) throw new Error("Hard cancellation failed");
+      alert(`Order cancelled on-chain. Tx: ${result.transactionHash}`);
       loadOrders();
     } catch (e: any) { alert(e.message || "Failed to cancel order"); }
     setCancellingId(null);
@@ -554,6 +571,10 @@ export default function ClientWrapper() {
         </HeaderRight>
       </PageHeader>
       <DescriptionCard>Place limit orders on BSC with the best rates. Powered by <strong>KyberSwap</strong>.</DescriptionCard>
+      <ExternalLinks>
+        <a href={KYBER_LIMIT_ORDER_URL} target="_blank" rel="noreferrer">Open KyberSwap Limit Order Book ↗</a>
+        <a href={KYBER_LIMIT_ORDER_URL} target="_blank" rel="noreferrer">Manage My Orders on KyberSwap ↗</a>
+      </ExternalLinks>
       <MainGrid>
         <Card>
           <CardTitle>Place Limit Order</CardTitle>
