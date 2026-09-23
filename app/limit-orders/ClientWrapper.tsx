@@ -51,7 +51,7 @@ async function fetchTokenPriceInUSDT(token: Token): Promise<number> {
     if (isNativeBnb(token)) return fetchTokenPriceInUSDT(getWbnbToken());
     const amountIn = ethers.utils.parseUnits("1", token.decimals);
     const res = await fetch(
-      `/api/kyber/route?tokenIn=${token.address}&tokenOut=${USDT_ADDRESS}&amountIn=${amountIn}`
+      `/api/kyber?tokenIn=${token.address}&tokenOut=${USDT_ADDRESS}&amountIn=${amountIn}`
     );
     const data = await res.json();
     if (!res.ok) {
@@ -69,7 +69,7 @@ async function fetchTokenPriceInUSDT(token: Token): Promise<number> {
     // Fallback via WBNB
     const wbnbPrice = await fetchTokenPriceInUSDT(getWbnbToken());
     const wbnbRes = await fetch(
-      `/api/kyber/route?tokenIn=${token.address}&tokenOut=${WBNB_ADDRESS}&amountIn=${amountIn}`
+      `/api/kyber?tokenIn=${token.address}&tokenOut=${WBNB_ADDRESS}&amountIn=${amountIn}`
     );
     const wbnbData = await wbnbRes.json();
     if (!wbnbRes.ok) {
