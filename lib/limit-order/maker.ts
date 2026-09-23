@@ -1,4 +1,4 @@
-import type { ethers } from "ethers";
+import { BigNumber, type ethers } from "ethers";
 import { LimitOrderApiClient } from "./api-client";
 import {
 	createLimitOrderDomain,
@@ -36,9 +36,12 @@ export class LimitOrderMaker {
 	 * Example: 1 BNB with 0.1% fee → 0.999 BNB
 	 */
 	applyDevFeeToMakingAmount(makingAmount: string): string {
-		const amount = parseFloat(makingAmount);
-		const feeMultiplier = 1 - this.feeConfig.feePercentage / 10000;
-		return (amount * feeMultiplier).toString();
+		const amount = BigNumber.from(makingAmount);
+		const feeBps = this.feeConfig.feePercentage;
+		if (!Number.isInteger(feeBps) || feeBps < 0 || feeBps > 10000) {
+			throw new Error("Invalid limit order fee percentage");
+		}
+		return amount.mul(10000 - feeBps).div(10000).toString();
 	}
 
 	/**
@@ -46,9 +49,12 @@ export class LimitOrderMaker {
 	 * Example: 1000 USDC with 0.1% fee → 1001 USDC
 	 */
 	applyDevFeeToTakingAmount(takingAmount: string): string {
-		const amount = parseFloat(takingAmount);
-		const feeMultiplier = 1 + this.feeConfig.feePercentage / 10000;
-		return (amount * feeMultiplier).toString();
+		const amount = BigNumber.from(takingAmount);
+		const feeBps = this.feeConfig.feePercentage;
+		if (!Number.isInteger(feeBps) || feeBps < 0 || feeBps > 10000) {
+			throw new Error("Invalid limit order fee percentage");
+		}
+		return amount.mul(10000 + feeBps).add(9999).div(10000).toString();
 	}
 
 	// ============================================

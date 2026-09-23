@@ -11,7 +11,7 @@ import { createLimitOrderMaker } from "../../lib/limit-order/maker";
 
 const BSC_CHAIN_ID = 56;
 const USDT_ADDRESS = "0x55d398326f99059fF775485246999027B3197955";
-const LIMIT_ORDER_CONTRACT = "0xcab2FA2eeab7065B45CBcF6E3936dDE2506b4f6C";
+const FALLBACK_LIMIT_ORDER_CONTRACT = "0xcab2FA2eeab7065B45CBcF6E3936dDE2506b4f6C";
 
 interface Token {
   address: string;
@@ -21,8 +21,10 @@ interface Token {
 }
 
 const WBNB_ADDRESS = "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c";
+const NATIVE_BNB_ADDRESS = "0x0000000000000000000000000000000000000000";
 
 const BSC_TOKENS: Token[] = [
+  { address: NATIVE_BNB_ADDRESS, symbol: "BNB", decimals: 18, logoUrl: "https://assets.coingecko.com/coins/images/825/small/bnb-icon2_2x.png" },
   { address: WBNB_ADDRESS, symbol: "WBNB", decimals: 18, logoUrl: "https://assets.coingecko.com/coins/images/825/small/bnb-icon2_2x.png" },
   { address: USDT_ADDRESS, symbol: "USDT", decimals: 18, logoUrl: "https://assets.coingecko.com/coins/images/325/small/Tether.png" },
   { address: "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56", symbol: "BUSD", decimals: 18, logoUrl: "https://assets.coingecko.com/coins/images/9576/small/busd_3.png" },
@@ -35,14 +37,18 @@ const ERC20_ABI = [
   "function approve(address spender, uint256 amount) returns (bool)",
   "function allowance(address owner, address spender) view returns (uint256)",
 ];
+const WBNB_ABI = [...ERC20_ABI, "function deposit() payable"];
 
 const DEFAULT_RPC = "https://bsc-rpc.publicnode.com";
 
 const normalizeDecimal = (value: string) => value.replace(',', '.');
+const isNativeBnb = (token: Token) => token.address.toLowerCase() === NATIVE_BNB_ADDRESS;
+const getWbnbToken = () => BSC_TOKENS.find((token) => token.address === WBNB_ADDRESS)!;
 
 // Ottiene il prezzo in USDT per 1 unità del token (rispettando i decimali)
 async function fetchTokenPriceInUSDT(token: Token): Promise<number> {
   try {
+    if (isNativeBnb(token)) return fetchTokenPriceInUSDT(getWbnbToken());
     const amountIn = ethers.utils.parseUnits("1", token.decimals);
     const res = await fetch(
       `/api/kyber/route?tokenIn=${token.address}&tokenOut=${USDT_ADDRESS}&amountIn=${amountIn}`
@@ -105,15 +111,15 @@ const DescriptionCard = styled.div`background: #18181b; border: 1px solid #3f3f4
 const HeaderRight = styled.div`display: flex; gap: 12px; align-items: center; flex-wrap: wrap;`;
 const ChainBadge = styled.div`display: flex; align-items: center; gap: 6px; padding: 6px 12px; background: #18181b; border: 1px solid #27272a; border-radius: 20px; color: #a1a1aa; font-size: 13px;`;
 const WalletBadge = styled.div`padding: 6px 12px; background: #27272a; border-radius: 8px; color: #a1a1aa; font-size: 13px; cursor: pointer;`;
-const MainGrid = styled.div`display: grid; gap: 16px; @media (min-width: 900px) { grid-template-columns: 420px 1fr; gap: 24px; }`;
-const Card = styled.div`background: #18181b; border: 1px solid #27272a; border-radius: 16px; padding: 16px; overflow-x: hidden;`;
+const MainGrid = styled.div`display: grid; gap: 16px; @media (min-width: 900px) { grid-template-columns: minmax(360px, 420px) minmax(0, 1fr); gap: 24px; }`;
+const Card = styled.div`background: #18181b; border: 1px solid #27272a; border-radius: 16px; padding: clamp(14px, 2vw, 20px); overflow: hidden;`;
 const CardTitle = styled.h2`font-size: 16px; font-weight: 600; color: #fff; margin-bottom: 16px;`;
 const InputGroup = styled.div`margin-bottom: 12px;`;
 const InputLabel = styled.div`font-size: 12px; color: #a1a1aa; margin-bottom: 6px; display: flex; justify-content: space-between;`;
-const InputRow = styled.div`display: flex; background: #27272a; border: 1px solid #3f3f46; border-radius: 12px; padding: 10px 12px; align-items: center; gap: 8px;`;
-const AmountInput = styled.input`flex: 1; background: transparent; border: none; color: #fff; font-size: 18px; font-weight: 600; outline: none; min-width: 0;`;
+const InputRow = styled.div`display: flex; background: #27272a; border: 1px solid #3f3f46; border-radius: 12px; padding: 10px 12px; align-items: center; gap: 8px; min-width: 0;`;
+const AmountInput = styled.input`flex: 1; width: 0; background: transparent; border: none; color: #fff; font-size: clamp(16px, 4vw, 18px); font-weight: 600; outline: none; min-width: 0;`;
 const TokenIcon = styled.img`width: 20px; height: 20px; border-radius: 50%;`;
-const TokenButton = styled.button`display: flex; align-items: center; gap: 6px; padding: 6px 10px; background: #18181b; border: 1px solid #3f3f46; border-radius: 10px; color: #fff; font-size: 13px; cursor: pointer;`;
+const TokenButton = styled.button`display: flex; align-items: center; gap: 6px; padding: 6px 8px; background: #18181b; border: 1px solid #3f3f46; border-radius: 10px; color: #fff; font-size: 13px; cursor: pointer; max-width: 45%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;`;
 const SwapIcon = styled.button`display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; background: #27272a; border: 1px solid #3f3f46; border-radius: 50%; color: #20B8CD; margin: -8px auto; cursor: pointer;`;
 const RateBox = styled.div`background: #27272a; border-radius: 12px; padding: 12px; margin: 12px 0;`;
 const RateLabel = styled.div`display: flex; justify-content: space-between; font-size: 12px; color: #a1a1aa; margin-bottom: 10px;`;
@@ -130,6 +136,7 @@ const ModalTitle = styled.div`display: flex; justify-content: space-between; pad
 const TokenItem = styled.div`display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; cursor: pointer; &:hover { background: #27272a; }`;
 const TokenName = styled.div`font-weight: 500; color: #fff;`;
 const TokenBal = styled.div`color: #a1a1aa; font-size: 13px;`;
+const LiveStatus = styled.div`display: flex; align-items: center; gap: 6px; color: #a1a1aa; font-size: 11px; margin: -6px 0 14px; &::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 8px #22c55e; }`;
 
 const formatNumber = (num: string | number) => {
   const n = typeof num === "string" ? parseFloat(num) : num;
@@ -151,6 +158,7 @@ export default function ClientWrapper() {
   const walletAddress = wallet?.accounts?.[0]?.address;
   const provider = wallet?.provider;
   const [maker, setMaker] = useState<any>(null);
+  const [limitOrderContract, setLimitOrderContract] = useState(FALLBACK_LIMIT_ORDER_CONTRACT);
 
   const [sellToken, setSellToken] = useState<Token>(BSC_TOKENS[0]);
   const [buyToken, setBuyToken] = useState<Token>(BSC_TOKENS[1]);
@@ -165,24 +173,37 @@ export default function ClientWrapper() {
   const [cancellingId, setCancellingId] = useState<string | null>(null);
   const [customTokens, setCustomTokens] = useState<Token[]>([]);
   const [importAddress, setImportAddress] = useState("");
+  const [importDecimals, setImportDecimals] = useState("");
   const [importLoading, setImportLoading] = useState(false);
   const [importError, setImportError] = useState("");
 
-  // Aggiorna prezzi
   useEffect(() => {
+    let cancelled = false;
     const updatePrices = async () => {
       setPriceLoading(true);
       const prices = await fetchTokenPrices(customTokens);
-      setTokenPrices(prices);
-      setPriceLoading(false);
+      if (!cancelled) {
+        setTokenPrices(prices);
+        setPriceLoading(false);
+      }
     };
     updatePrices();
+    const interval = window.setInterval(updatePrices, 30_000);
+    return () => { cancelled = true; window.clearInterval(interval); };
   }, [customTokens]);
 
   useEffect(() => {
     if (provider && walletAddress) setMaker(createLimitOrderMaker(getDefaultClient()));
     else setMaker(null);
   }, [provider, walletAddress]);
+
+  useEffect(() => {
+    let cancelled = false;
+    getDefaultClient().getLatestContractAddress(BSC_CHAIN_ID.toString())
+      .then((address) => { if (!cancelled) setLimitOrderContract(address); })
+      .catch(() => { /* Keep the verified BSC fallback. */ });
+    return () => { cancelled = true; };
+  }, []);
 
   const loadBalances = useCallback(async () => {
     if (!walletAddress || !provider) return;
@@ -197,7 +218,12 @@ export default function ClientWrapper() {
     setBalances(bals);
   }, [walletAddress, provider, customTokens]);
 
-  useEffect(() => { if (walletAddress && provider) loadBalances(); }, [walletAddress, provider, loadBalances]);
+  useEffect(() => {
+    if (!walletAddress || !provider) return;
+    loadBalances();
+    const interval = window.setInterval(loadBalances, 15_000);
+    return () => window.clearInterval(interval);
+  }, [walletAddress, provider, loadBalances]);
 
   const loadOrders = useCallback(async () => {
     if (!maker || !walletAddress) return;
@@ -207,8 +233,14 @@ export default function ClientWrapper() {
         id: o.id,
         makerAsset: o.makerAsset,
         takerAsset: o.takerAsset,
-        makingAmount: ethers.utils.formatEther(o.makingAmount),
-        takingAmount: ethers.utils.formatEther(o.takingAmount),
+        makingAmount: ethers.utils.formatUnits(
+          o.makingAmount,
+          allTokens.find((token) => token.address.toLowerCase() === o.makerAsset.toLowerCase())?.decimals ?? 18,
+        ),
+        takingAmount: ethers.utils.formatUnits(
+          o.takingAmount,
+          allTokens.find((token) => token.address.toLowerCase() === o.takerAsset.toLowerCase())?.decimals ?? 18,
+        ),
         status: o.status || "active",
       }));
       setOrders(fetchedOrders);
@@ -244,30 +276,45 @@ export default function ClientWrapper() {
     setCancellingId(null);
   };
 
-  const checkApproval = useCallback(async () => {
-    if (!walletAddress || !provider || !maker) return;
+  const checkApproval = useCallback(async (): Promise<boolean> => {
+    if (!walletAddress || !provider || !maker) return true;
+    if (isNativeBnb(sellToken)) {
+      setApprovalNeeded(true);
+      return true;
+    }
     try {
-      const tokenAddr = sellToken.address;
+      const tokenAddr = isNativeBnb(sellToken) ? WBNB_ADDRESS : sellToken.address;
       const res = await maker.getMakerActiveAmount(walletAddress, tokenAddr);
       const currentAmount = ethers.BigNumber.from(res.activeMakingAmount || "0");
       const newAmount = ethers.utils.parseUnits(sellAmount || "0", sellToken.decimals);
       const prov = new ethers.providers.Web3Provider(provider);
       const tokenContract = new ethers.Contract(tokenAddr, ERC20_ABI, prov);
-      const allowance = await tokenContract.allowance(walletAddress, LIMIT_ORDER_CONTRACT);
+      const allowance = await tokenContract.allowance(walletAddress, limitOrderContract);
       setActiveMakingAmount(res.activeMakingAmount || "0");
-      setApprovalNeeded(allowance.lt(currentAmount.add(newAmount)));
-    } catch (e) { setApprovalNeeded(true); }
-  }, [walletAddress, provider, maker, sellToken, sellAmount]);
+      const needsApproval = allowance.lt(currentAmount.add(newAmount));
+      setApprovalNeeded(needsApproval);
+      return needsApproval;
+    } catch (e) {
+      setApprovalNeeded(true);
+      return true;
+    }
+  }, [walletAddress, provider, maker, sellToken, sellAmount, limitOrderContract]);
 
   const handleApprove = async () => {
     if (!provider || !walletAddress || !sellAmount) return;
     setApproving(true);
     try {
       const prov = new ethers.providers.Web3Provider(provider);
-      const tokenAddr = sellToken.address;
-      const tokenContract = new ethers.Contract(tokenAddr, ERC20_ABI, await prov.getSigner());
-      const amount = ethers.utils.parseUnits(sellAmount, sellToken.decimals).add(ethers.utils.parseUnits(activeMakingAmount || "0", 18));
-      const tx = await tokenContract.approve(LIMIT_ORDER_CONTRACT, amount);
+      const signer = await prov.getSigner();
+      const tokenAddr = isNativeBnb(sellToken) ? WBNB_ADDRESS : sellToken.address;
+      const amount = ethers.utils.parseUnits(sellAmount, sellToken.decimals).add(ethers.BigNumber.from(activeMakingAmount || "0"));
+      if (isNativeBnb(sellToken)) {
+        const wrapTx = await new ethers.Contract(WBNB_ADDRESS, WBNB_ABI, signer).deposit({ value: ethers.utils.parseUnits(sellAmount, 18) });
+        await wrapTx.wait();
+        setSellToken(getWbnbToken());
+      }
+      const tokenContract = new ethers.Contract(tokenAddr, ERC20_ABI, signer);
+      const tx = await tokenContract.approve(limitOrderContract, amount);
       await tx.wait();
       setApprovalNeeded(false);
       alert("Approval successful!");
@@ -347,6 +394,10 @@ export default function ClientWrapper() {
   };
 
   const handleFlip = () => {
+    if (isNativeBnb(sellToken)) {
+      alert("BNB nativo può essere usato solo come token da vendere.");
+      return;
+    }
     const t = sellToken;
     setSellToken(buyToken);
     setBuyToken(t);
@@ -384,12 +435,16 @@ export default function ClientWrapper() {
       if (!confirm(`L'importo in ${buyToken.symbol} è ${buyVal.toExponential(2)}. Questo è irrealistico. Continuare?`)) return;
     }
 
-    await checkApproval();
-    if (approvalNeeded) {
+    const needsApproval = await checkApproval();
+    if (needsApproval) {
       alert("Please approve the token first");
       return;
     }
 
+    if (isNativeBnb(sellToken)) {
+      alert("Prima esegui Wrap & Approve BNB, poi crea l'ordine.");
+      return;
+    }
     const makingAmount = ethers.utils.parseUnits(sellFloat.toString(), sellToken.decimals);
     const takingAmount = ethers.utils.parseUnits(buyVal.toString(), buyToken.decimals);
 
@@ -417,6 +472,10 @@ export default function ClientWrapper() {
 
   const allTokens = [...BSC_TOKENS, ...customTokens];
   const selectToken = (t: Token) => {
+    if (showTokenModal === "buy" && isNativeBnb(t)) {
+      setImportError("BNB nativo può essere usato solo come token da vendere. Seleziona WBNB per il token da acquistare.");
+      return;
+    }
     if (showTokenModal === "sell") setSellToken(t);
     else setBuyToken(t);
     setShowTokenModal(null);
@@ -438,7 +497,21 @@ export default function ClientWrapper() {
     let ethersProvider: ethers.providers.Provider = provider ? new ethers.providers.Web3Provider(provider) : new ethers.providers.JsonRpcProvider(DEFAULT_RPC);
     try {
       const contract = new ethers.Contract(checksummed, ["function symbol() view returns (string)", "function decimals() view returns (uint8)"], ethersProvider);
-      const [symbol, decimals] = await Promise.all([contract.symbol(), contract.decimals()]);
+      const fallbackDecimals = importDecimals === "" ? null : Number(importDecimals);
+      if (fallbackDecimals !== null && (!Number.isInteger(fallbackDecimals) || fallbackDecimals < 0 || fallbackDecimals > 36)) {
+        throw new Error("Invalid fallback decimals");
+      }
+      const symbol = await contract.symbol().catch(() => `TOKEN-${checksummed.slice(2, 8)}`);
+      let decimals: number;
+      try {
+        decimals = Number(await contract.decimals());
+      } catch {
+        if (fallbackDecimals === null) throw new Error("Missing token decimals");
+        decimals = fallbackDecimals;
+      }
+      if (!Number.isInteger(decimals) || decimals < 0 || decimals > 36) {
+        throw new Error("Invalid token decimals");
+      }
       const newToken: Token = { address: checksummed, symbol, decimals, logoUrl: "" };
       setCustomTokens(prev => [...prev, newToken]);
       selectToken(newToken);
@@ -448,7 +521,9 @@ export default function ClientWrapper() {
       setTokenPrices(prev => ({ ...prev, [checksummed]: price }));
       setPriceLoading(false);
     } catch (e) {
-      setImportError("Impossibile leggere il token. Verifica che sia un ERC20 valido su BSC.");
+      setImportError(e instanceof Error && e.message === "Invalid fallback decimals"
+        ? "I decimali devono essere un intero tra 0 e 36."
+        : "Impossibile leggere i decimali. Inserisci un fallback valido se il token non espone metadata.");
     } finally { setImportLoading(false); }
   };
 
@@ -466,8 +541,9 @@ export default function ClientWrapper() {
       <MainGrid>
         <Card>
           <CardTitle>Place Limit Order</CardTitle>
+          <LiveStatus>{priceLoading ? "Refreshing market data..." : "Live prices and wallet balances"}</LiveStatus>
           <div style={{ background: "rgba(244,114,182,0.1)", color: "#F472B6", padding: "10px", borderRadius: "8px", fontSize: "12px", fontWeight: "bold", marginBottom: "10px", textAlign: "center" }}>🏆 Earn 200 Points Upon Execution</div>
-          <div style={{ background: "rgba(245, 158, 11, 0.1)", color: "#f59e0b", padding: "10px", borderRadius: "8px", fontSize: "12px", marginBottom: "15px", textAlign: "center" }}>⚠️ <strong>NOTA:</strong> KyberSwap supporta solo <strong>WBNB</strong> (non BNB nativo). Il tuo token deve avere liquidità sulla pool.</div>
+          <div style={{ background: "rgba(245, 158, 11, 0.1)", color: "#f59e0b", padding: "10px", borderRadius: "8px", fontSize: "12px", marginBottom: "15px", textAlign: "center" }}>⚠️ <strong>BNB nativo:</strong> viene convertito in WBNB dal wallet prima dell&apos;ordine. Il token deve avere liquidità sulla pool.</div>
           <InputGroup>
             <InputLabel><span>You Sell</span><span>{walletAddress ? (balances[sellToken.address] ? parseFloat(balances[sellToken.address]).toFixed(4) : "...") : "Connect wallet"}</span></InputLabel>
             <InputRow><AmountInput type="number" step="any" inputMode="decimal" placeholder="0.0" value={sellAmount} onChange={(e) => handleSell(e.target.value)} /><TokenButton onClick={() => setShowTokenModal("sell")}>{sellToken.logoUrl && <TokenIcon src={sellToken.logoUrl} />} {sellToken.symbol} ▼</TokenButton></InputRow>
@@ -496,7 +572,7 @@ export default function ClientWrapper() {
           </div>
           {approvalNeeded && sellAmount && (
             <SubmitBtn onClick={handleApprove} disabled={approving} style={{ background: "#f59e0b", marginBottom: 8 }}>
-              {approving ? "Approving..." : `Approve ${sellToken.symbol}`}
+              {approving ? (isNativeBnb(sellToken) ? "Wrapping & approving..." : "Approving...") : (isNativeBnb(sellToken) ? "Wrap & approve BNB" : `Approve ${sellToken.symbol}`)}
             </SubmitBtn>
           )}
           <SubmitBtn onClick={handleCreate}>Create Order</SubmitBtn>
@@ -534,12 +610,14 @@ export default function ClientWrapper() {
                 <input type="text" placeholder="0x..." value={importAddress} onChange={(e) => { setImportAddress(e.target.value); setImportError(""); }} style={{ flex: 1, padding: "8px 10px", background: "#27272a", border: `1px solid ${importError ? "#ef4444" : "#3f3f46"}`, borderRadius: 8, color: "#fff", fontSize: 13, outline: "none" }} />
                 <button onClick={handleImportToken} disabled={importLoading} style={{ padding: "8px 14px", background: "#20B8CD", border: "none", borderRadius: 8, color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap", opacity: importLoading ? 0.6 : 1 }}>{importLoading ? "..." : "Import"}</button>
               </div>
+              <input type="number" min="0" max="36" step="1" inputMode="numeric" placeholder="Decimals fallback (optional)" value={importDecimals} onChange={(e) => setImportDecimals(e.target.value)} style={{ width: "100%", boxSizing: "border-box", marginTop: 8, padding: "8px 10px", background: "#27272a", border: "1px solid #3f3f46", borderRadius: 8, color: "#fff", fontSize: 13, outline: "none" }} />
+              <div style={{ color: "#71717a", fontSize: 11, marginTop: 5 }}>On-chain decimals are authoritative; use this only for unusual tokens that do not expose metadata.</div>
               {importError && <div style={{ color: "#ef4444", fontSize: 12, marginTop: 6 }}>{importError}</div>}
             </div>
             {allTokens.map((t) => (
               <TokenItem key={t.address} onClick={() => selectToken(t)}>
                 <div style={{ display: "flex", alignItems: "center", gap: 10 }}>{t.logoUrl && <img src={t.logoUrl} alt={t.symbol} style={{ width: 24, height: 24, borderRadius: "50%" }} />}<div><TokenName>{t.symbol}</TokenName>{customTokens.includes(t) && <div style={{ fontSize: 11, color: "#20B8CD" }}>Custom</div>}</div></div>
-                <TokenBal>{balances[t.address] ? parseFloat(balances[t.address]).toFixed(4) : ""}</TokenBal>
+                <div style={{ textAlign: "right" }}><TokenBal>{balances[t.address] ? parseFloat(balances[t.address]).toFixed(4) : "..."}</TokenBal><div style={{ color: "#71717a", fontSize: 10 }}>{t.decimals} decimals</div></div>
               </TokenItem>
             ))}
           </ModalInner>

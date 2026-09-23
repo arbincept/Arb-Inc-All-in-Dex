@@ -110,9 +110,9 @@ export default function CreateLimitOrderPage() {
 			decimals: 18,
 		},
 		{
-			address: "0x630b9c39d46314a3268d75bb25fd79df4581d1af",
+			address: "0x5ee54869ecd5e752c31af095187326d4a4d50e1c",
 			symbol: "ARB INC",
-			decimals: 18,
+			decimals: 9,
 		},
 		{
 			address: "0x55d398326f99059fF775485246999027B3197955",

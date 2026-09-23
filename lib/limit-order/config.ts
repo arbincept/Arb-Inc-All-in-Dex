@@ -75,9 +75,9 @@ export const POLYGON_CONFIG: LimitOrderConfig = {
 // ============================================
 
 export const CONTRACT_ADDRESSES: Record<number, string> = {
-	56: "0x4d8a47b8f8b4c7e2d9f3a5b6e8c2d1f4a9b3c8e5", // BSC
-	1: "0x1234567890abcdef1234567890abcdef12345678", // Ethereum (example)
-	137: "0xabcdef1234567890abcdef1234567890abcdef12", // Polygon (example)
+	56: "0xcab2FA2eeab7065B45CBcF6E3936dDE2506b4f6C", // BSC DSLO protocol
+	1: "0xcab2FA2eeab7065B45CBcF6E3936dDE2506b4f6C", // Ethereum DSLO protocol
+	137: "0xcab2FA2eeab7065B45CBcF6E3936dDE2506b4f6C", // Polygon DSLO protocol
 };
 
 // ============================================
@@ -120,9 +120,9 @@ export const SUPPORTED_TOKENS: Record<
 			name: "USD Coin",
 		},
 		{
-			address: "0x630b9c39d46314a3268d75bb25fd79df4581d1af",
+			address: "0x5ee54869ecd5e752c31af095187326d4a4d50e1c",
 			symbol: "ARB INC",
-			decimals: 18,
+			decimals: 9,
 			name: "Arbitrage Inception",
 		},
 	],

@@ -154,10 +154,21 @@ export class LimitOrderApiClient {
 	}
 
 	async getContractAddresses(chainId: string) {
-		return this.get<{ latest: string; legacy: string[] }>(
+		return this.get<{
+			latest: string;
+			features?: Record<string, { supportDoubleSignature: boolean }>;
+		}>(
 			`/read-ks/api/v1/configs/contract-address`,
 			{ params: { chainId } },
 		);
+	}
+
+	async getLatestContractAddress(chainId: string): Promise<string> {
+		const response = await this.getContractAddresses(chainId);
+		if (!/^0x[a-fA-F0-9]{40}$/.test(response.data.latest)) {
+			throw new Error("Kyber returned an invalid Limit Order contract address");
+		}
+		return response.data.latest;
 	}
 
 	// Maker APIs
@@ -188,7 +199,17 @@ export class LimitOrderApiClient {
 	}
 
 	async cancelOrder(body: any) {
-		return this.post<{ success: boolean }>(`/write/api/v1/orders/cancel`, body);
+		const endpoint =
+			typeof window === "undefined"
+				? `/write/api/v1/orders/cancel`
+				: `/api/kyber/limit-order/cancel`;
+		return this.post<{ success: boolean }>(
+			endpoint,
+			body,
+			typeof window === "undefined"
+				? { headers: { Origin: "https://kyberswap.com" } }
+				: undefined,
+		);
 	}
 
 	async getCancelBatchOrdersEncodedData(body: any) {
@@ -198,11 +219,15 @@ export class LimitOrderApiClient {
 		);
 	}
 
-	async getCancelAllOrdersEncodedData(body: any) {
+	async getIncreaseNonceEncodedData(body: any) {
 		return this.post<{ encodedData: string }>(
-			`/read-ks/api/v1/encode/cancel-all-orders`,
+			`/read-ks/api/v1/encode/increase-nonce`,
 			body,
 		);
+	}
+
+	async getCancelAllOrdersEncodedData(body: any) {
+		return this.getIncreaseNonceEncodedData(body);
 	}
 
 	// Taker APIs

@@ -152,9 +152,11 @@ export class LimitOrderTaker {
 
 			// Sort by takingAmount (ascending) - lower is better for taker
 			const sortedOrders = orders.sort((a, b) => {
-				const aAmount = parseFloat(a.takingAmount);
-				const bAmount = parseFloat(b.takingAmount);
-				return aAmount - bAmount;
+				const aAmount = ethers.BigNumber.from(a.takingAmount);
+				const bAmount = ethers.BigNumber.from(b.takingAmount);
+				if (aAmount.lt(bAmount)) return -1;
+				if (aAmount.gt(bAmount)) return 1;
+				return 0;
 			});
 
 			return sortedOrders[0];
@@ -168,16 +170,19 @@ export class LimitOrderTaker {
 	 * Calculates the optimal taking amount based on order size
 	 */
 	calculateTakingAmount(order: Order, fillPercentage: number = 100): string {
-		const totalTakingAmount = parseFloat(order.takingAmount);
-		const filledTakingAmount = parseFloat(order.filledTakingAmount);
-		const remainingTakingAmount = totalTakingAmount - filledTakingAmount;
+		if (!Number.isFinite(fillPercentage) || fillPercentage <= 0 || fillPercentage > 100) {
+			throw new Error("Fill percentage must be greater than 0 and at most 100");
+		}
 
-		if (remainingTakingAmount <= 0) {
+		const totalTakingAmount = ethers.BigNumber.from(order.takingAmount);
+		const filledTakingAmount = ethers.BigNumber.from(order.filledTakingAmount);
+		const remainingTakingAmount = totalTakingAmount.sub(filledTakingAmount);
+
+		if (remainingTakingAmount.lte(0)) {
 			throw new Error("Order already fully filled");
 		}
 
-		const takingAmount = (remainingTakingAmount * fillPercentage) / 100;
-		return takingAmount.toString();
+		return remainingTakingAmount.mul(Math.floor(fillPercentage * 100)).div(10000).toString();
 	}
 
 	/**
@@ -189,11 +194,11 @@ export class LimitOrderTaker {
 		if (order.status !== "active") return false;
 		if (order.expiredAt < now) return false;
 
-		const totalMakingAmount = parseFloat(order.makingAmount);
-		const filledMakingAmount = parseFloat(order.filledMakingAmount);
-		const remainingMakingAmount = totalMakingAmount - filledMakingAmount;
+		const totalMakingAmount = ethers.BigNumber.from(order.makingAmount);
+		const filledMakingAmount = ethers.BigNumber.from(order.filledMakingAmount);
+		const remainingMakingAmount = totalMakingAmount.sub(filledMakingAmount);
 
-		return remainingMakingAmount > 0;
+		return remainingMakingAmount.gt(0);
 	}
 }
 

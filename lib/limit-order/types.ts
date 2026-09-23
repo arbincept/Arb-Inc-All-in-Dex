@@ -247,7 +247,7 @@ export interface ContractAddressesResponse {
 	message: string;
 	data: {
 		latest: string;
-		legacy: string[];
+		features?: Record<string, { supportDoubleSignature: boolean }>;
 	};
 }
 
