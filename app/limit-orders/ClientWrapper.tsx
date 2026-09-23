@@ -282,6 +282,12 @@ export default function ClientWrapper() {
 
   useEffect(() => { if (walletAddress && maker) loadOrders(); }, [walletAddress, maker, loadOrders]);
 
+  useEffect(() => {
+    if (!walletAddress || !maker) return;
+    const interval = window.setInterval(loadOrders, 15_000);
+    return () => window.clearInterval(interval);
+  }, [walletAddress, maker, loadOrders]);
+
   const handleGaslessCancel = async (orderId: string) => {
     if (!provider || !walletAddress || !maker) return;
     if (!confirm("Cancel this order gaslessly? You will only sign a message; no gas is required.")) return;

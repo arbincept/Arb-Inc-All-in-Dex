@@ -140,6 +140,7 @@ export class HardCancelFlow {
 			success: result.success,
 			transactionHash: result.transactionHash,
 			gasUsed: result.gasUsed,
+			error: result.error,
 		};
 	}
 }

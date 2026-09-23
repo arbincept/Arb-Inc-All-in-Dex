@@ -14,6 +14,14 @@ import {
 	type Order,
 } from "./types";
 
+function normalizeOrderId(orderId: string | number): number {
+	const value = typeof orderId === "number" ? orderId : Number(orderId);
+	if (!Number.isSafeInteger(value) || value < 0) {
+		throw new Error(`Invalid Kyber order ID: ${orderId}`);
+	}
+	return value;
+}
+
 // ============================================
 // Maker API Integration
 // ============================================
@@ -197,13 +205,7 @@ export class LimitOrderMaker {
 
 		const requestBody = {
 			chainId: this.client.getChainId().toString(),
-			orderIds: orderIds.map((orderId) => {
-				const normalizedOrderId = String(orderId);
-				if (!/^\d+$/.test(normalizedOrderId)) {
-					throw new Error(`Invalid Kyber order ID: ${orderId}`);
-				}
-				return normalizedOrderId;
-			}),
+			orderIds: orderIds.map(normalizeOrderId),
 			maker: signerAddress,
 		};
 
@@ -224,15 +226,9 @@ export class LimitOrderMaker {
 	 */
 	async cancelOrders(
 		signer: ethers.Signer,
-		orderIds: string[],
+		orderIds: Array<string | number>,
 	): Promise<boolean> {
-		const normalizedOrderIds = orderIds.map((orderId) => {
-			const normalizedOrderId = String(orderId);
-			if (!/^\d+$/.test(normalizedOrderId)) {
-				throw new Error(`Invalid Kyber order ID: ${orderId}`);
-			}
-			return normalizedOrderId;
-		});
+		const normalizedOrderIds = orderIds.map(normalizeOrderId);
 
 		// Step 1: Get unsigned cancel message
 		const { requestBody, returnedData } = await this.getUnsignedCancelOrder(
@@ -251,17 +247,16 @@ export class LimitOrderMaker {
 		// Step 3: Create signed cancel body
 		const signedBody = {
 			...requestBody,
-			salt: returnedData.message.salt,
 			signature,
 		};
 
 		// Step 4: Submit cancel
 		try {
 			const response = await this.client.cancelOrder(signedBody);
-			if (!response.data?.success) {
+			if (response.code !== 0) {
 				throw new Error(response.message || "Kyber rejected the cancellation");
 			}
-			return response.data.success;
+			return true;
 		} catch (error) {
 			console.error("Failed to cancel orders:", error);
 			throw error;
@@ -271,15 +266,9 @@ export class LimitOrderMaker {
 	/**
 	 * Gets encoded data for batch cancellation (for on-chain hard cancel)
 	 */
-	async getCancelBatchOrdersEncodedData(orderIds: string[]): Promise<string> {
+	async getCancelBatchOrdersEncodedData(orderIds: Array<string | number>): Promise<string> {
 		const body = {
-			orderIds: orderIds.map((orderId) => {
-				const normalizedOrderId = String(orderId);
-				if (!/^\d+$/.test(normalizedOrderId)) {
-					throw new Error(`Invalid Kyber order ID: ${orderId}`);
-				}
-				return normalizedOrderId;
-			}),
+			orderIds: orderIds.map(normalizeOrderId),
 		};
 
 		try {
