@@ -82,10 +82,36 @@ export default function BetaSwapClient() {
 	const [slippage, setSlippage] = useState(DEFAULT_SLIPPAGE_BPS);
 	const [error, setError] = useState("");
 	const [txHash, setTxHash] = useState("");
+	const [approvalRequired, setApprovalRequired] = useState(false);
+	const [checkingApproval, setCheckingApproval] = useState(false);
 	const walletAddress = wallet?.accounts?.[0]?.address || "";
 	const taxInfo = getTaxTokenInfo(tokenIn.address) || getTaxTokenInfo(tokenOut.address);
 	const effectiveSlippage = taxInfo ? Math.max(slippage, TAX_TOKEN_MIN_SLIPPAGE_BPS) : slippage;
 	const sameToken = tokenIn.address.toLowerCase() === tokenOut.address.toLowerCase();
+
+	useEffect(() => {
+		if (!wallet || !quote || isNativeAddress(tokenIn.address)) {
+			setApprovalRequired(false);
+			setCheckingApproval(false);
+			return;
+		}
+		let cancelled = false;
+		const checkAllowance = async () => {
+			try {
+				setCheckingApproval(true);
+				const provider = new ethers.providers.Web3Provider(wallet.provider, "any");
+				const token = new ethers.Contract(tokenIn.address, ERC20_ABI, provider);
+				const allowance = await token.allowance(walletAddress, quote.routerAddress);
+				if (!cancelled) setApprovalRequired(allowance.lt(quote.amountIn));
+			} catch {
+				if (!cancelled) setApprovalRequired(true);
+			} finally {
+				if (!cancelled) setCheckingApproval(false);
+			}
+		};
+		void checkAllowance();
+		return () => { cancelled = true; };
+	}, [quote, tokenIn.address, wallet, walletAddress]);
 
 	useEffect(() => {
 		setQuote(null);
@@ -137,6 +163,9 @@ export default function BetaSwapClient() {
 				if (allowance.lt(quote.amountIn)) {
 					const approval = await token.approve(quote.routerAddress, quote.amountIn);
 					await approval.wait();
+					const refreshedAllowance = await token.allowance(walletAddress, quote.routerAddress);
+					setApprovalRequired(refreshedAllowance.lt(quote.amountIn));
+					if (refreshedAllowance.lt(quote.amountIn)) throw new Error("Approval was not confirmed by the token contract");
 				}
 			}
 			const tx = await signer.sendTransaction({
@@ -159,7 +188,7 @@ export default function BetaSwapClient() {
 	return <>
 		<GlobalStyle />
 		<Page><Header activePage="/swap-all" walletSection={walletSection} /><Shell>
-			<Intro><div><Eyebrow>KyberSwap Aggregator API v1 Beta</Eyebrow><Title>Swap with clarity.</Title><Lead>Native BNB and BEP-20 swaps routed through KyberSwap, with wallet-controlled approvals and a dedicated tax-token safety mode.</Lead></div><Status>{loadingQuote ? "Finding the best route..." : quote ? "Route ready" : "BSC liquidity"}</Status></Intro>
+			<Intro><div><Eyebrow>KyberSwap Aggregator API v1 Beta</Eyebrow><Title>Swap with clarity.</Title><Lead>Official whitelisted KyberSwap partner access now powers our Super Swap, routing native BNB and BEP-20 tokens with wallet-controlled approvals.</Lead></div><Status>{loadingQuote ? "Finding the best route..." : quote ? "Route ready" : "BSC liquidity"}</Status></Intro>
 			<Layout><SwapCard>
 				<TokenRow><div><RowLabel>You pay</RowLabel><Amount inputMode="decimal" placeholder="0.0" value={amountIn} onChange={(event) => setAmountIn(event.target.value.replace(/[^0-9.]/g, ""))} /></div><div><RowLabel>Asset</RowLabel><TokenButton type="button" onClick={() => document.getElementById("token-in")?.focus()}><TokenIcon src={tokenIn.logoUrl} alt="" />{tokenIn.symbol}<ChevronDown size={16} /></TokenButton></div></TokenRow>
 				<FlipButton type="button" aria-label="Invert swap direction" onClick={flip}><RefreshCw size={16} /></FlipButton>
@@ -168,9 +197,9 @@ export default function BetaSwapClient() {
 				<SelectBox><Select id="token-out" aria-label="Receive token" value={tokenOut.address} onChange={(event) => chooseToken("out", event.target.value)}>{DEFAULT_SWAP_TOKENS.map((token) => <option key={token.address} value={token.address}>{token.symbol} · {token.decimals} decimals</option>)}</Select><IconRight><ChevronDown size={17} /></IconRight></SelectBox>
 				{taxInfo && <Notice $warning>{taxInfo.label} Slippage is protected at {effectiveSlippage / 100}% or higher so the quote has room for the token transfer.</Notice>}
 				{error && <Notice $warning>{error}</Notice>}
-				<Primary type="button" disabled={!wallet || !quote || loadingQuote || sending || sameToken} onClick={sendSwap}>{sending ? <><LoaderCircle size={18} className="spin" />Confirming in wallet...</> : !wallet ? "Connect wallet to swap" : loadingQuote ? "Fetching route..." : quote ? `Swap ${tokenIn.symbol} for ${tokenOut.symbol}` : "Enter an amount"}</Primary>
+				<Primary type="button" disabled={!wallet || !quote || loadingQuote || sending || checkingApproval || sameToken} onClick={sendSwap}>{sending ? <><LoaderCircle size={18} className="spin" />Confirming in wallet...</> : !wallet ? "Connect wallet to swap" : loadingQuote ? "Fetching route..." : checkingApproval ? "Checking approval..." : approvalRequired ? `Approve and swap ${tokenIn.symbol}` : quote ? `Swap ${tokenIn.symbol} for ${tokenOut.symbol}` : "Enter an amount"}</Primary>
 				{txHash && <Notice>Swap submitted. <a href={`https://bscscan.com/tx/${txHash}`} target="_blank" rel="noreferrer">View on BscScan <ExternalLink size={12} /></a></Notice>}
-			</SwapCard><div><Panel><Eyebrow><Settings2 size={13} style={{ verticalAlign: "-2px" }} /> Trade settings</Eyebrow><RowLabel>Maximum slippage</RowLabel><Select value={String(slippage)} onChange={(event) => setSlippage(Math.min(MAX_SLIPPAGE_BPS, Number(event.target.value)))}><option value="50">0.5%</option><option value="100">1%</option><option value="300">3%</option><option value="800">8%</option><option value="1200">12%</option></Select><Meta><MetaLine><span>Estimated receive</span><span>{minimumReceived}</span></MetaLine><MetaLine><span>Platform fee</span><span>{FEE_BPS / 100}%</span></MetaLine><MetaLine><span>Network</span><span>BNB Smart Chain</span></MetaLine><MetaLine><span>Router</span><span>{quote?.routerAddress ? `${quote.routerAddress.slice(0, 6)}...${quote.routerAddress.slice(-4)}` : "KyberSwap"}</span></MetaLine></Meta><Notice>Quotes are exact-input. Your wallet approves only the selected token and sends the transaction directly to KyberSwap.</Notice></Panel><Panel style={{ marginTop: 18 }}><Eyebrow>Token safety</Eyebrow><p style={{ color: "#a9bfbd", fontSize: 13, lineHeight: 1.6, margin: "10px 0 0" }}>ARB INC is handled with its verified 9-decimal metadata. Native BNB uses Kyber's native-token address and transaction value.</p><Secondary style={{ marginTop: 15 }} onClick={() => navigator.clipboard.writeText(ARB_INC_ADDRESS)}><Copy size={14} /> Copy ARB INC address</Secondary></Panel></div></Layout>
+			</SwapCard><div><Panel><Eyebrow><Settings2 size={13} style={{ verticalAlign: "-2px" }} /> Trade settings</Eyebrow><RowLabel>Maximum slippage</RowLabel><Select value={String(slippage)} onChange={(event) => setSlippage(Math.min(MAX_SLIPPAGE_BPS, Number(event.target.value)))}><option value="50">0.5%</option><option value="100">1%</option><option value="300">3%</option><option value="800">8%</option><option value="1200">12%</option></Select><Notice>Slippage is applied automatically. ARB INC quotes use an 8% minimum to account for its 4% transfer tax; other tokens use the selected setting.</Notice><Meta><MetaLine><span>Estimated receive</span><span>{minimumReceived}</span></MetaLine><MetaLine><span>Platform fee</span><span>{FEE_BPS / 100}%</span></MetaLine><MetaLine><span>Network</span><span>BNB Smart Chain</span></MetaLine><MetaLine><span>Router</span><span>{quote?.routerAddress ? `${quote.routerAddress.slice(0, 6)}...${quote.routerAddress.slice(-4)}` : "KyberSwap"}</span></MetaLine></Meta><Notice>Quotes are exact-input. Your wallet approves only the selected token and sends the transaction directly to KyberSwap.</Notice></Panel><Panel style={{ marginTop: 18 }}><Eyebrow>Token safety</Eyebrow><p style={{ color: "#a9bfbd", fontSize: 13, lineHeight: 1.6, margin: "10px 0 0" }}>ARB INC is handled with its verified 9-decimal metadata. Native BNB uses Kyber's native-token address and transaction value.</p><Secondary style={{ marginTop: 15 }} onClick={() => navigator.clipboard.writeText(ARB_INC_ADDRESS)}><Copy size={14} /> Copy ARB INC address</Secondary></Panel></div></Layout>
 		</Shell><Footer /></Page>
 	</>;
 }

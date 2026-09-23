@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import { Suspense } from "react";
 
-const ClientSwapAllPage = dynamic(() => import("./ClientWrapper"), {
+const ClientSwapAllPage = dynamic(() => import("./BetaSwapClient"), {
 	ssr: false,
 });
 
