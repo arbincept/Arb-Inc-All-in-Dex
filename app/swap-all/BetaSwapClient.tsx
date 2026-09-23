@@ -40,7 +40,6 @@ const ERC20_ABI = [
   "function name() view returns (string)",
   "function decimals() view returns (uint8)",
 ];
-const GAS_RESERVE = "0.005";
 const GlobalStyle = createGlobalStyle`body{background:#071014;margin:0}*{box-sizing:border-box}@keyframes spin{to{transform:rotate(360deg)}}.spin{animation:spin .9s linear infinite}`;
 const Page = styled.main`
   min-height: 100vh;
@@ -577,11 +576,7 @@ export default function BetaSwapClient() {
   const setPercentage = (percentage: number) => {
     try {
       const raw = ethers.BigNumber.from(balanceRaw);
-      const reserve = isNativeAddress(tokenIn.address)
-        ? ethers.utils.parseEther(GAS_RESERVE)
-        : ethers.constants.Zero;
-      const spendable = raw.gt(reserve) ? raw.sub(reserve) : ethers.constants.Zero;
-      const amount = spendable.mul(percentage).div(100);
+      const amount = raw.mul(Math.round(percentage * 10)).div(1000);
       setAmountIn(
         formatInputUnits(amount, tokenIn.decimals),
       );
@@ -797,7 +792,7 @@ export default function BetaSwapClient() {
                     {value}%
                   </Percent>
                 ))}
-                <Percent type="button" onClick={() => setPercentage(100)}>
+                <Percent type="button" onClick={() => setPercentage(99.9)}>
                   MAX
                 </Percent>
               </PercentRow>
