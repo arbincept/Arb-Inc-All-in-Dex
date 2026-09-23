@@ -54,23 +54,35 @@ async function fetchTokenPriceInUSDT(token: Token): Promise<number> {
       `/api/kyber/route?tokenIn=${token.address}&tokenOut=${USDT_ADDRESS}&amountIn=${amountIn}`
     );
     const data = await res.json();
-    if (data.data?.routeSummary?.amountOutUsd) {
-      return parseFloat(data.data.routeSummary.amountOutUsd);
-    } else if (data.data?.routeSummary?.amountOut) {
-      return parseFloat(data.data.routeSummary.amountOut) / 1e18;
+    if (!res.ok) {
+      throw new Error(data.message || data.error || `Kyber quote failed (${res.status})`);
+    }
+    const routeSummary = data.data?.routeSummary;
+    const amountOutUsd = Number(routeSummary?.amountOutUsd);
+    if (Number.isFinite(amountOutUsd) && amountOutUsd > 0) return amountOutUsd;
+    const amountOut = routeSummary?.amountOut;
+    if ((typeof amountOut === "string" && /^\d+$/.test(amountOut)) || typeof amountOut === "number") {
+      const outputUnits = ethers.utils.formatUnits(String(amountOut), 18);
+      const outputValue = Number(outputUnits);
+      if (Number.isFinite(outputValue) && outputValue > 0) return outputValue;
     }
     // Fallback via WBNB
-    const wbnbPrice = await fetchTokenPriceInUSDT(BSC_TOKENS[0]);
+    const wbnbPrice = await fetchTokenPriceInUSDT(getWbnbToken());
     const wbnbRes = await fetch(
       `/api/kyber/route?tokenIn=${token.address}&tokenOut=${WBNB_ADDRESS}&amountIn=${amountIn}`
     );
     const wbnbData = await wbnbRes.json();
-    if (wbnbData.data?.routeSummary?.amountOut) {
-      const wbnbAmount = parseFloat(wbnbData.data.routeSummary.amountOut) / 1e18;
-      return wbnbAmount * wbnbPrice;
+    if (!wbnbRes.ok) {
+      throw new Error(wbnbData.message || wbnbData.error || `Kyber quote failed (${wbnbRes.status})`);
+    }
+    const wbnbAmount = wbnbData.data?.routeSummary?.amountOut;
+    if ((typeof wbnbAmount === "string" && /^\d+$/.test(wbnbAmount)) || typeof wbnbAmount === "number") {
+      const wbnbValue = Number(ethers.utils.formatUnits(String(wbnbAmount), 18));
+      if (Number.isFinite(wbnbValue) && wbnbValue > 0) return wbnbValue * wbnbPrice;
     }
     return 0;
-  } catch {
+  } catch (error) {
+    if (error instanceof Error && /api key|401|403/i.test(error.message)) throw error;
     return 0;
   }
 }
@@ -80,10 +92,10 @@ async function fetchTokenPrices(customTokens: Token[] = []): Promise<Record<stri
   const prices: Record<string, number> = {};
   for (const token of allTokens) {
     if (token.address.toLowerCase() === USDT_ADDRESS.toLowerCase()) {
-      prices[token.address] = 1;
+      prices[token.address.toLowerCase()] = 1;
     } else {
       const price = await fetchTokenPriceInUSDT(token);
-      prices[token.address] = price;
+      prices[token.address.toLowerCase()] = price;
       await new Promise(r => setTimeout(r, 100));
     }
   }
@@ -154,6 +166,7 @@ export default function ClientWrapper() {
   const [showTokenModal, setShowTokenModal] = useState<"sell" | "buy" | null>(null);
   const [tokenPrices, setTokenPrices] = useState<Record<string, number>>({});
   const [priceLoading, setPriceLoading] = useState(false);
+  const [priceError, setPriceError] = useState("");
 
   const walletAddress = wallet?.accounts?.[0]?.address;
   const provider = wallet?.provider;
@@ -181,10 +194,14 @@ export default function ClientWrapper() {
     let cancelled = false;
     const updatePrices = async () => {
       setPriceLoading(true);
-      const prices = await fetchTokenPrices(customTokens);
-      if (!cancelled) {
-        setTokenPrices(prices);
-        setPriceLoading(false);
+      setPriceError("");
+      try {
+        const prices = await fetchTokenPrices(customTokens);
+        if (!cancelled) setTokenPrices(prices);
+      } catch (error) {
+        if (!cancelled) setPriceError(error instanceof Error ? error.message : "Kyber price service unavailable");
+      } finally {
+        if (!cancelled) setPriceLoading(false);
       }
     };
     updatePrices();
@@ -323,8 +340,8 @@ export default function ClientWrapper() {
   };
 
   const getMarketRate = useCallback((): number | null => {
-    const sellPrice = tokenPrices[sellToken.address];
-    const buyPrice = tokenPrices[buyToken.address];
+    const sellPrice = tokenPrices[sellToken.address.toLowerCase()];
+    const buyPrice = tokenPrices[buyToken.address.toLowerCase()];
     if (sellPrice === undefined || buyPrice === undefined) return null;
     if (sellPrice === 0 || buyPrice === 0) return null;
     const rateValue = sellPrice / buyPrice;
@@ -336,7 +353,7 @@ export default function ClientWrapper() {
   const getEstimatedUsdRate = () => {
     const rateNum = parseFloat(normalizeDecimal(rate));
     if (isNaN(rateNum)) return null;
-    const buyPrice = tokenPrices[buyToken.address];
+    const buyPrice = tokenPrices[buyToken.address.toLowerCase()];
     if (!buyPrice) return null;
     return rateNum * buyPrice;
   };
@@ -381,7 +398,7 @@ export default function ClientWrapper() {
     }
     const market = getMarketRate();
     if (market === null) {
-      alert("Market rate not available for one of the selected tokens. Ensure the token has liquidity on KyberSwap and prices are loaded.");
+      alert(priceError || "Market rate not available for one of the selected tokens. Ensure the token has liquidity on KyberSwap and prices are loaded.");
       return;
     }
     const rateStr = market.toFixed(12);
@@ -518,7 +535,7 @@ export default function ClientWrapper() {
       loadBalances();
       setPriceLoading(true);
       const price = await fetchTokenPriceInUSDT(newToken);
-      setTokenPrices(prev => ({ ...prev, [checksummed]: price }));
+      setTokenPrices(prev => ({ ...prev, [checksummed.toLowerCase()]: price }));
       setPriceLoading(false);
     } catch (e) {
       setImportError(e instanceof Error && e.message === "Invalid fallback decimals"
@@ -541,7 +558,7 @@ export default function ClientWrapper() {
       <MainGrid>
         <Card>
           <CardTitle>Place Limit Order</CardTitle>
-          <LiveStatus>{priceLoading ? "Refreshing market data..." : "Live prices and wallet balances"}</LiveStatus>
+          <LiveStatus>{priceLoading ? "Refreshing market data..." : priceError ? priceError : "Live prices and wallet balances"}</LiveStatus>
           <div style={{ background: "rgba(244,114,182,0.1)", color: "#F472B6", padding: "10px", borderRadius: "8px", fontSize: "12px", fontWeight: "bold", marginBottom: "10px", textAlign: "center" }}>🏆 Earn 200 Points Upon Execution</div>
           <div style={{ background: "rgba(245, 158, 11, 0.1)", color: "#f59e0b", padding: "10px", borderRadius: "8px", fontSize: "12px", marginBottom: "15px", textAlign: "center" }}>⚠️ <strong>BNB nativo:</strong> viene convertito in WBNB dal wallet prima dell&apos;ordine. Il token deve avere liquidità sulla pool.</div>
           <InputGroup>
