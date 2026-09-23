@@ -203,7 +203,10 @@ export class LimitOrderApiClient {
 			typeof window === "undefined"
 				? `/write/api/v1/orders/cancel`
 				: `/api/kyber/limit-order/cancel`;
-		return this.post<{ success: boolean }>(
+		return this.post<{
+			cancelledOrderIds?: Array<string | number>;
+			operatorSignatureExpiry?: number;
+		}>(
 			endpoint,
 			body,
 			typeof window === "undefined"

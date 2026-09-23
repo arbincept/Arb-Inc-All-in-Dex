@@ -248,8 +248,16 @@ export default function ClientWrapper() {
   const loadOrders = useCallback(async () => {
     if (!maker || !walletAddress) return;
     try {
-      const res = await maker.getMakerOrders(walletAddress, { page: 1, size: 50 });
-      const fetchedOrders = (res.orders || []).map((o: any) => ({
+      const statuses = activeTab === "open"
+        ? ["active"]
+        : ["active", "partially_filled", "closed", "filled", "cancelled", "expired"];
+      const responses = await Promise.all(statuses.map((status) =>
+        maker.getMakerOrders(walletAddress, { page: 1, size: 50, status }),
+      ));
+      const uniqueOrders = Array.from(
+        new Map(responses.flatMap((response: any) => response.orders || []).map((order: any) => [String(order.id), order])).values(),
+      );
+      const fetchedOrders = uniqueOrders.map((o: any) => ({
         id: o.id,
         makerAsset: o.makerAsset,
         takerAsset: o.takerAsset,
@@ -278,7 +286,7 @@ export default function ClientWrapper() {
         }
       });
     } catch (e) { console.error(e); setOrders([]); }
-  }, [maker, walletAddress]);
+  }, [activeTab, maker, walletAddress]);
 
   useEffect(() => { if (walletAddress && maker) loadOrders(); }, [walletAddress, maker, loadOrders]);
 
@@ -637,7 +645,7 @@ export default function ClientWrapper() {
                   <div><div style={{ color: "#fff", fontWeight: 500 }}>{getSym(o.makerAsset)} → {getSym(o.takerAsset)}</div><div style={{ color: "#a1a1aa", fontSize: 13 }}>{formatNumber(o.makingAmount)} {getSym(o.makerAsset)}</div></div>
                   <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
                     <div style={{ textAlign: "right" }}><div style={{ color: "#F472B6", fontWeight: 500 }}>{(parseFloat(o.takingAmount) / parseFloat(o.makingAmount)).toFixed(8)} {getSym(o.takerAsset)}</div><div style={{ color: o.status.toLowerCase() === "filled" ? "#22c55e" : "#20B8CD", fontSize: 12 }}>{o.status}</div></div>
-                    {o.status.toLowerCase() !== "filled" && <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", justifyContent: "flex-end" }}>
+                    {["active", "open", "partially_filled"].includes(o.status.toLowerCase()) && <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", justifyContent: "flex-end" }}>
                       <button onClick={() => handleGaslessCancel(o.id)} disabled={cancellingId === o.id} style={{ padding: "6px 10px", background: "#20B8CD", border: "none", borderRadius: 6, color: "#fff", fontSize: 12, cursor: "pointer" }}>{cancellingId === o.id ? "..." : "Gasless cancel"}</button>
                       <button onClick={() => handleHardCancel(o.id)} disabled={cancellingId === o.id} style={{ padding: "6px 10px", background: "#ef4444", border: "none", borderRadius: 6, color: "#fff", fontSize: 12, cursor: "pointer" }}>{cancellingId === o.id ? "..." : "Hard cancel (gas)"}</button>
                     </div>}
