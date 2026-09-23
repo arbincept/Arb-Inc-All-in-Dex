@@ -45,8 +45,7 @@ async function fetchTokenPriceInUSDT(token: Token): Promise<number> {
   try {
     const amountIn = ethers.utils.parseUnits("1", token.decimals);
     const res = await fetch(
-      `https://aggregator-api.kyberswap.com/bsc/api/v1/routes?tokenIn=${token.address}&tokenOut=${USDT_ADDRESS}&amountIn=${amountIn}`,
-      { headers: { "x-client-id": "arb-inc" } }
+      `/api/kyber/route?tokenIn=${token.address}&tokenOut=${USDT_ADDRESS}&amountIn=${amountIn}`
     );
     const data = await res.json();
     if (data.data?.routeSummary?.amountOutUsd) {
@@ -57,8 +56,7 @@ async function fetchTokenPriceInUSDT(token: Token): Promise<number> {
     // Fallback via WBNB
     const wbnbPrice = await fetchTokenPriceInUSDT(BSC_TOKENS[0]);
     const wbnbRes = await fetch(
-      `https://aggregator-api.kyberswap.com/bsc/api/v1/routes?tokenIn=${token.address}&tokenOut=${WBNB_ADDRESS}&amountIn=${amountIn}`,
-      { headers: { "x-client-id": "arb-inc" } }
+      `/api/kyber/route?tokenIn=${token.address}&tokenOut=${WBNB_ADDRESS}&amountIn=${amountIn}`
     );
     const wbnbData = await wbnbRes.json();
     if (wbnbData.data?.routeSummary?.amountOut) {

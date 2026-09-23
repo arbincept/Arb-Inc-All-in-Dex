@@ -48,6 +48,7 @@ export class LimitOrderApiClient {
 			headers: {
 				"Content-Type": "application/json",
 				Accept: "application/json",
+				"x-client-id": "arb-inc",
 			},
 		});
 
