@@ -82,8 +82,7 @@ async function fetchTokenPriceInUSDT(token: Token): Promise<number> {
     }
     return 0;
   } catch (error) {
-    if (error instanceof Error && /api key|401|403/i.test(error.message)) throw error;
-    return 0;
+    throw error instanceof Error ? error : new Error("Kyber price request failed");
   }
 }
 
