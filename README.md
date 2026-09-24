@@ -1,5 +1,5 @@
 # Arbitrage Inc: All-in-Dex Suite
-### Open-source BNB Chain swap, bridge and limit-order terminal
+### Open-Source BSC DEX Aggregator, Cross-Chain Bridge & Real-Yield Terminal
 
 <p align="center">
   <img src="./public/social-preview.png" alt="Arbitrage Inception - BNB Chain DEX Aggregator & Bridge" width="100%" />
@@ -16,41 +16,21 @@
 [![PWA](https://img.shields.io/badge/PWA-Ready-9B51E0?logo=pwa&logoColor=white)](#)
 [![GitHub stars](https://img.shields.io/github/stars/arbincept/Arb-Inc-All-in-Dex?style=social)](https://github.com/arbincept/Arb-Inc-All-in-Dex)
 
-Arbitrage Inc is a live, non-custodial Web3 application for interacting with DEX liquidity, cross-chain routes and limit orders from a wallet on BNB Smart Chain. The code is open source so developers can inspect the routing, signing, API proxy and on-chain safety paths before contributing.
+**Arbitrage Inc: All-in-Dex** is a production-grade, open-source **BSC DEX Aggregator**, cross-chain bridge, limit order client, and real-yield telemetry engine on **BNB Smart Chain (BSC)**. Built with **Next.js 15 (App Router)**, **React 19**, **TypeScript**, **Tailwind CSS**, and **PWA (Progressive Web App)** capabilities.
 
-## Try it first
-
-- [Open the live application](https://arbitrage-inc.exchange)
-- [Swap interface](https://arbitrage-inc.exchange/swap) · [Bridge interface](https://arbitrage-inc.exchange/bridge) · [Limit orders](https://arbitrage-inc.exchange/limit-orders)
-- [Read the integration matrix](./docs/INTEGRATION-MATRIX.md)
-- [Run locally](#getting-started) · [Read the API docs](./docs/API.md) · [Read the security policy](./docs/SECURITY.md)
-
-The repository includes the Next.js application, wallet and routing integrations, API proxies, on-chain safety utilities, monitoring scripts and automated checks. It does not custody user private keys or trading funds; users approve and sign transactions in their own wallets.
-
-**Live application:** [arbitrage-inc.exchange](https://arbitrage-inc.exchange)
-**Deployment:** Vercel deployments are triggered from pushes to `main`.
-**Network:** BNB Smart Chain (BSC)
-**License:** [MIT](./LICENSE)
-
-## Visual preview
-
-![Arbitrage Inc BNB Chain DEX aggregator preview](./public/social-preview.png)
-
-The image above is the repository's current social preview. The live application is the source of truth for current UI routes and integration availability.
-
-## Project links
-
-- [Public API documentation](./docs/API.md)
-- [Integration and test matrix](./docs/INTEGRATION-MATRIX.md)
-- [DappBay project whitepaper](./docs/WHITEPAPER.md)
-- [Security and CSP policy](./docs/SECURITY.md)
-- [Audit and disclosures](./AUDIT.md)
-- [DeFiLlama protocol page](https://defillama.com/protocol/arbitrage-inc)
-- [Telegram community](https://t.me/ArbitrageInception) · [X / Twitter](https://x.com/Arbitrageincept)
-- [Contributing guide](./CONTRIBUTING.md)
+**Live Application:** [https://arbitrage-inc.exchange](https://arbitrage-inc.exchange)  
+**Public API Docs:** [docs/API.md](./docs/API.md)  
+**DappBay Project Whitepaper:** [docs/WHITEPAPER.md](./docs/WHITEPAPER.md)
+**Security & CSP Policy:** [docs/SECURITY.md](./docs/SECURITY.md)  
+**Deployment:** Vercel deployments are triggered from pushes to the `main` branch of this repository.
+**DeFiLlama Protocol:** [https://defillama.com/protocol/arbitrage-inc](https://defillama.com/protocol/arbitrage-inc)  
+**Awesome-Web3 Directory:** [Listed in Open Source Project (Line 407)](https://github.com/ahmet/awesome-web3/blob/main/README.md#L407) ([Merged PR #796](https://github.com/ahmet/awesome-web3/pull/796))  
+**Automated Security Scan:** [HashDit Bot - Zero Issues Detected (BNB Chain PR #98)](https://github.com/bnb-chain/developer-tools-list/pull/98#issuecomment-5652788720)  
+**Smart Contract:** [0x5ee54869ecd5e752c31af095187326d4a4d50e1c (BscScan)](https://bscscan.com/address/0x5ee54869ecd5e752c31af095187326d4a4d50e1c#readContract)  
+**Audit & Disclosures:** [AUDIT.md](./AUDIT.md) | **Community:** [Telegram](https://t.me/ArbitrageInception) · [X / Twitter](https://x.com/Arbitrageincept) | **License:** MIT
 
 > [!TIP]
-> Found a missing integration, unclear flow, or reproducible issue? Open a focused issue with the route, network, wallet, and reproduction steps. Stars, documentation improvements, and small test contributions are also welcome.
+> **Developer & Research Community:** If this codebase saves you development time or helps your Web3 / bot research, please consider leaving a **[Star on GitHub](https://github.com/arbincept/Arb-Inc-All-in-Dex)**! It directly helps maintain open-source indexing across BNB Chain catalogs.
 
 ---
 
