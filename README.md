@@ -63,7 +63,7 @@ flowchart TD
     User(["User Wallet / Client (PWA)"]) --> Router["Next.js 15 App Router"]
     
     subgraph Frontend["Frontend and User Experience"]
-        Router --> SwapUI["DEX Aggregator UI (/swap)"]
+        Router --> SwapUI["DEX Aggregator UI (/swap-all)"]
         Router --> BridgeUI["Cross-Chain Bridge UI (/bridge)"]
         Router --> LimitUI["Decentralized Limit Orders (/limit-orders)"]
         Router --> VaultsUI["Yield Vaults and Pools (/vaults)"]
@@ -88,7 +88,7 @@ flowchart TD
         HealthCheck["Real-Time Health Auditor<br>(scripts/health_check.js - Max 80% SECURE)"] --> Telemetry
         DefiLlama["DefiLlama Verified Dimension Adapters<br>(fees/arbitrage-inc.ts)"] --> Telemetry
         Telemetry --> DashUI
-        YieldDistributor["Automated 12-Hour Yield Engine"] --> Holders["ARB Inc Token Holders"]
+        YieldDistributor["Automated 24-Hour Community Rewards Cycle<br>(SAFE_FACTOR 0.73)"] --> Holders["ARB Inc Token Holders"]
     end
 ```
 
@@ -96,7 +96,7 @@ flowchart TD
 
 ## 🚀 Key Platform Capabilities
 
-### 1. Multi-DEX Aggregator & Split-Order Routing (`/swap`, `/swap-all`)
+### 1. Multi-DEX Aggregator & Split-Order Routing (`/swap-all`)
 - Routes swaps across multiple BSC decentralized exchanges (including PancakeSwap V2/V3, Uniswap V3, Biswap, and KyberSwap) to achieve optimal price execution, minimal price impact, and slippage protection.
 - Smart order splitting algorithms reduce gas overhead and prevent front-running / MEV sandwich attacks.
 
@@ -112,7 +112,7 @@ flowchart TD
 
 ### 5. 100% Real-Yield Community Distribution Engine
 - **Zero Team Allocation, Zero Token Burns:** 100% of accumulated protocol fees and DEX revenue are converted into BNB and directed to the distribution contract.
-- **Automated 12-Hour Payouts:** Every 12 hours, 100% of accumulated BNB is distributed programmatically to ARB Inc token holders relative to their wallet balances.
+- **Automated 24-Hour Distribution Attempt:** Every 24 hours, the protocol attempts to process an eligible BNB distribution. Amounts, timing and eligibility depend on reserves, accounting state, gas and service availability.
 
 ### 6. Real-Time On-Chain Security & Health Watcher Daemons
 - **Solvency & Contract Watcher (`scripts/watcher.js`):** Continuously monitors RPC nodes, liquidity pool ratios, and reserve solvency using an algorithmic risk factor (`SAFE_FACTOR = 0.73`).
@@ -131,8 +131,9 @@ flowchart TD
 ### 9. Multi-Chain Wallet Connectors
 - Universal Web3 authentication supporting MetaMask, Coinbase Wallet, WalletConnect v2, Phantom, OKX, and emerging multi-chain ecosystems (Solana Wallet Adapter, Sui dApp Kit).
 
-### 10. Automated End-to-End Testing Suite
-- Playwright automated smoke test suite (`scripts/maintenance/test-pages.mjs` & `playwright.config.ts`) testing critical user journeys, page loading, RPC responsiveness, and UI state integrity.
+### 10. Current Automated Checks
+- Node-based financial math and Web3 security tests run through `npm test`.
+- Production builds are validated through `npm run build` and GitHub Actions.
 
 ---
 
@@ -156,7 +157,7 @@ The ARB Inc token contract ownership has been **permanently renounced** to the z
 | **Styling & Animation** | Tailwind CSS, Framer Motion, Styled-Components |
 | **Web3 & Blockchain** | Viem 2, Wagmi 3, Ethers 5, Web3-Onboard, KyberSwap Widgets, Mayan Finance SDK |
 | **Infrastructure** | Node.js 22 LTS, Upstash Redis, Vercel Edge Network |
-| **Testing & CI** | Playwright E2E Test Runner, Biome Linter |
+| **Testing & CI** | Node test runner for financial/security tests, Next.js production build, GitHub Actions |
 | **Monitoring** | Custom RPC Watcher Daemons, DeFiLlama Dimension Adapters |
 
 ---
@@ -182,10 +183,13 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-### Run Automated Smoke Tests
+### Run Current Checks
 ```bash
-# Run Playwright automated smoke tests across all routes
-node scripts/maintenance/test-pages.mjs
+# Run financial math and Web3 security tests
+npm test
+
+# Build the production application
+npm run build
 ```
 
 ---
