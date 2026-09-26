@@ -31,7 +31,7 @@
 
 ## Demo & Concrete Example
 
-The visual above is the current product preview. Try the [live application](https://arbitrage-inc.exchange), then open the `/swap-all` route to inspect a BNB Chain swap quote before signing anything in a wallet.
+The image above is a project social preview, not a screenshot of the live application. Open the [live swap interface](https://arbitrage-inc.exchange/swap-all) to inspect the real BNB Chain swap UI and quote flow before signing anything in a wallet.
 
 Example workflow:
 
@@ -78,7 +78,8 @@ flowchart TD
         Router --> SwapUI["DEX Aggregator UI (/swap-all)"]
         Router --> BridgeUI["Cross-Chain Bridge UI (/bridge)"]
         Router --> LimitUI["Decentralized Limit Orders (/limit-orders)"]
-        Router --> VaultsUI["Yield Vaults and Pools (/vaults)"]
+        Router --> VaultsUI["Vaults Gateway (/vaults)"]
+        VaultsUI --> EarnApp["Arbitrage Inc Earn<br>(separate application)"]
         Router --> DashUI["Yield and Telemetry Dashboard (/)"]
     end
     
@@ -119,8 +120,8 @@ flowchart TD
 - Decentralized conditional trade execution on-chain without requiring deposits into centralized orderbooks or third-party custody.
 - Direct wallet-to-contract signature authorizations.
 
-### 4. Automated Yield Vaults & Staking Pools (`/vaults`)
-- Curated integration with decentralized liquidity pools and auto-compounding strategies, maximizing APY/APR for liquidity providers on BSC.
+### 4. Yield Vaults Gateway (`/vaults`)
+- The `/vaults` page links to the separate [Arbitrage Inc Earn application](https://arbitrage-inc-earn.vercel.app), which provides the yield and lending interface on BNB Smart Chain.
 
 ### 5. 100% Real-Yield Community Distribution Engine
 - **Zero Team Allocation, Zero Token Burns:** 100% of accumulated protocol fees and DEX revenue are converted into BNB and directed to the distribution contract.
