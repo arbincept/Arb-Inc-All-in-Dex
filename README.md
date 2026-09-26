@@ -29,6 +29,18 @@
 **Smart Contract:** [0x5ee54869ecd5e752c31af095187326d4a4d50e1c (BscScan)](https://bscscan.com/address/0x5ee54869ecd5e752c31af095187326d4a4d50e1c#readContract)  
 **Audit & Disclosures:** [AUDIT.md](./AUDIT.md) | **Community:** [Telegram](https://t.me/ArbitrageInception) · [X / Twitter](https://x.com/Arbitrageincept) | **License:** MIT
 
+## Demo & Concrete Example
+
+The visual above is the current product preview. Try the [live application](https://arbitrage-inc.exchange), then open the `/swap-all` route to inspect a BNB Chain swap quote before signing anything in a wallet.
+
+Example workflow:
+
+1. As a concrete example, select BNB as the input and USDT as the output on BNB Smart Chain.
+2. Review the routed quote, price impact, slippage and estimated gas.
+3. Approve and sign only if the route and transaction details match your intent.
+
+This is a non-custodial interface for inspecting and submitting on-chain transactions; quotes, liquidity and execution conditions can change.
+
 > [!TIP]
 > **Developer & Research Community:** If this codebase saves you development time or helps your Web3 / bot research, please consider leaving a **[Star on GitHub](https://github.com/arbincept/Arb-Inc-All-in-Dex)**! It directly helps maintain open-source indexing across BNB Chain catalogs.
 
