@@ -2,7 +2,7 @@
 ### Open-Source BSC DEX Aggregator, Cross-Chain Bridge & Real-Yield Terminal
 
 <p align="center">
-  <img src="./public/social-preview.png" alt="Arbitrage Inception - BNB Chain DEX Aggregator & Bridge" width="100%" />
+    <img src="./public/live-home.png" alt="Arbitrage Inception live DEX dashboard" width="100%" />
 </p>
 
 [![CI](https://github.com/arbincept/Arb-Inc-All-in-Dex/actions/workflows/ci.yml/badge.svg)](https://github.com/arbincept/Arb-Inc-All-in-Dex/actions)
@@ -31,7 +31,14 @@
 
 ## Demo & Concrete Example
 
-The image above is a project social preview, not a screenshot of the live application. Open the [live swap interface](https://arbitrage-inc.exchange/swap-all) to inspect the real BNB Chain swap UI and quote flow before signing anything in a wallet.
+The image above is a clean capture of the live application home dashboard. Use the dedicated routes below to inspect each primary product surface:
+
+- [Swap aggregator](https://arbitrage-inc.exchange/swap-all)
+- [Cross-chain bridge](https://arbitrage-inc.exchange/bridge)
+- [Limit orders](https://arbitrage-inc.exchange/limit-orders)
+- [Earn gateway](https://arbitrage-inc.exchange/vaults)
+
+The [`social-preview.png`](./public/social-preview.png) asset remains available for link previews and social sharing; it is not presented as a screenshot of the application.
 
 Example workflow:
 
