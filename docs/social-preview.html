@@ -1,252 +1,60 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Arbitrage Inception - Social Preview</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700;800&display=swap" rel="stylesheet">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Arb-Inc All-in-Dex — by Lukecele</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      -webkit-font-smoothing: antialiased;
+    * { box-sizing: border-box; }
+    html, body { margin: 0; background: #030014; }
+    body { color: #faf8ff; font-family: Arial, Helvetica, sans-serif; }
+    .card {
+      width: 1280px; height: 640px; padding: 56px 64px; position: relative;
+      overflow: hidden; isolation: isolate; display: flex; flex-direction: column;
+      background: radial-gradient(ellipse at 95% 5%, #361c66 0, transparent 54%), #080416;
     }
-    body {
-      width: 1280px;
-      height: 640px;
-      background: #06070d;
-      color: #ffffff;
-      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-      position: relative;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      padding: 60px 80px;
+    .card::before {
+      content: ""; position: absolute; inset: 22px; border: 1px solid #493464;
+      border-radius: 24px; z-index: -1;
     }
-    /* Ambient Glow */
-    .glow-1 {
-      position: absolute;
-      top: -100px;
-      left: -80px;
-      width: 600px;
-      height: 600px;
-      background: radial-gradient(circle, rgba(99, 102, 241, 0.35) 0%, rgba(99, 102, 241, 0) 70%);
-      filter: blur(60px);
-      z-index: 0;
-    }
-    .glow-2 {
-      position: absolute;
-      bottom: -100px;
-      right: -80px;
-      width: 650px;
-      height: 650px;
-      background: radial-gradient(circle, rgba(245, 158, 11, 0.22) 0%, rgba(245, 158, 11, 0) 70%);
-      filter: blur(70px);
-      z-index: 0;
-    }
-    .glow-3 {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 800px;
-      height: 800px;
-      background: radial-gradient(circle, rgba(16, 185, 129, 0.12) 0%, rgba(16, 185, 129, 0) 70%);
-      filter: blur(80px);
-      z-index: 0;
-    }
-    .content {
-      position: relative;
-      z-index: 10;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-    /* Top Bar */
-    .top-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .brand-group {
-      display: flex;
-      align-items: center;
-      gap: 22px;
-    }
-    .brand-logo {
-      width: 72px;
-      height: 72px;
-      border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-    .brand-text h1 {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 38px;
-      font-weight: 800;
-      letter-spacing: -0.5px;
-      background: linear-gradient(135deg, #ffffff 0%, #e2e8f0 60%, #94a3b8 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    .network-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 22px;
-      background: rgba(240, 185, 11, 0.12);
-      border: 1px solid rgba(240, 185, 11, 0.35);
-      border-radius: 100px;
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 17px;
-      font-weight: 700;
-      color: #f0b90b;
-      backdrop-filter: blur(15px);
-    }
-    .network-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: #f0b90b;
-      box-shadow: 0 0 10px #f0b90b;
-    }
-    /* Main Hero Center */
-    .hero-center {
-      margin: auto 0;
-    }
-    .hero-title {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 48px;
-      font-weight: 800;
-      line-height: 1.15;
-      letter-spacing: -1px;
-      color: #ffffff;
-      margin-bottom: 16px;
-    }
-    .hero-title span {
-      background: linear-gradient(135deg, #818cf8 0%, #c084fc 50%, #34d399 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    .hero-subtitle {
-      font-size: 22px;
-      color: #94a3b8;
-      font-weight: 400;
-      max-width: 900px;
-      line-height: 1.45;
-    }
-    /* Badges Row */
-    .badges-row {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      flex-wrap: wrap;
-    }
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 18px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      backdrop-filter: blur(20px);
-      border-radius: 100px;
-      font-size: 15px;
-      font-weight: 600;
-      color: #e2e8f0;
-    }
-    .pill-green {
-      color: #34d399;
-      border-color: rgba(52, 211, 153, 0.3);
-      background: rgba(52, 211, 153, 0.08);
-    }
-    .pill-gold {
-      color: #fbbf24;
-      border-color: rgba(251, 191, 36, 0.3);
-      background: rgba(251, 191, 36, 0.08);
-    }
-    .pill-indigo {
-      color: #818cf8;
-      border-color: rgba(129, 140, 248, 0.3);
-      background: rgba(129, 140, 248, 0.08);
-    }
-    /* Bottom Bar */
-    .bottom-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-      padding-top: 22px;
-    }
-    .domain {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 20px;
-      font-weight: 700;
-      color: #f8fafc;
-      letter-spacing: 0.5px;
-    }
-    .stats-tag {
-      font-size: 15px;
-      color: #64748b;
-      font-weight: 500;
-    }
-    .stats-tag strong {
-      color: #94a3b8;
+    header { display: flex; align-items: center; justify-content: space-between; }
+    .eyebrow { margin: 0; font-size: 20px; letter-spacing: 3px; font-weight: 700; color: #c2addf; }
+    .signature { margin: 0; font-size: 30px; font-weight: 700; color: #f6cb87; }
+    .hero { display: grid; grid-template-columns: 1fr 310px; align-items: center; flex: 1; gap: 28px; }
+    h1 { margin: 0 0 22px; font-size: 62px; line-height: 1.04; letter-spacing: -2.5px; }
+    .message { margin: 0; font-size: 42px; line-height: 1.18; letter-spacing: -1px; color: #d8c6ff; }
+    .message span { color: #faf8ff; }
+    .details { margin: 24px 0 0; font-size: 21px; color: #c2b7d5; }
+    img { width: 300px; height: 300px; border-radius: 30px; border: 1px solid #493464; }
+    footer { border-top: 1px solid #493464; padding-top: 25px; display: flex; justify-content: space-between; align-items: center; }
+    .url { font-size: 25px; font-weight: 700; }
+    .cta { color: #d8c6ff; font-size: 21px; }
+    /* The export is a fixed 1280×640 canvas. A small-screen view scales the entire card. */
+    @media (max-width: 1279px) {
+      .card { transform-origin: top left; transform: scale(calc(100vw / 1280px)); }
+      body { width: 100vw; height: 50vw; overflow: hidden; }
     }
   </style>
 </head>
 <body>
-  <div class="glow-1"></div>
-  <div class="glow-2"></div>
-  <div class="glow-3"></div>
-
-  <div class="content">
-    <!-- Top Bar -->
-    <div class="top-bar">
-      <div class="brand-group">
-        <img class="brand-logo" src="file:///home/luca/Arb-Inc-All-in-Dex/public/logo.jpg" alt="Logo">
-        <div class="brand-text">
-          <h1>Arbitrage Inception</h1>
-        </div>
+  <main class="card" aria-label="Arb-Inc All-in-Dex social card">
+    <header>
+      <p class="eyebrow">ARBITRAGE INCEPTION / OPEN SOURCE</p>
+      <p class="signature">by Lukecele</p>
+    </header>
+    <div class="hero">
+      <div>
+        <h1>Arb-Inc All-in-Dex</h1>
+        <p class="message">Swap, bridge,<br><span>and explore DeFi.</span></p>
+        <p class="details">DEX aggregation · Cross-chain routes · Limit orders</p>
       </div>
-      <div class="network-badge">
-        <div class="network-dot"></div>
-        BNB SMART CHAIN
-      </div>
+      <img src="../public/logo.jpg" width="300" height="300" alt="Arbitrage Inception logo">
     </div>
-
-    <!-- Center Hero -->
-    <div class="hero-center">
-      <div class="hero-title">
-        Non-Custodial DEX Aggregator &amp;<br>
-        <span>Multi-Chain Bridge Suite</span>
-      </div>
-      <div class="hero-subtitle">
-        High-performance routing via KyberSwap v1, Mayan cross-chain execution, automated limit orders, and protocol community rewards telemetry.
-      </div>
-    </div>
-
-    <!-- Bottom Bar & Badges -->
-    <div>
-      <div class="badges-row" style="margin-bottom: 20px;">
-        <div class="pill pill-green">✓ HashDit Bot: 0 Issues</div>
-        <div class="pill pill-indigo">★ DefiLlama Indexed (#7591)</div>
-        <div class="pill pill-gold">⚡ 0.5% DEX Fee · 4% Tax</div>
-        <div class="pill">🛡️ MiCA Recital 22 Non-Custodial</div>
-        <div class="pill">📜 MIT Open Source</div>
-      </div>
-      <div class="bottom-bar">
-        <div class="domain">arbitrage-inc.exchange</div>
-        <div class="stats-tag">
-          <strong>GitHub:</strong> github.com/arbincept/Arb-Inc-All-in-Dex
-        </div>
-      </div>
-    </div>
-  </div>
+    <footer>
+      <span class="url">arbitrage-inc.exchange</span>
+      <span class="cta">Explore the app · Star the repo · Follow @Lukecele</span>
+    </footer>
+  </main>
 </body>
 </html>

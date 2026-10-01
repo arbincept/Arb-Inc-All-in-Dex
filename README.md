@@ -30,11 +30,13 @@ Built with **Next.js, React, TypeScript, viem, and wagmi**, with a PWA manifest 
 
 ## Try it
 
-1. Open the swap interface and select an input and output asset, such as BNB and USDT.
-2. Inspect the quote, route, fees, price impact, and slippage.
-3. Connect a wallet and review the transaction before signing if you choose to execute it.
+1. Open the swap interface, select an input and output asset such as BNB and USDT, and enter an amount.
+2. Connect a wallet to request a quote; the current interface requires a wallet address for the quote request.
+3. Inspect the quote, route, fees, price impact, and slippage. Review the transaction before signing if you choose to execute it.
 
 Quotes and supported routes depend on the underlying providers and current liquidity.
+
+[View the demo storyboard](docs/demo.md) ([24-second video](public/demo/swap-storyboard.webm) · [poster](public/demo/swap-storyboard-poster.png)). This is a walkthrough plan, not a live quote recording; the capture prerequisites and remaining steps are documented alongside it.
 
 ## Quick start
 
