@@ -114,9 +114,8 @@ export async function GET() {
 			(days) => feeHistory.length >= days,
 		);
 		let periodDays = 1;
-		let periodFeesUsd =
-			totalVolume24hUsd * (REWARD_TAX_PERCENTAGE / 100);
-		let aprSource = "DexScreener 24h fallback";
+		let swapFeesUsd = 0;
+		let aprSource = "DexScreener token volume tax";
 		if (availableWindows.length > 0) {
 			const bestWindow = availableWindows
 				.map((days) => ({
@@ -134,9 +133,14 @@ export async function GET() {
 						b.feesUsd / b.days - a.feesUsd / a.days,
 					)[0];
 			periodDays = bestWindow.days;
-			periodFeesUsd = bestWindow.feesUsd;
-			aprSource = "DeFiLlama historical protocol fees";
+			swapFeesUsd = bestWindow.feesUsd;
+			aprSource = "DeFiLlama swap fees + DexScreener token volume tax";
 		}
+		// DeFiLlama tracks the 0.5% DEX fee, but not the ARB INC 4% transfer tax
+		// when liquidity is too low. Estimate that separate engine from live token volume.
+		const tokenTaxFeesUsd =
+			totalVolume24hUsd * (REWARD_TAX_PERCENTAGE / 100) * periodDays;
+		const periodFeesUsd = swapFeesUsd + tokenTaxFeesUsd;
 		const calibratedPeriodFeesUsd =
 			periodFeesUsd / APR_CALIBRATION_FACTOR;
 		const dailyRewardsUsd = calibratedPeriodFeesUsd / periodDays;
@@ -172,6 +176,8 @@ export async function GET() {
 				aprCalibrationFactor: APR_CALIBRATION_FACTOR,
 				periodDays,
 				periodFeesUsd,
+				swapFeesUsd,
+				tokenTaxFeesUsd,
 				calibratedPeriodFeesUsd,
 				aprSource,
 				availableWindows,

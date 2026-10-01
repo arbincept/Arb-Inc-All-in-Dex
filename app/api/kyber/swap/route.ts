@@ -105,6 +105,17 @@ export async function GET(request: Request) {
 			cache: "no-store",
 		});
 		const body = await response.text();
+		if (response.ok) {
+			try {
+				const buildBodyResponse = JSON.parse(body);
+				if (buildBodyResponse.code === 0 && buildBodyResponse.data) {
+					buildBodyResponse.data.routeSummary = routeBody.data.routeSummary;
+					return NextResponse.json(buildBodyResponse, { status: response.status });
+				}
+			} catch {
+				// Preserve the upstream response when Kyber returns a non-JSON body.
+			}
+		}
 		return new NextResponse(body, {
 			status: response.status,
 			headers: {

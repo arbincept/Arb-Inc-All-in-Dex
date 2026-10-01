@@ -14,7 +14,7 @@ export const ARB_INC_DECIMALS = 9;
 export const ARB_INC_TAX_BPS = 400; // 4%
 
 export const BSC_CHAIN_ID = 56;
-export const FEE_RECEIVER = "0xafF5340ECFaf7ce049261cff193f5FED6BDF04E7";
+export const FEE_RECEIVER = "0x0F477f8c88b48E299AcE83B14303157d032382EC";
 export const FEE_BPS = 50; // 0.5% platform fee, matches existing widget config
 
 export interface SwapToken {

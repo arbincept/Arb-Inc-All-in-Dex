@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 
-const KYBER_API_BASE =
-	process.env.KYBER_AGGREGATOR_API_URL ||
-	"https://api.kyberswap.com/swap/bsc/api/v1";
+const KYBER_QUOTE_API_BASE =
+	process.env.KYBER_QUOTE_API_URL ||
+	"https://aggregator-api.kyberswap.com/bsc/api/v1";
 const ADDRESS_PATTERN = /^0x[a-fA-F0-9]{40}$/;
 
 export async function GET(request: Request) {
@@ -22,7 +22,7 @@ export async function GET(request: Request) {
 		return NextResponse.json({ error: "Invalid Kyber quote parameters" }, { status: 400 });
 	}
 
-	const upstreamUrl = new URL(`${KYBER_API_BASE}/routes`);
+	const upstreamUrl = new URL(`${KYBER_QUOTE_API_BASE}/routes`);
 	upstreamUrl.searchParams.set("tokenIn", tokenIn);
 	upstreamUrl.searchParams.set("tokenOut", tokenOut);
 	upstreamUrl.searchParams.set("amountIn", amountIn);
