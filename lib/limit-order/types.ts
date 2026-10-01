@@ -343,7 +343,7 @@ export const DEFAULT_CONFIG: LimitOrderConfig = {
 	chainId: ChainId.BSC,
 	feeConfig: {
 		feePercentage: 10, // 0.1%
-		feeReceiver: "0xafF5340ECFaf7ce049261cff193f5FED6BDF04E7",
+		feeReceiver: "0x75F7F06a5C5c440c1aDbd586826CD26253EDE219",
 		chargeFeeBy: "currency_out",
 		isInBps: true,
 	},

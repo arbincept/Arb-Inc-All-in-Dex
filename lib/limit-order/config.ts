@@ -13,7 +13,8 @@ const ENV_CONFIG = {
 			DEFAULT_CONFIG.chainId.toString(),
 	),
 	LIMIT_ORDER_FEE_RECEIVER:
-		process.env.NEXT_PUBLIC_LIMIT_ORDER_FEE_RECEIVER || "",
+		process.env.NEXT_PUBLIC_LIMIT_ORDER_FEE_RECEIVER ||
+			DEFAULT_CONFIG.feeConfig.feeReceiver,
 	LIMIT_ORDER_FEE_PERCENTAGE: parseInt(
 		process.env.NEXT_PUBLIC_LIMIT_ORDER_FEE_PERCENTAGE ||
 			DEFAULT_CONFIG.feeConfig.feePercentage.toString(),
