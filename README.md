@@ -36,7 +36,9 @@ Built with **Next.js, React, TypeScript, viem, and wagmi**, with a PWA manifest 
 
 Quotes and supported routes depend on the underlying providers and current liquidity.
 
-[View the demo storyboard](docs/demo.md) ([24-second video](public/demo/swap-storyboard.webm) · [poster](public/demo/swap-storyboard-poster.png)). This is a walkthrough plan, not a live quote recording; the capture prerequisites and remaining steps are documented alongside it.
+![BNB to USDT quote preview showing estimated output, slippage, platform fee and router](public/demo/swap-quote.png)
+
+<sub>Quote snapshot supplied by the maintainer. Displayed values change with provider responses and liquidity. [Screenshot details](docs/demo.md).</sub>
 
 ## Quick start
 

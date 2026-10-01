@@ -45,7 +45,7 @@ Complete these operations in this repository only:
 
 ## Demo and announcement
 
-- [Demo status and 24-second storyboard](demo.md): a live quote capture remains pending; the supplied video is labelled as a storyboard.
+- [BNB/USDT quote screenshot and capture details](demo.md): a still image supplied by the maintainer; video work is deferred.
 - [Technical announcement draft](announcement.md): English text ready to copy, not published.
 
 The existing README fee disclosures, provider dependencies and distinction between wallet trading and hosted reward payouts remain in place. No claim of guaranteed execution, profit, MEV immunity or a completed manual audit is added by these assets.
