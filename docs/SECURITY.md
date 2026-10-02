@@ -36,9 +36,9 @@ Arbitrage Inception strictly decouples **non-custodial trading execution** from 
 ## 2. Security Review Status & Disclosures
 
 ### Automated Security Static Analysis (HashDit Bot)
-- **BNB Chain Official Developer Tools Catalog:** Cleared automated static security verification via **HashDit Bot** (BNB Chain's official security partner) with **zero vulnerabilities detected** ([PR #98](https://github.com/bnb-chain/developer-tools-list/pull/98#issuecomment-5652788720)).
-- **BNB Chain Awesome Catalog:** Cleared automated static security verification via **HashDit Bot** with **zero vulnerabilities detected** ([PR #16](https://github.com/bnb-chain/awesome/pull/16#issuecomment-5686496121)).
-- **Notice on Automated Scans:** Automated bot analysis evaluates smart contract code structure, known threat patterns, and common vulnerability vectors. As stated by HashDit, automated static analysis **does not replace an independent, full-scope manual human audit**.
+- **BNB Chain Developer Tools Catalog:** An automated static scan by **HashDit Bot** reported zero findings in the linked submission ([PR #98](https://github.com/bnb-chain/developer-tools-list/pull/98#issuecomment-5652788720)).
+- **BNB Chain Awesome Catalog:** An automated HashDit Bot scan reported zero findings in the linked submission ([PR #16](https://github.com/bnb-chain/awesome/pull/16#issuecomment-5686496121)).
+- **Notice on Automated Scans:** These are bot scan results only, not an independent security audit, certification, or guarantee that the contract is safe. Automated analysis evaluates common code patterns and vulnerability vectors but does not replace an independent, full-scope manual human audit.
 
 ### Independent Manual Audit Disclosure
 - The native BEP-20 token contract (`0x5EE54869Ecd5E752C31aF095187326D4A4D50e1c`) has **not undergone a third-party paid manual audit**. 
@@ -75,7 +75,7 @@ Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-eval' 'un
 
 ## 4. RPC Architecture & Redundancy
 
-The protocol prioritizes enterprise-grade, high-throughput RPC endpoints on BNB Smart Chain (Chain ID 56) with zero legacy dataseed dependencies:
+The protocol uses ordered RPC endpoints on BNB Smart Chain (Chain ID 56), with NodeReal and other public providers preferred where configured:
 
 | Endpoint | Provider | Role | Rate / Performance |
 |---|---|---|---|
@@ -84,6 +84,8 @@ The protocol prioritizes enterprise-grade, high-throughput RPC endpoints on BNB 
 | `https://1rpc.io/bnb` | Automata Network | Resilient Fallback | Privacy-preserving, multi-region fallback RPC |
 
 Custom private RPCs can be injected via the `BSC_RPC_URL` environment variable. Unauthenticated `rpc.ankr.com` was deprecated due to mandatory API key requirements.
+
+The claim handlers currently retain `bsc-dataseed.binance.org`, `bsc-dataseed1.binance.org`, and `bsc-dataseed2.binance.org` as legacy fallbacks after the primary endpoint. These endpoints are not preferred, but they remain operational dependencies for compatibility; this repository therefore does not claim to have fully eliminated legacy dataseed RPCs.
 
 ---
 

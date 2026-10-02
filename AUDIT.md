@@ -28,9 +28,9 @@ alter contract behavior. Verify this by reading the ABI on BSCScan.
 ## Security Reviews & Audit Status
 
 ### Automated Static Analysis (HashDit Bot)
-- **BNB Chain Developer Tools:** Cleared automated static review by **HashDit Bot** (BNB Chain official partner) with zero vulnerabilities detected ([PR #98](https://github.com/bnb-chain/developer-tools-list/pull/98#issuecomment-5652788720)).
-- **BNB Chain Awesome Catalog:** Cleared automated review with zero vulnerabilities ([PR #16](https://github.com/bnb-chain/awesome/pull/16#issuecomment-5686496121)).
-- *Note:* Automated static bot scans evaluate common security patterns and do not replace a manual human security audit.
+- **BNB Chain Developer Tools:** An automated static scan by **HashDit Bot** reported zero findings in the linked submission ([PR #98](https://github.com/bnb-chain/developer-tools-list/pull/98#issuecomment-5652788720)).
+- **BNB Chain Awesome Catalog:** An automated HashDit Bot scan reported zero findings in the linked submission ([PR #16](https://github.com/bnb-chain/awesome/pull/16#issuecomment-5686496121)).
+- *Important:* These are automated bot scan results only, not an independent security audit, certification, or guarantee that the contract is safe. Automated scans do not replace a manual human security audit.
 
 ### Continuous Mathematical Testing
 - 13/13 passing automated invariant tests in `tests/financial-math.test.mjs` verifying protocol reserve solvency (`SAFE_FACTOR = 0.73`) and Treasury utilization boundaries (<= 80%).
