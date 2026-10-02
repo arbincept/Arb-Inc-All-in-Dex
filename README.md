@@ -2,6 +2,8 @@
 
 # Arb-Inc All-in-Dex
 
+[![CI](https://github.com/arbincept/Arb-Inc-All-in-Dex/actions/workflows/ci.yml/badge.svg)](https://github.com/arbincept/Arb-Inc-All-in-Dex/actions/workflows/ci.yml)
+
 **Swap, bridge, and explore DeFi from one open-source interface.**
 
 Built and maintained by **[Luca Celebrano · @Lukecele](https://github.com/Lukecele)**, founder of [Arbitrage Inception](https://github.com/arbincept).
