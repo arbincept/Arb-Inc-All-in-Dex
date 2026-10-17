@@ -301,8 +301,7 @@ export default function TermsOfServicePage() {
 						responsibly.
 					</Disclaimer>
 					<p>
-						© {new Date().getFullYear()} Arbitrage Inception Contributors — MIT
-						License
+						Open-Source Software (Licenza Libera MIT) • Zero riserva di copyright proprietario. Marchi e protocolli di terze parti appartengono ai rispettivi titolari.
 					</p>
 				</PageFooter>
 			</Container>

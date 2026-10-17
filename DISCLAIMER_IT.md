@@ -32,7 +32,8 @@ L'utente riconosce e accetta che:
 
 La piattaforma non effettua tracciamento a fini commerciali né profilazione degli utenti. I dati tecnici di navigazione strettamente necessari per la sicurezza e la prevenzione di abusi informatici sono trattati in conformità al Regolamento (UE) 2016/679 (GDPR). Per richieste tecniche o di sicurezza è disponibile il canale dedicato: luca.celebrano1@gmail.com o tramite GitHub Issues.
 
-## 5. Licenza Open Source
+## 5. Licenza Open Source & Proprietà Intellettuale di Terze Parti
 
-Codice sorgente pubblico rilasciato sotto Licenza MIT:  
-https://github.com/arbincept/Arb-Inc-All-in-Dex
+- **Codice Sorgente Open-Source:** Il codice sorgente dell'interfaccia è distribuito gratuitamente sotto Licenza Libera MIT (100% aperto, senza alcuna riserva di copyright proprietario da parte di Arbitrage Inception o dei contributori):  
+  https://github.com/arbincept/Arb-Inc-All-in-Dex
+- **Tutela dei Diritti di Terze Parti:** Tutti i marchi registrati, loghi, denominazioni commerciali, protocolli e smart contract terzi richiamati o integrati nell'interfaccia (inclusi, a titolo esemplificativo, BNB Chain, PancakeSwap, KyberSwap, Mayan Finance) appartengono inderogabilmente ed esclusivamente ai rispettivi titolari e legittimi proprietari. L'utilizzo di tali denominazioni avviene a solo scopo identificativo del servizio decentralizzato richiamato (nominative fair use).

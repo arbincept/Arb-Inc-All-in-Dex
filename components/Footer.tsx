@@ -184,15 +184,16 @@ export default function Footer() {
 			</LegalLinks>
 
 			<Copyright>
-				© {new Date().getFullYear()} Arbitrage Inception Contributors —{" "}
+				Open-Source Software distribuito con{" "}
 				<a
 					href="https://github.com/arbincept/Arb-Inc-All-in-Dex/blob/main/LICENSE"
 					target="_blank"
 					rel="noopener noreferrer"
-					style={{ color: "#a855f7" }}
+					style={{ color: "#a855f7", fontWeight: 600 }}
 				>
-					MIT License
+					Licenza Libera MIT
 				</a>
+				{" "}• Zero riserva di copyright proprietario. Tutti i marchi, protocolli e loghi di terze parti (BNB Chain, PancakeSwap, KyberSwap, Mayan) appartengono ai rispettivi titolari e legittimi proprietari.
 			</Copyright>
 			<p
 				style={{
