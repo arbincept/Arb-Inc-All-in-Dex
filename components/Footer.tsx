@@ -184,16 +184,16 @@ export default function Footer() {
 			</LegalLinks>
 
 			<Copyright>
-				Open-Source Software distribuito con{" "}
+				Open-source software released under the{" "}
 				<a
 					href="https://github.com/arbincept/Arb-Inc-All-in-Dex/blob/main/LICENSE"
 					target="_blank"
 					rel="noopener noreferrer"
 					style={{ color: "#a855f7", fontWeight: 600 }}
 				>
-					Licenza Libera MIT
+					MIT License
 				</a>
-				{" "}• Zero riserva di copyright proprietario. Tutti i marchi, protocolli e loghi di terze parti (BNB Chain, PancakeSwap, KyberSwap, Mayan) appartengono ai rispettivi titolari e legittimi proprietari.
+				{" "}• Free to copy, study, and modify with zero proprietary copyright reserved. All third-party trademarks, protocol names, and logos (BNB Chain, PancakeSwap, KyberSwap, Mayan) remain the property of their respective owners.
 			</Copyright>
 			<p
 				style={{

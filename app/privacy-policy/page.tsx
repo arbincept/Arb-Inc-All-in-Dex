@@ -266,7 +266,7 @@ export default function PrivacyPolicyPage() {
 						responsibly.
 					</Disclaimer>
 					<p>
-						Open-Source Software (Licenza Libera MIT) • Zero riserva di copyright proprietario. Marchi e protocolli di terze parti appartengono ai rispettivi titolari.
+						Open-source software (MIT License) • Zero proprietary copyright reserved. All third-party trademarks and protocol names belong to their respective owners.
 					</p>
 				</PageFooter>
 			</Container>
