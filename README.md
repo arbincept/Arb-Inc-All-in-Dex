@@ -8,11 +8,14 @@
 
 Built and maintained by **[Luca Celebrano · @Lukecele](https://github.com/Lukecele)**, founder of [Arbitrage Inception](https://github.com/arbincept).
 
-**[Open app](https://arbitrage-inc.exchange)** · **[Star this repository](https://github.com/arbincept/Arb-Inc-All-in-Dex)** · **[Follow Lukecele](https://github.com/Lukecele)**
-
-[Quick start](#quick-start) · [Contribute](#contribute) · [MIT license](LICENSE)
+**[Open app](https://arbitrage-inc.exchange)** · **[Follow Lukecele](https://github.com/Lukecele)** · **[Quick start](#quick-start)** · **[MIT license](LICENSE)**
 
 </div>
+
+> [!TIP]
+> **Support Open-Source DeFi Development!**  
+> If you find **Arb-Inc All-in-Dex** useful for your trades, research, or builds, please take a moment to **give this repository a ⭐ Star** in the top-right corner! Your star directly helps boost protocol indexing, visibility, and ongoing open-source maintenance.
+
 
 ![All-in-Dex application home with swap, bridge and protocol telemetry](public/live-home.png)
 
