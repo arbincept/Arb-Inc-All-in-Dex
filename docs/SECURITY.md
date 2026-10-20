@@ -6,30 +6,37 @@ This document outlines the security architecture, audit status, Content-Security
 
 ## 1. Architectural Model & Custodial Boundaries
 
-Arbitrage Inception strictly decouples **non-custodial trading execution** from the **companion rewards service**:
+Arbitrage Inception operates on a fully decentralized, non-custodial model with automated on-chain revenue sharing:
 
 ```
 +-------------------------------------------------------------------------+
 |                        CLIENT BROWSER / dAPP                            |
 +-------------------------------------------------------------------------+
         |                                                 |
-        | (1) Wallet-to-Contract Swaps                    | (2) Read State & Point Claims
+        | (1) Wallet-to-Contract Swaps & Orders           | (2) Read-Only Telemetry / Stats
         v                                                 v
 +-----------------------------+               +--------------------------+
-| Non-Custodial Smart Routing |               | Companion Rewards Engine |
+| Non-Custodial Smart Routing |               | Companion Telemetry API  |
 | - KyberSwap BSC Aggregator  |               | - Next.js Serverless API |
-| - PancakeSwap Core AMM      |               | - Upstash Redis State    |
-| - Mayan Finance Bridge      |               | - Automated Hot Signer   |
+| - PancakeSwap Core AMM      |               | - Zero Private Key State |
+| - Mayan Finance Bridge      |               | - No Hot Signer          |
 +-----------------------------+               +--------------------------+
-        |                                                 |
-        v                                                 v
-  Funds remain 100% in user's                  Reward payouts distributed
-  wallet; contracts execute peer-              from Protocol Reserve to
-  to-contract on BSC / Solana.                 eligible participant wallets.
+        |                                                 
+        v                                                 
+  Funds remain 100% in user's                  
+  wallet; contracts execute peer-              
+  to-contract on BSC / Solana.                 
+
++-------------------------------------------------------------------------+
+|                  ON-CHAIN AUTOMATED REVENUE SHARING                      |
+|  - 50% Token Transfer Tax -> Pushed directly to qualified holders       |
+|  - 50% Token Transfer Tax -> Pushed directly to Protocol Operations     |
+|  - 100% Automated On-Chain Distribution via RevShare (Zero Custody)     |
++-------------------------------------------------------------------------+
 ```
 
 1. **Non-Custodial Swaps & Bridge:** All token swaps, multi-hop routing, and cross-chain bridging are executed client-side via user wallet signatures (MetaMask, Rabby, WalletConnect) directly interacting with audited smart contracts (KyberSwap Aggregator, PancakeSwap routers, and Mayan Finance Wormhole contracts). The platform never takes custody of, holds, or has access to user private keys or trading principal.
-2. **Hosted Companion Rewards Service:** Community reward points and fee-derived distribution claims are tracked off-chain using Upstash Redis state machines. Payout claims are signed by an automated protocol reserve hot signer and distributed in BNB directly to user wallets.
+2. **Automated On-Chain RevShare (Decommissioned Hot Signers):** Following the October 2026 protocol upgrade, manual claiming contracts and server-side hot signers were permanently decommissioned. Token holder rewards are automatically distributed on-chain every 24 hours to qualified holders (>= 1,000,000 ARB) via RevShare. This eliminates all server-held private key attack surfaces, manual claim risks, and centralized custody.
 
 ---
 
@@ -48,11 +55,10 @@ Arbitrage Inception strictly decouples **non-custodial trading execution** from 
   - Tax percentage (4%) and tax wallet are permanently immutable.
   - Verified source code is published on [BscScan](https://bscscan.com/address/0x5EE54869Ecd5E752C31aF095187326D4A4D50e1c#code).
 
-### Continuous Mathematical Solvency Verification
-- The protocol runs continuous automated unit tests ([`tests/financial-math.test.mjs`](../tests/financial-math.test.mjs), 13/13 passing tests in CI/CD).
-- Enforces strict Treasury reserve solvency constraints:
-  - `SAFE_FACTOR = 0.73` (mandatory 27% protocol reserve retention on inbound yields).
-  - Utilization cap <= 80% (automatic `CRITICAL` or `WARNING` triage if claims exceed safe reserves).
+### Continuous Mathematical Solvency Verification & Accounting Model
+- The repository maintains automated unit tests ([`tests/financial-math.test.mjs`](../tests/financial-math.test.mjs), passing tests in CI/CD).
+- **Current Era (October 20, 2026 onward):** Automated on-chain RevShare distributes 50% of the ARB INC token transfer tax directly to holders and 50% to protocol operations. The safe factor and intermediate treasury claiming mechanics were retired in favor of this direct distribution.
+- **Historical Invariant Verification:** Historical solvency models (`SAFE_FACTOR = 0.73` and utilization boundary checks) are retained in test suites for verifying legacy period accounting and treasury data integrity.
 
 ---
 

@@ -6,9 +6,10 @@ This document outlines the public HTTP REST endpoints provided by the Arbitrage 
 
 ## 1. Overview & Architecture Separation
 
-The Arbitrage Inception platform operates on a dual-tier model:
+The Arbitrage Inception platform operates on a decentralized, non-custodial model:
 * **DEX & Cross-Chain Execution (Non-Custodial):** Token swaps and cross-chain bridging execute client-side directly between the user's Web3 wallet and on-chain protocol smart contracts (KyberSwap Aggregator, PancakeSwap V2/V3, Mayan Finance / Wormhole).
-* **Companion Telemetry & Rewards API (Hosted Protocol Service):** The endpoints below manage read-only leaderboard metrics, APR calculations, partner offers, and optional loyalty/referral point tracking.
+* **Automated On-Chain RevShare (No Custody / No Hot Signers):** 50% of the ARB INC token transfer tax is pushed automatically on-chain to qualified holders (>= 1,000,000 ARB) every 24 hours. The platform does not use server-side hot signers, custody private keys, or maintain manual claiming contracts.
+* **Companion Telemetry API (Read-Only):** The endpoints below manage read-only leaderboard metrics, APR calculations, partner offers, and operational telemetry.
 
 ---
 
@@ -121,24 +122,17 @@ Verifies an on-chain transaction receipt and logs community loyalty points.
 
 ---
 
-### 2.6 Claim Accumulated BNB Rewards
-Dispatches claimable native BNB reward distributions to an eligible wallet from the community treasury reserve.
+### 2.6 Claim Endpoint (Deprecated — Migrated to Automated RevShare)
+Manual reward claiming has been permanently deprecated following the migration to automated on-chain RevShare distributions.
 
-* **Method:** `POST`
-* **Path:** `/api/claim`
-* **Headers:** `Content-Type: application/json`
-* **Request Body:**
+* **Method:** `POST` / `GET`
+* **Path:** `/api/claim` and `/api/rewards/claim`
+* **Response:**
 ```json
 {
-  "walletAddress": "0x123def..."
+  "success": false,
+  "message": "Manual claiming is deprecated. ARB INC rewards are automatically pushed to qualified holders on-chain every 24 hours via RevShare.",
+  "revshare_url": "https://app.revshare.ltd/token/0x5EE54869Ecd5E752C31aF095187326D4A4D50e1c"
 }
 ```
-* **Response (Success):**
-```json
-{
-  "success": true,
-  "hash": "0x345cde...",
-  "claimedBnb": 0.0385
-}
-```
-* **Note:** Payout transactions are signed on-chain via an automated protocol hot signer wallet adhering to mathematical solvency boundaries (`SAFE_FACTOR = 0.73`).
+* **Architecture Note:** In accordance with the October 20, 2026 protocol update, server-held hot signers and manual claiming were decommissioned. 50% of the token transfer tax is directly distributed on-chain to qualified holders holding at least 1,000,000 ARB. Real-time distributions can be verified at [app.revshare.ltd](https://app.revshare.ltd/token/0x5EE54869Ecd5E752C31aF095187326D4A4D50e1c).

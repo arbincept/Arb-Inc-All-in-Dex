@@ -58,7 +58,7 @@ npm run dev
 
 Open [localhost:3000](http://localhost:3000).
 
-**Configuration:** [.env.example](.env.example) lists provider settings. The hosted leaderboard and reward endpoints also use `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`; reward claims require a server-side signer configured through `PRIVATE_KEY`. Those services need their own deployment configuration. Keep provider secrets and signer keys on the server, outside `NEXT_PUBLIC_*` variables.
+**Configuration:** [.env.example](.env.example) lists provider settings. All DEX operations (swaps, limit orders, and bridging) are non-custodial and execute client-side via the user's Web3 wallet. Token holder revenue sharing is handled automatically on-chain through RevShare (50% to qualified holders, 50% to protocol operations), completely eliminating the need for server-side hot signers or reward claim custody. Optional companion telemetry/leaderboard endpoints can use `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` when enabled. Keep all provider secrets outside `NEXT_PUBLIC_*` variables.
 
 ### Project checks
 
@@ -71,16 +71,16 @@ The test command covers financial math and Web3 security logic. These commands a
 
 ## How it fits together
 
-- **Wallet-based trading:** the frontend connects a user's wallet to swap, bridge, and limit-order integrations.
-- **Hosted services:** leaderboard and reward accounting use Redis. Eligible reward claims are paid through a server-held signer; this is a separate component from wallet-based trading.
-- **Monitoring:** [scripts](scripts/README.md) contain operational tooling; [API documentation](docs/API.md) describes the hosted endpoints.
+- **Wallet-based trading:** the frontend connects a user's wallet to non-custodial swap, bridge, and limit-order integrations.
+- **Automated RevShare:** 50% of the 4% ARB INC token transfer tax is pushed automatically on-chain every 24 hours to qualified holders (>= 1,000,000 ARB), while 50% is allocated to protocol operations. No manual claiming or server hot-wallet signers are used.
+- **Monitoring:** [scripts](scripts/README.md) contain operational tooling; [API documentation](docs/API.md) describes the companion endpoints.
 
 ## Fees and deployment notes
 
 - Supported aggregated swaps apply a **0.5% protocol fee**.
-- The **ARB INC token has a 4% transfer tax** on buys and sells.
+- The **ARB INC token has a 4% transfer tax** on buys and sells, split evenly (50/50) between holder RevShare and protocol operations.
 - Bridge fees and source/destination gas depend on the route.
-- Reward amounts and timing depend on reserves, accounting, gas, and service availability.
+- RevShare distributions occur automatically on-chain based on accumulated token transfer taxes.
 
 Read the [contract disclosures](AUDIT.md), [security documentation](docs/SECURITY.md), and [whitepaper](docs/WHITEPAPER.md) for deployment details. Automated scans do not establish a manual audit or guarantee transaction safety.
 
