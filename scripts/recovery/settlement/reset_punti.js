@@ -1,6 +1,16 @@
 const path = require("path");
-require("dotenv").config({ path: path.resolve(__dirname, "..", ".env.local") });
-require("dotenv").config({ path: path.resolve(__dirname, "..", ".env") });
+[
+	path.resolve(__dirname, "../../../.env.local"),
+	path.resolve(__dirname, "../../../.env"),
+	path.resolve(__dirname, "..", ".env.local"),
+	path.resolve(__dirname, "..", ".env"),
+	path.resolve(process.cwd(), ".env.local"),
+	path.resolve(process.cwd(), ".env"),
+].forEach((p) => {
+	try {
+		require("dotenv").config({ path: p });
+	} catch (e) {}
+});
 const { Redis } = require("@upstash/redis");
 
 const redis = new Redis({

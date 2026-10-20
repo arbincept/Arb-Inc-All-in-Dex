@@ -17,8 +17,8 @@
 
 ## Security & Architectural Disclosures
 - Custody Model: Non-custodial, peer-to-contract. Users retain sole custody of their private keys.
-- Regulatory Classification: Excluded under MiCA Regulation (EU) 2023/1114 Recital 22 & Italian D.Lgs. 129/2024 (decentralized peer-to-peer services without intermediaries).
-- Static Security Audit: HashDit Bot - Zero Issues Detected (BNB Chain Tools List PR #98).
+- Regulatory status: No regulatory exemption, approval, or classification is claimed. MiCA and other financial, consumer-protection, tax, and sanctions rules may apply depending on the user's jurisdiction and the service used.
+- Automated static scan: HashDit Bot reported zero findings in the BNB Chain Tools List submission ([PR #98](https://github.com/bnb-chain/developer-tools-list/pull/98#issuecomment-5652788720)). This is not an independent manual security audit, certification, or guarantee of safety.
 - Security Policy: https://github.com/arbincept/Arb-Inc-All-in-Dex/blob/main/docs/SECURITY.md
 - Machine-Readable DApp Metadata: https://github.com/arbincept/Arb-Inc-All-in-Dex/blob/main/dapp-metadata.json
 - Official Contacts: luca.celebrano1@gmail.com | Telegram: https://t.me/ArbitrageInception

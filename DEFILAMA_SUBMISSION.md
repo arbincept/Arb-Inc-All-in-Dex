@@ -1,162 +1,79 @@
-# DeFiLlama Adapter - Arbitrage Inc
+# DeFiLlama Adapter Submission
 
-## Status: ✅ Ready for Submission
+## Adapter
 
-## File Location
-`./fees/arbitrage-inc.ts`
+The upstream-style reference is [defillama-adapters/aggregators/arbitrage-inc.ts](defillama-adapters/aggregators/arbitrage-inc.ts). Copy it into `aggregators/arbitrage-inc/index.ts` in the DefiLlama `dimension-adapters` repository. The local project excludes `defillama-adapters/` from its application TypeScript build because its imports belong to the upstream repository.
 
-## Test Results
-```
-🦙 Running ARBITRAGE-INC adapter 🦙
-Start Date: Wed, 25 Mar 2026
-End Date: Thu, 26 Mar 2026
-BSC 👇
-Daily fees: 0.00 (no transactions yet)
-Daily revenue: 0.00
-```
+## Scope
 
-## Instructions to Submit
+- Chain: BNB Smart Chain (`CHAIN.BSC`)
+- Start date: `2026-10-01` (earliest local implementation boundary; verify the first on-chain receipt before opening the PR)
+- Kyber swap fees received by `0x0F477f8c88b48E299AcE83B14303157d032382EC`
+- Kyber limit-order fees received by `0x75F7F06a5C5c440c1aDbd586826CD26253EDE219`
+- ARB INC transfer-tax proceeds realized as native BNB from treasury `0x66BB01F14229E2179bAD84D52A69C0e4628dE63f`
+- Holder revenue reported with `dailyHoldersRevenue`
+- Mayan bridge activity excluded
+- No signer, private key, Redis state, wallet leaderboard, or individual user points
+- Personal wallet trading activity excluded from protocol volume and fees
+- Data dependency: Allium, through upstream `getETHReceived` for native BNB receipts
 
-### Option 1: GitHub Web Interface (Recommended)
+## Accounting
 
-1. **Go to:** https://github.com/DefiLlama/dimension-adapters
+The adapter reads native BNB received by the treasury wallet `0x66BB01F14229E2179bAD84D52A69C0e4628dE63f`. That wallet receives `40%` of BNB realized when the ARB INC accumulator sells transfer-tax tokens, so:
 
-2. **Click "Fork"** (top right corner)
-
-3. **In your fork:**
-   - Navigate to `fees/` folder
-   - Click "Add file" → "Create new file"
-   - Name it: `arbitrage-inc.ts`
-   - Paste the content from `./fees/arbitrage-inc.ts`
-
-4. **Click "Commit changes"**
-
-5. **Create Pull Request:**
-   - Click "Contribute" → "Open pull request"
-    - Fill in:
-      - **Title:** `feat(fees): add Arbitrage Inc. fees adapter`
-      - **Description:**
-        ```
-        ## Project Name
-        Arbitrage Inc.
-
-        ## Project Type
-        DEX Aggregator / Fees
-
-        ## Methodology
-        We track fees sent to the address 0xafF5340ECFaf7ce049261cff193f5FED6BDF04E7 which represents the protocol fee for every arbitrage executed via our frontend integration.
-
-        ## Chain
-        BNB Smart Chain (BSC)
-
-        ## Adapter Details
-        - Version: 2
-        - Start Date: 2026-03-20
-        - Tracks: Token transfers to fee receiver address
-        ```
-       ## Project Name
-       Arbitrage Inc.
-
-       ## Project Type
-       DEX Aggregator / Fees
-
-       ## Methodology
-       We track fees sent to the address 0xafF5340ECFaf7ce049261cff193f5FED6BDF04E7 which represents the protocol fee for every arbitrage executed via our frontend integration.
-
-       ## Chain
-       BNB Smart Chain (BSC)
-
-       ## Adapter Details
-       - Version: 2
-       - Start Date: 2026-03-20
-       - Tracks: Token transfers to fee receiver address
-       ```
-
-### Option 2: GitHub CLI (If authenticated)
-
-```bash
-# Clone your fork
-git clone https://github.com/YOUR_USERNAME/dimension-adapters.git
-cd dimension-adapters
-
-# Copy the adapter file
-cp ./fees/arbitrage-inc.ts fees/
-
-# Commit and push
-git add fees/arbitrage-inc.ts
-git commit -m "feat(fees): add Arbitrage Inc. fees adapter"
-git push origin main
-
-# Create PR
-gh pr create --title "feat(fees): add Arbitrage Inc. fees adapter" --body "$(cat <<'EOF'
-## Project Name
-Arbitrage Inc.
-
-## Project Type
-DEX Aggregator / Fees
-
-## Methodology
-We track fees sent to the address 0xafF5340ECFaf7ce049261cff193f5FED6BDF04E7 which represents the protocol fee for every arbitrage executed via our frontend integration.
-
-## Chain
-BNB Smart Chain (BSC)
-EOF)"
+```text
+swapVolume       = swapFees / 0.005
+limitOrderVolume = limitOrderFees / 0.001
+realizedArbTaxBnb = treasuryBnb / 0.40
+dailyRevenue = swapFees + limitOrderFees + realizedArbTaxBnb
+dailyHoldersRevenue = realizedArbTaxBnb * 0.292
+dailyProtocolRevenue = swapFees + limitOrderFees + realizedArbTaxBnb * 0.708
 ```
 
----
+This uses realized BNB proceeds rather than an ARB INC market price. The holder percentage is an accounting allocation, not aggregator volume. Holding points and qualifying DEX activity points only determine each eligible holder's internal pro-rata allocation; they are not adapter inputs.
 
-## Adapter Code (for reference)
+## Wallet boundaries
 
-```typescript
-import { Adapter, FetchOptions } from "../adapters/types";
-import { CHAIN } from "../helpers/chains";
-import { addTokensReceived } from "../helpers/token";
+The accounting roles are kept distinct:
 
-const FEE_RECEIVER = '0xafF5340ECFaf7ce049261cff193f5FED6BDF04E7';
+- Treasury: `0x66BB01F14229E2179bAD84D52A69C0e4628dE63f`
+- Accumulator: `0x4c1caA917FD012b285Ba35E93535675e5B59806C`
+- Second team wallet (20%): `0x3b523ec5ac7f37a151142b756040301729061348`
+- Team/dev fee receiver (40% and personal activity): `0xafF5340ECFaf7ce049261cff193f5FED6BDF04E7`
+- Swap fee receiver: `0x0F477f8c88b48E299AcE83B14303157d032382EC`
+- Limit-order fee receiver: `0x75F7F06a5C5c440c1aDbd586826CD26253EDE219`
 
-const fetch: any = async (options: FetchOptions) => {
-  const dailyFees = await addTokensReceived({
-    options,
-    tokens: [
-      '0xbb4CdB9CBd36B01bD1cBaEBf2E08E7023b076de6',
-      '0xe9e7CEA3DedcA698478E4cbC3F78dF2E8C6E2F8B',
-      '0x55d398326f99059fF775485246999027B3197955',
-      '0x7130d2A12B9BCbFAe4f2634d864A1BCe1767a8D0',
-      '0x2170Ed0880ac9A755fd29B2688956BD959F933F8',
-    ],
-    targets: [FEE_RECEIVER],
-  });
+Because the treasury is dedicated and has no other inbound source, the adapter can safely use the treasury as its tax target. The swap and limit-order receivers are distinct, so their fee streams no longer need to be inferred from a shared wallet. The 40% team/personal wallet and the second team wallet are excluded from aggregator volume.
 
-  return {
-    dailyFees,
-    dailyRevenue: dailyFees,
-  };
-};
+## Volume boundary
 
-const adapter: Adapter = {
-  version: 2,
-  chains: [CHAIN.BSC],
-  fetch,
-  start: '2026-03-20',
-  methodology: {
-    Fees: "We track fees sent to the fee receiver address which represents the protocol fee for every arbitrage executed via our frontend integration.",
-    Revenue: "Developer fees are collected from each trade and sent to the designated fee receiver address.",
-  },
-};
+The fee adapter does not manufacture `dailyVolume` from ARB INC tax proceeds. Aggregator volume must remain in the Kyber aggregator adapter and must be derived only from identifiable Kyber fee events:
 
-export default adapter;
+```text
+swap volume        = identifiable swap fees / 0.005
+limit-order volume = identifiable limit-order fees / 0.001
 ```
 
----
+The dedicated receivers allow each fee rate to be applied only to its own stream. Personal activity, team-wallet receipts, accumulator balances, and treasury tax proceeds are excluded from aggregator volume.
 
-## Links
+## Personal activity boundary
 
-- **Repository:** https://github.com/DefiLlama/dimension-adapters
-- **Your Fork:** https://github.com/DefiLlama/dimension-adapters/fork
-- **PR Create:** https://github.com/DefiLlama/dimension-adapters/compare
+Personal trading by founders, team members, or other individually controlled wallets is not protocol activity. It must not be included in `dailyVolume`, `dailyFees`, `dailyRevenue`, or holder-revenue calculations. Personal wallets and leaderboard activity are excluded unless a future on-chain contract or receiver makes the activity independently identifiable. Internal points may be used for allocation, but they are never adapter inputs.
 
-## Next Steps After PR Merged
+## Methodology text
 
-Once your PR is merged (usually takes 24-48h):
-1. Your protocol will appear on: https://defillama.com/fees
-2. Fees will be tracked automatically from the fee receiver address
+**Fees:** Kyber swap fees, Kyber limit-order fees, and ARB INC transfer-tax proceeds realized in BNB from the dedicated treasury allocation.
+
+**Revenue:** All collected Kyber fees plus the full realized ARB INC tax proceeds. No supply-side costs are reported, so `dailyRevenue` equals `dailyFees`; personal activity is excluded.
+
+**Protocol revenue:** 100% of Kyber fees plus the `70.8%` protocol allocation of realized ARB INC tax proceeds.
+
+**Holder revenue:** `29.2%` of realized ARB INC tax proceeds, represented by `40%` treasury allocation multiplied by the `0.73` safety factor. The resulting BNB is distributed to eligible ARB INC holder participants using the protocol's internal allocation rules.
+
+## Submission checklist
+
+1. Copy the adapter into the upstream `dimension-adapters/aggregators/arbitrage-inc/index.ts` path.
+2. In a complete upstream checkout, run the repository's adapter test command (`pnpm test`) for BSC and inspect the returned daily breakdown.
+3. Confirm no bridge transactions, signer logic, Redis calls, or leaderboard data are present.
+4. Submit only the upstream adapter file in the PR; local tests, this document, and `dapp-metadata.json` are not upstream adapter files.
+5. Include the project website (`https://arbitrage-inc.exchange/`), repository, and X/Twitter (`@Arbitrageincept`) in the PR description.

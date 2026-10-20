@@ -1,14 +1,30 @@
 const path = require("path");
-require("dotenv").config({ path: path.resolve(__dirname, "..", ".env.local") });
+[
+	path.resolve(__dirname, "../../../.env.local"),
+	path.resolve(__dirname, "../../../.env"),
+	path.resolve(__dirname, "..", ".env.local"),
+	path.resolve(__dirname, "..", ".env"),
+	path.resolve(process.cwd(), ".env.local"),
+	path.resolve(process.cwd(), ".env"),
+].forEach((p) => {
+	try {
+		require("dotenv").config({ path: p });
+	} catch (e) {}
+});
 const { Redis } = require("@upstash/redis");
 const { ethers } = require("ethers");
+
+const JsonRpcProvider = ethers.JsonRpcProvider || ethers.providers?.JsonRpcProvider;
+const parseEther = ethers.parseEther || ethers.utils?.parseEther;
+const formatEther = ethers.formatEther || ethers.utils?.formatEther;
+const isAddress = ethers.isAddress || ethers.utils?.isAddress;
 
 const redis = new Redis({
 	url: process.env.UPSTASH_REDIS_REST_URL,
 	token: process.env.UPSTASH_REDIS_REST_TOKEN,
 });
 
-const RPC_URL = process.env.BSC_RPC_URL || "https://bsc-rpc.publicnode.com";
+const RPC_URL = process.env.RPC_URL || process.env.BSC_RPC_URL || "https://bsc-rpc.publicnode.com";
 const PRIVATE_KEY = process.env.TREASURY_PRIVATE_KEY;
 
 async function payDebts() {
@@ -19,14 +35,14 @@ async function payDebts() {
 		process.exit(1);
 	}
 
-	const provider = new ethers.providers.JsonRpcProvider(RPC_URL);
+	const provider = new JsonRpcProvider(RPC_URL);
 	const wallet = new ethers.Wallet(PRIVATE_KEY, provider);
 
 	console.log(`🏦 Wallet Titolare: ${wallet.address}`);
 	
 	try {
 	    const balance = await provider.getBalance(wallet.address);
-	    console.log(`💰 Saldo Disponibile On-Chain: ${ethers.utils.formatEther(balance)} BNB`);
+	    console.log(`💰 Saldo Disponibile On-Chain: ${formatEther(balance.toString())} BNB`);
 	} catch (error) {
 	    console.error("❌ ERRORE RPC:", error.message);
 	    process.exit(1);
@@ -50,7 +66,7 @@ async function payDebts() {
 		process.exit(0);
 	}
 
-	let totSent = ethers.BigNumber.from(0);
+	let totSent = 0n;
 
 	for (const key of pendingKeys) {
 		const walletAddress = key.replace("rewards:pending:", "");
@@ -62,9 +78,10 @@ async function payDebts() {
 		if (amountToPayText === "") amountToPayText = "0";
 		if (parseFloat(amountToPayText) === 0) continue;
 
-		const amountInWei = ethers.utils.parseEther(amountToPayText);
+		const amountInWei = parseEther(amountToPayText);
+		const amountBigInt = BigInt(amountInWei.toString());
 
-		if (!ethers.utils.isAddress(walletAddress)) {
+		if (!isAddress(walletAddress)) {
 			console.log(`⚠️ Ignorato: ${walletAddress}`);
 			continue;
 		}
@@ -74,12 +91,12 @@ async function payDebts() {
 			const tx = await wallet.sendTransaction({ to: walletAddress, value: amountInWei });
 			await tx.wait(1); 
 			await redis.set(key, "0");
-			totSent = totSent.add(amountInWei);
+			totSent += amountBigInt;
 		} catch (error) {
 			console.error(`   ❌ Fallito invio a ${walletAddress}. Errore:`, error.message);
 		}
 	}
-	console.log(`\n💸 Totale Erogato: ${ethers.utils.formatEther(totSent)} BNB`);
+	console.log(`\n💸 Totale Erogato: ${formatEther(totSent.toString())} BNB`);
 	process.exit(0);
 }
 

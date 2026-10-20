@@ -58,22 +58,21 @@ Cross-chain execution depends on Mayan Finance, Wormhole-connected infrastructur
 
 The limit-order interface is powered by KyberSwap on BNB Smart Chain. It uses KyberSwap route and market-rate data and depends on KyberSwap-supported liquidity and execution infrastructure. Users create conditional orders from their own wallet and should review the target token, approval, expiry, slippage and execution conditions before signing. An order may remain unfilled, fail or incur network and protocol costs.
 
-### Community Rewards
+### Token Holder Rewards
 
-The project includes an optional rewards and community-points service. Points and eligibility data are recorded through hosted infrastructure. Where a claim is available, a server-side operational signer may submit a BNB payout from the designated treasury. Claims depend on the service being available, the recorded balance, eligibility rules, gas, treasury liquidity and operational controls.
+ARB INC token holder rewards are distributed directly on-chain under a 50% holders / 50% team model. Transfer-tax tokens collected by the accumulator wallet are converted to native BNB, with 50% pushed directly to qualified token holders (holding a minimum of 1,000,000 ARB INC) every 24 hours via RevShare, and 50% allocated to protocol operations. Payouts are automated and non-custodial: no manual claim transactions, staking, or locking are required from holders.
 
-This service is separate from wallet-based trading. It is not a bank account, deposit, investment product or guarantee of income. The separate RevShare page may record reward rounds and recipient allocations; those records are not the same as the repository's Redis accounting or claim endpoint.
+This service is tied to public on-chain distributions. It is not a bank account, deposit, investment product or guarantee of income. Live distributions, holder counts, and payout history are tracked transparently on the public RevShare platform.
 
 ## 3. Architecture
 
-The system has four practical layers:
+The system has three core operational layers:
 
 1. **Frontend:** Next.js, React, TypeScript and PWA-compatible user interface.
-2. **Wallet and transaction layer:** Wagmi, Viem, Ethers, Web3-Onboard and supported wallet connectors.
-3. **Third-party execution layer:** DEX routers, liquidity pools, bridge providers and on-chain contracts selected by the user.
-4. **Telemetry and rewards layer:** public RPC data, monitoring scripts, Upstash Redis accounting and an operational payout signer for the optional rewards service.
+2. **Wallet and transaction layer:** Wagmi, Viem, Ethers, Web3-Onboard and supported wallet connectors for non-custodial signing.
+3. **Third-party execution layer:** KyberSwap DEX aggregator, Mayan Finance / Wormhole cross-chain bridge, and RevShare automated distribution contracts.
 
-Trading and bridge transactions are signed by the user's wallet and sent to public smart contracts or third-party protocols. The hosted rewards layer is not fully on-chain: points, pending balances and eligibility are maintained off-chain before a possible on-chain claim.
+Trading, bridging, and swaps are signed directly by the user's wallet. Holder rewards are executed on-chain directly from the Accumulator wallet to eligible holders without intermediate custodial holding.
 
 ## 4. ARB INC Token
 
@@ -95,7 +94,7 @@ The token has a stated 4% transfer tax on supported buys and sells. The tax affe
 
 ARB INC does not represent ownership in a company, a claim on company assets, a redemption right, a fixed interest payment or a guaranteed return. Market price, liquidity, availability and transferability can change or disappear.
 
-## 5. Fees and Treasury Flows
+## 5. Fees and Revenue Flows
 
 Depending on the route and feature used, users may encounter:
 
@@ -105,22 +104,18 @@ Depending on the route and feature used, users may encounter:
 - third-party protocol fees, spread, slippage and execution costs;
 - the ARB INC transfer tax when the token contract applies it.
 
-The project-stated token-tax accounting model assigns 40% to community-reward accounting, 40% to development infrastructure and 20% to operations and ecosystem growth. These percentages describe an intended accounting model and are not a claim that every transfer-tax amount is received, available or distributed in those proportions.
+The ARB INC transfer tax (4%) is accumulated on-chain by the accumulator wallet (`0x4c1caA917FD012b285Ba35E93535675e5B59806C`) and distributed directly: 50% is pushed to token holders holding at least 1,000,000 ARB INC via RevShare every 24 hours, and 50% is allocated to the team for ongoing platform development, maintenance, and operational management. The previous intermediate transfer through a separate treasury wallet has been eliminated in favor of direct automated push.
 
-A documented `SAFE_FACTOR` of `0.73` is an internal distribution and solvency parameter, not a guarantee that 73% of any amount will be paid to users. Treasury balances, eligibility, gas, implementation changes and third-party services can affect any distribution.
-
-The public RevShare token page lists a distribution wallet and revenue-recipient wallets. Its current disclosed split is 41% developer wallet, 39% treasury wallet and 20% third wallet, with reward rounds described at 24-hour intervals. This is a separate public record and should not be confused with the project's token-tax allocation percentages or hosted Redis claim accounting.
+DEX aggregator fees (0.5%) and limit-order fees (0.1%) remain separate, fueling aggregator liquidity and platform development.
 
 ## 6. Decentralisation and Control Model
 
-The ARB INC token contract is presented as immutable and ownership-renounced. The frontend repository is public and licensed under MIT. These facts do not mean every project component is decentralised.
+The ARB INC token contract is presented as immutable and ownership-renounced. The frontend repository is public and licensed under MIT.
 
 - User trading is non-custodial and wallet-signed.
-- Routing and bridge execution rely on third-party protocols.
-- The frontend and hosted APIs may be unavailable or changed.
-- Rewards points and pending balances use hosted Redis infrastructure.
-- The optional BNB claim process uses an operational hot signer.
-- Treasury and fee-recipient wallets remain relevant operational dependencies.
+- Routing and bridge execution rely on third-party protocols (KyberSwap, Mayan).
+- Token holder rewards are dispatched automatically on-chain via RevShare.
+- No hot-wallet signer key is maintained on the frontend server.
 
 The project has no promise that the frontend, rewards service, third-party routes or token markets will continue indefinitely.
 

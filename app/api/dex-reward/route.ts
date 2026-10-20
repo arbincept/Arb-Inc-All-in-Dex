@@ -1,140 +1,20 @@
 import { NextResponse } from "next/server";
-import { ethers } from "ethers";
-import { Redis } from "@upstash/redis";
 
-// Cluster RPC resiliente allineato con le buone pratiche del watcher (NodeReal prioritario per indicizzazione istantanea delle ricevute)
-const RPC_URLS = [
-    process.env.BSC_RPC_URL,
-    process.env.RPC_URL,
-    "https://binance.nodereal.io",
-    "https://bsc-rpc.publicnode.com",
-    "https://1rpc.io/bnb",
-].filter(Boolean) as string[];
-
-const redis = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL!,
-  token: process.env.UPSTASH_REDIS_REST_TOKEN!,
-});
-
-// Funzione helper per mettere in pausa l'esecuzione
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
-export const maxDuration = 30;
 export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
-    try {
-        const body = await req.json();
-        let { txHash, userWallet, type, actionType } = body;
-        if (!type && actionType) {
-            type = actionType === "limit-order" ? "limit" : actionType === "swap" ? "swap" : null;
-        }
+	try {
+		const body = await req.json().catch(() => ({}));
+		const { txHash, userWallet } = body;
 
-        if (!txHash || !userWallet || !type) {
-            return NextResponse.json({ success: false, error: "Parametri mancanti" }, { status: 400 });
-        }
-
-        if (!ethers.utils.isAddress(userWallet)) {
-            return NextResponse.json({ success: false, error: "Wallet non valido" }, { status: 400 });
-        }
-        userWallet = userWallet.toLowerCase();
-        const cleanTxHash = txHash.toLowerCase();
-
-        let points = 0;
-        if (type === "swap") points = 100;
-        else if (type === "limit") points = 200;
-        else return NextResponse.json({ success: false, error: "Invalid type" }, { status: 400 });
-
-        // 1. Lock atomico immediato: prenota l'hash per 45s con NX. Margine ideale rispetto all'esecuzione di 6s.
-        const claimKey = `claim_tx:${cleanTxHash}`;
-        const lockAcquired = await redis.set(claimKey, "pending", { nx: true, ex: 45 });
-        if (!lockAcquired) {
-            return NextResponse.json({ success: false, error: "Transazione già riscattata o in elaborazione" }, { status: 400 });
-        }
-
-        try {
-            // --- 🚨 SMART POLLING MULTI-RPC CON TIMEOUT E FAILOVER DINAMICO 🚨 ---
-            let receipt = null;
-            const maxRetries = 4; // Fino a 4 tentativi (ruota tra nodi sani)
-            const delayMs = 1500; // 1.5s di pausa
-
-            for (let i = 0; i < maxRetries; i++) {
-                const targetRpc = RPC_URLS[i % RPC_URLS.length];
-                try {
-                    const rpcResponse = await fetch(targetRpc, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        signal: AbortSignal.timeout(3500), // Timeout 3.5s per evitare hanging di rete
-                        body: JSON.stringify({
-                            jsonrpc: "2.0",
-                            id: 1,
-                            method: "eth_getTransactionReceipt",
-                            params: [cleanTxHash]
-                        })
-                    });
-                    
-                    if (rpcResponse.ok) {
-                        const rpcData = await rpcResponse.json();
-                        receipt = rpcData.result;
-                        if (receipt) {
-                            break; // Ricevuta confermata on-chain!
-                        }
-                    }
-                } catch (rpcErr) {
-                    console.warn(`[Attempt ${i + 1}] RPC failover (${targetRpc}):`, rpcErr);
-                }
-                
-                // Attende solo se non siamo all'ultimo tentativo
-                if (i < maxRetries - 1) {
-                    await sleep(delayMs);
-                }
-            }
-
-            if (!receipt || parseInt(receipt.status, 16) !== 1) {
-                // Rilascia la prenotazione temporanea per consentire il retry se la tx era solo in ritardo
-                await redis.del(claimKey);
-                return NextResponse.json({ success: false, error: "Transazione fallita o non confermata dal network" }, { status: 400 });
-            }
-
-            if (receipt.from.toLowerCase() !== userWallet) {
-                // Rilascia la prenotazione
-                await redis.del(claimKey);
-                return NextResponse.json({ success: false, error: "La transazione non appartiene a questo wallet" }, { status: 403 });
-            }
-
-            // 2. Conferma definitiva: transazione validata, lock esteso a 30 giorni
-            await redis.set(claimKey, "true", { ex: 2592000 });
-
-        } catch (verifyError: any) {
-            console.error("RPC Manual Fetch Error:", verifyError);
-            // In caso di errore RPC temporaneo, rilascia il lock per consentire il retry
-            await redis.del(claimKey);
-            return NextResponse.json({ success: false, error: "Errore durante la verifica blockchain" }, { status: 503 });
-        }
-
-        await redis.zincrby("leaderboard:points", points, userWallet);
-
-        let parent = await redis.get(`ref:parent:${userWallet}`);
-        if (!parent && body.referrerWallet && ethers.utils.isAddress(body.referrerWallet)) {
-            const refCandidate = body.referrerWallet.toLowerCase();
-            if (refCandidate !== userWallet) {
-                await redis.set(`ref:parent:${userWallet}`, refCandidate);
-                await redis.sadd(`ref:children:${refCandidate}`, userWallet);
-                parent = refCandidate;
-                console.log(`🔗 Referral auto-linked from dex-reward: ${userWallet} -> ${refCandidate}`);
-            }
-        }
-
-        if (parent) {
-            const bonus = points * 0.1;
-            await redis.zincrby("leaderboard:points", bonus, parent as string);
-            await redis.incrbyfloat(`ref:earnings:${parent}`, bonus);
-        }
-
-        return NextResponse.json({ success: true, pointsAdded: points });
-
-    } catch (error) {
-        console.error("General Error:", error);
-        return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 });
-    }
+		return NextResponse.json({
+			success: true,
+			txHash: txHash || "",
+			userWallet: userWallet || "",
+			status: "migrated_to_revshare",
+			message: "Swap recorded. Holder rewards are automated via RevShare.",
+		});
+	} catch (e: any) {
+		return NextResponse.json({ success: true });
+	}
 }

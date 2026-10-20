@@ -1,7 +1,22 @@
 const path = require("path");
-require("dotenv").config({ path: path.resolve(__dirname, "..", ".env.local") });
+[
+	path.resolve(__dirname, "../../../.env.local"),
+	path.resolve(__dirname, "../../../.env"),
+	path.resolve(__dirname, "..", ".env.local"),
+	path.resolve(__dirname, "..", ".env"),
+	path.resolve(process.cwd(), ".env.local"),
+	path.resolve(process.cwd(), ".env"),
+].forEach((p) => {
+	try {
+		require("dotenv").config({ path: p });
+	} catch (e) {}
+});
 const { Redis } = require("@upstash/redis");
 const { ethers } = require("ethers");
+
+const parseEther = ethers.parseEther || ethers.utils?.parseEther;
+const formatEther = ethers.formatEther || ethers.utils?.formatEther;
+const isAddress = ethers.isAddress || ethers.utils?.isAddress;
 
 // Configurazione Redis
 const redis = new Redis({
@@ -34,7 +49,7 @@ async function checkDebtsReadOnly() {
 
 	console.log(`📋 Trovati ${pendingKeys.length} wallet passivi in Redis da verificare.`);
 
-	let totToPay = ethers.BigNumber.from(0);
+	let totToPay = 0n;
 	let validWallets = 0;
 	let invalidWallets = 0;
 
@@ -48,16 +63,16 @@ async function checkDebtsReadOnly() {
 		if (amountToPayText === "") amountToPayText = "0";
 		if (parseFloat(amountToPayText) === 0) continue;
 
-		const amountInWei = ethers.utils.parseEther(amountToPayText);
+		const amountInWei = BigInt(parseEther(amountToPayText).toString());
 
-		if (!ethers.utils.isAddress(walletAddress)) {
+		if (!isAddress(walletAddress)) {
 			invalidWallets++;
 			console.log(`⚠️  Ignorato: ${walletAddress} (Indirizzo Non Valido, non verrebbe pagato)`);
 			continue;
 		}
 
 		validWallets++;
-		totToPay = totToPay.add(amountInWei);
+		totToPay += amountInWei;
 		console.log(`✔️  Previsto: ${amountToPayText} BNB a ${walletAddress}`);
 	}
 
@@ -66,9 +81,9 @@ async function checkDebtsReadOnly() {
 	console.log("========================================================");
 	console.log(`✅ Indirizzi validi da pagare: ${validWallets}`);
 	console.log(`❌ Indirizzi scartati:         ${invalidWallets}`);
-	console.log(`💸 Totale stimato necessario:  ${ethers.utils.formatEther(totToPay)} BNB`);
+	console.log(`💸 Totale stimato necessario:  ${formatEther(totToPay.toString())} BNB`);
 	console.log("========================================================\n");
-	console.log("Per eseguire i pagamenti ON-CHAIN, esegui: node scripts_pagamenti/pay_all_debts.cjs");
+	console.log("Per eseguire i pagamenti ON-CHAIN, esegui: node pay_all_debts.cjs");
 	process.exit(0);
 }
 

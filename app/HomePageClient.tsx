@@ -29,8 +29,8 @@ import { useProtocolData } from "../hooks/useProtocolData";
 import * as S from "./HomePageStyles";
 
 const CONTRACT_ADDRESS = "0x5ee54869ecd5e752c31af095187326d4a4d50e1c";
-const TREASURY_WALLET = "0x66BB01F14229E2179bAD84D52A69C0e4628dE63f";
 const ACCUMULATOR_WALLET = "0x4c1caA917FD012b285Ba35E93535675e5B59806C";
+const REVSHARE_LINK = "https://app.revshare.ltd/token/0x5EE54869Ecd5E752C31aF095187326D4A4D50e1c";
 const SWAP_LINK = `/swap-all?tokenOut=${CONTRACT_ADDRESS}`;
 const TOKEN_SNIFFER_LINK = `https://tokensniffer.com/token/bsc/${CONTRACT_ADDRESS}`;
 const ALL_POOLS_LINK = `https://pancakeswap.finance/info/tokens/${CONTRACT_ADDRESS}`;
@@ -38,11 +38,7 @@ const ALL_POOLS_LINK = `https://pancakeswap.finance/info/tokens/${CONTRACT_ADDRE
 const HomePageClient = () => {
 	const [mounted, setMounted] = useState(false);
 	const [copied, setCopied] = useState(false);
-	const data = useProtocolData(
-		CONTRACT_ADDRESS,
-		TREASURY_WALLET,
-		ACCUMULATOR_WALLET,
-	);
+	const data = useProtocolData(CONTRACT_ADDRESS, ACCUMULATOR_WALLET);
 
 	useEffect(() => {
 		setMounted(true);
@@ -53,27 +49,6 @@ const HomePageClient = () => {
 		setCopied(true);
 		setTimeout(() => setCopied(false), 2000);
 	};
-
-	const debtNum = parseFloat(data.protocolDebt);
-	const treasuryNum = parseFloat(data.treasuryBnb);
-	let ratioStr = "...",
-		statusStr = "Analyzing...",
-		statusColor = "#94a3b8";
-
-	if (!isNaN(debtNum) && !isNaN(treasuryNum) && treasuryNum > 0) {
-		const ratio = (debtNum / treasuryNum) * 100;
-		ratioStr = ratio.toFixed(2) + "%";
-		if (ratio <= 80) {
-			statusStr = "✅ SECURE";
-			statusColor = "#22c55e";
-		} else if (ratio <= 95) {
-			statusStr = "⚠️ WARNING";
-			statusColor = "#facc15";
-		} else {
-			statusStr = "🚨 DANGER";
-			statusColor = "#ef4444";
-		}
-	}
 
 	if (!mounted) return null;
 
@@ -89,20 +64,19 @@ const HomePageClient = () => {
 						for BNB Chain
 					</S.Title>
 					<S.Subtitle>
-						A non-custodial interface for swaps, bridges, limit orders and
-						optional community points. Trading is wallet-signed; hosted services
-						are separate and may be unavailable.
+						A non-custodial interface for swaps, bridges, and limit orders.
+						Trading is wallet-signed with automated on-chain rewards for ARB INC token holders.
 					</S.Subtitle>
 					<S.ButtonGroup>
 						<S.PrimaryButton href={SWAP_LINK}>
 							Swap Now <FaArrowRight />
 						</S.PrimaryButton>
 						<S.SecondaryButton href="#protocol-specs">
-							Technical Specs
+							Protocol Specs
 						</S.SecondaryButton>
 					</S.ButtonGroup>
 
-					{/* NEW PROMINENT REVENUE STREAMS BADGES */}
+					{/* PROMINENT REVENUE STREAMS BADGES */}
 					<div
 						style={{
 							display: "flex",
@@ -127,7 +101,7 @@ const HomePageClient = () => {
 								fontWeight: "bold",
 							}}
 						>
-							<FaCoins /> 4% Token Tax
+							<FaCoins /> 4% Tax (50% Holders / 50% Team)
 						</div>
 						<div
 							style={{
@@ -159,7 +133,7 @@ const HomePageClient = () => {
 								fontWeight: "bold",
 							}}
 						>
-							<FaTasks /> Free Task Partner Fees
+							<FaShieldAlt /> 100% Non-Custodial
 						</div>
 					</div>
 
@@ -186,13 +160,34 @@ const HomePageClient = () => {
 								</a>
 							</div>
 						</S.ContractBox>
-						<S.AuditBadgeLink
-							href={TOKEN_SNIFFER_LINK}
-							target="_blank"
-							rel="noreferrer"
+						<div
+							style={{
+								display: "flex",
+								gap: "10px",
+								flexWrap: "wrap",
+								justifyContent: "center",
+							}}
 						>
-							<FaShieldAlt /> Audit on TokenSniffer
-						</S.AuditBadgeLink>
+							<S.AuditBadgeLink
+								href={REVSHARE_LINK}
+								target="_blank"
+								rel="noreferrer"
+								style={{
+									background: "rgba(168, 85, 247, 0.12)",
+									borderColor: "rgba(168, 85, 247, 0.35)",
+									color: "#c084fc",
+								}}
+							>
+								<FaCoins /> Verified on RevShare.ltd
+							</S.AuditBadgeLink>
+							<S.AuditBadgeLink
+								href={TOKEN_SNIFFER_LINK}
+								target="_blank"
+								rel="noreferrer"
+							>
+								<FaShieldAlt /> Audit on TokenSniffer
+							</S.AuditBadgeLink>
+						</div>
 					</S.ContractContainer>
 				</S.Hero>
 
@@ -201,13 +196,18 @@ const HomePageClient = () => {
 						style={{ display: "flex", flexDirection: "column", gap: "12px" }}
 					>
 						<S.PulseCard $isProcessing={data.isProcessing}>
-							<span className="label">Next Rewards Epoch</span>
+							<div className="header-row">
+								<span className="label">Automated RevShare Epoch</span>
+								<S.LiveIndicator>
+									<div className="dot"></div>Live
+								</S.LiveIndicator>
+							</div>
 							<span className="value">
 								{data.isProcessing && <FaSpinner className="fa-spin" />}
 								{data.timerDisplay}
 							</span>
 							<span className="sub" style={{ marginBottom: "15px" }}>
-								BNB distribution cycle; amounts are not guaranteed
+								24h automated BNB push (50% to qualified holders)
 							</span>
 
 							<div
@@ -231,14 +231,13 @@ const HomePageClient = () => {
 										gap: "5px",
 									}}
 								>
-										<FaCalendarAlt /> Epoch schedule
+									<FaCalendarAlt /> 100% Automated Distribution (50/50 Split)
 								</div>
 								<div style={{ fontSize: "0.85rem", color: "white" }}>
-										Every 24 hours the protocol attempts to process a BNB
-										distribution from the accumulator to eligible participants.
-										Amounts, timing and eligibility are not guaranteed and depend
-										on reserves, gas and service availability. Community points
-										reset separately on the 1st and 15th of each month.
+									Every 24 hours, the 4% token tax is distributed: 50% is pushed
+									directly to qualified token holders' wallets on-chain via
+									RevShare (min. 1,000,000 ARB INC), and 50% supports team operations.
+									No manual claim, no locking, zero gas required from holders.
 								</div>
 							</div>
 
@@ -261,7 +260,7 @@ const HomePageClient = () => {
 										letterSpacing: "1px",
 									}}
 								>
-									Accumulator (Pending)
+									Accumulator Reserves (Pending Payout)
 								</div>
 								<div
 									style={{
@@ -289,15 +288,38 @@ const HomePageClient = () => {
 									<span style={{ color: "white" }}>{data.accTokens} ARB</span>
 								</div>
 							</div>
-							<a
-								href={`https://bscscan.com/address/${ACCUMULATOR_WALLET}`}
-								target="_blank"
-								rel="noreferrer"
-								className="verify-link"
-								style={{ marginTop: "10px", alignSelf: "center" }}
+
+							<div
+								style={{
+									display: "flex",
+									flexDirection: "column",
+									gap: "8px",
+									marginTop: "12px",
+								}}
 							>
-								<FaExternalLinkAlt size={10} /> View Accumulator Wallet
-							</a>
+								<a
+									href={REVSHARE_LINK}
+									target="_blank"
+									rel="noreferrer"
+									className="defillama-btn"
+									style={{
+										borderColor: "rgba(168, 85, 247, 0.4)",
+										color: "#c084fc",
+										background: "rgba(168, 85, 247, 0.1)",
+									}}
+								>
+									<FaCoins /> View on RevShare.ltd
+								</a>
+								<a
+									href={`https://bscscan.com/address/${ACCUMULATOR_WALLET}`}
+									target="_blank"
+									rel="noreferrer"
+									className="verify-link"
+									style={{ alignSelf: "center" }}
+								>
+									<FaExternalLinkAlt size={10} /> View Accumulator on BscScan
+								</a>
+							</div>
 						</S.PulseCard>
 						<S.ActionButton
 							href="/rewards"
@@ -310,348 +332,230 @@ const HomePageClient = () => {
 								fontSize: "1rem",
 							}}
 						>
-							Go to Rewards
+							How Rewards Work & FAQ
 						</S.ActionButton>
 					</div>
 
-					<S.PulseCard>
-						<div className="header-row">
-							<span className="label">Trading Volume (24h)</span>
-							<S.LiveIndicator>
-								<div className="dot"></div>Live
-							</S.LiveIndicator>
-						</div>
-						<div
-							className="data-panel volume-panel"
-							style={{
-								display: "flex",
-								flexDirection: "column",
-								gap: "10px",
-								margin: "15px 0",
-							}}
-						>
-							<div>
-								<span style={{ fontSize: "0.8rem", color: "#94a3b8" }}>
-									Aggregated Token Volume
-								</span>
-								<span
-									style={{
-										color: "#3b82f6",
-										fontWeight: "bold",
-										fontSize: "1.8rem",
-										display: "block",
-									}}
-								>
-									{data.tokenVolume24h !== null ? (
-										`$${data.tokenVolume24h.toLocaleString(undefined, { maximumFractionDigits: 0 })}`
-									) : (
-										<FaSpinner className="fa-spin" size={20} />
-									)}
-								</span>
+					<div
+						style={{ display: "flex", flexDirection: "column", gap: "12px" }}
+					>
+						<S.PulseCard>
+							<div className="header-row">
+								<span className="label">Trading Volume (24h)</span>
+								<S.LiveIndicator>
+									<div className="dot"></div>Live
+								</S.LiveIndicator>
 							</div>
 							<div
-								style={{
-									borderTop: "1px solid rgba(255,255,255,0.05)",
-									paddingTop: "10px",
-								}}
-							>
-								<span
-									style={{
-										fontSize: "0.75rem",
-										color: "#94a3b8",
-										display: "flex",
-										alignItems: "center",
-										gap: "5px",
-									}}
-								>
-									<FaWater size={10} /> Total Token Liquidity
-								</span>
-								<span
-									style={{
-										color: "white",
-										fontWeight: "bold",
-										fontSize: "1.2rem",
-									}}
-								>
-									{data.tokenLiquidity !== null ? (
-										`$${data.tokenLiquidity.toLocaleString(undefined, { maximumFractionDigits: 0 })}`
-									) : (
-										<FaSpinner className="fa-spin" size={14} />
-									)}
-								</span>
-							</div>
-							<div
-								style={{
-									borderTop: "1px solid rgba(255,255,255,0.05)",
-									paddingTop: "10px",
-								}}
-							>
-								<span style={{ fontSize: "0.75rem", color: "#94a3b8" }}>
-									Estimated Community Rewards APR
-									{data.aprPeriodDays ? ` (${data.aprPeriodDays}d)` : ""}
-								</span>
-								<span
-									style={{
-										color: "#c4b5fd",
-										fontWeight: "bold",
-										fontSize: "1.2rem",
-										display: "block",
-									}}
-								>
-									{data.globalApr}
-								</span>
-								<span style={{ fontSize: "0.68rem", color: "#64748b" }}>
-									{data.aprPeriodDays
-										? "Best observed historical fee window"
-										: data.aprSource || "Historical fee estimate"}; not guaranteed.
-								</span>
-							</div>
-						</div>
-						<a
-							href={ALL_POOLS_LINK}
-							target="_blank"
-							rel="noreferrer"
-							className="verify-link"
-							style={{
-								display: "flex",
-								alignItems: "center",
-								gap: "5px",
-								marginTop: "10px",
-							}}
-						>
-							<FaChartLine /> View All Pools on PancakeSwap{" "}
-							<FaExternalLinkAlt size={10} />
-						</a>
-
-						<div
-							className="data-panel secondary-panel"
-							style={{
-								background: "rgba(0,0,0,0.3)",
-								border: "1px solid rgba(255,255,255,0.05)",
-								borderRadius: "12px",
-								padding: "12px",
-								marginTop: "auto",
-								marginBottom: "10px",
-							}}
-						>
-							<div
+								className="data-panel volume-panel"
 								style={{
 									display: "flex",
-									flexWrap: "wrap",
-									justifyContent: "space-between",
-									gap: "4px",
-									fontSize: "0.8rem",
-									marginBottom: "4px",
+									flexDirection: "column",
+									gap: "10px",
+									margin: "15px 0",
 								}}
 							>
+								<div>
+									<span style={{ fontSize: "0.8rem", color: "#94a3b8" }}>
+										Aggregated Token Volume
+									</span>
+									<span
+										style={{
+											color: "#3b82f6",
+											fontWeight: "bold",
+											fontSize: "1.8rem",
+											display: "block",
+										}}
+									>
+										{data.tokenVolume24h !== null ? (
+											`$${data.tokenVolume24h.toLocaleString(undefined, { maximumFractionDigits: 0 })}`
+										) : (
+											<FaSpinner className="fa-spin" size={20} />
+										)}
+									</span>
+								</div>
+								<div
+									style={{
+										borderTop: "1px solid rgba(255,255,255,0.05)",
+										paddingTop: "10px",
+									}}
+								>
+									<span
+										style={{
+											fontSize: "0.75rem",
+											color: "#94a3b8",
+											display: "flex",
+											alignItems: "center",
+											gap: "5px",
+										}}
+									>
+										<FaWater size={10} /> Total Token Liquidity
+									</span>
+									<span
+										style={{
+											color: "white",
+											fontWeight: "bold",
+											fontSize: "1.2rem",
+										}}
+									>
+										{data.tokenLiquidity !== null ? (
+											`$${data.tokenLiquidity.toLocaleString(undefined, { maximumFractionDigits: 0 })}`
+										) : (
+											<FaSpinner className="fa-spin" size={14} />
+										)}
+									</span>
+								</div>
+								<div
+									style={{
+										borderTop: "1px solid rgba(255,255,255,0.05)",
+										paddingTop: "10px",
+									}}
+								>
+									<span style={{ fontSize: "0.75rem", color: "#94a3b8" }}>
+										Estimated Holder Rewards APR
+										{data.aprPeriodDays ? ` (${data.aprPeriodDays}d)` : ""}
+									</span>
+									<span
+										style={{
+											color: "#c4b5fd",
+											fontWeight: "bold",
+											fontSize: "1.2rem",
+											display: "block",
+										}}
+									>
+										{data.globalApr}
+									</span>
+									<span style={{ fontSize: "0.68rem", color: "#64748b" }}>
+										{data.aprPeriodDays
+											? "Best observed historical fee window"
+											: data.aprSource || "Historical fee estimate"}; not guaranteed.
+									</span>
+								</div>
+							</div>
+							<a
+								href={ALL_POOLS_LINK}
+								target="_blank"
+								rel="noreferrer"
+								className="verify-link"
+								style={{
+									display: "flex",
+									alignItems: "center",
+									gap: "5px",
+									marginTop: "10px",
+								}}
+							>
+								<FaChartLine /> View All Pools on PancakeSwap{" "}
+								<FaExternalLinkAlt size={10} />
+							</a>
+
+							<div
+								className="data-panel secondary-panel"
+								style={{
+									background: "rgba(0,0,0,0.3)",
+									border: "1px solid rgba(255,255,255,0.05)",
+									borderRadius: "12px",
+									padding: "12px",
+									marginTop: "auto",
+									marginBottom: "10px",
+								}}
+							>
+								<div
+									style={{
+										display: "flex",
+										flexWrap: "wrap",
+										justifyContent: "space-between",
+										gap: "4px",
+										fontSize: "0.8rem",
+										marginBottom: "4px",
+									}}
+								>
 									<span style={{ color: "#64748b", textTransform: "uppercase" }}>
 										DeFiLlama Fee Data
-								</span>
-							</div>
-							<div
-								style={{
-									display: "flex",
-									flexWrap: "wrap",
-									justifyContent: "space-between",
-									gap: "4px",
-									fontSize: "0.8rem",
-								}}
-							>
-										<span style={{ color: "#94a3b8" }}>
-											{data.aprPeriodDays
-												? `${data.aprPeriodDays}d Calibrated APR Basis`
-												: "Calibrated APR Basis"}
-										</span>
-								<span style={{ color: "white", fontWeight: "bold" }}>
-											{data.aprCalibratedFeesUsd !== null
-												? `$${data.aprCalibratedFeesUsd.toLocaleString(undefined, {
-														maximumFractionDigits: 2,
-													})}`
-												: "..."}
-								</span>
-							</div>
-						</div>
-
-						<a
-							href="https://defillama.com/protocol/arbitrage-inc"
-							target="_blank"
-							rel="noreferrer"
-							className="defillama-btn"
-						>
-							🦙 Open DefiLlama
-						</a>
-					</S.PulseCard>
-
-					<S.PulseCard>
-						<div className="header-row">
-							<span className="label">Treasury Wallet</span>
-							<FaShieldAlt style={{ color: "#22c55e" }} />
-						</div>
-						<div
-							className="data-panel balance-panel"
-							style={{
-								background: "rgba(0,0,0,0.3)",
-								border: "1px solid rgba(255,255,255,0.05)",
-								borderRadius: "12px",
-								padding: "20px",
-								margin: "15px 0",
-							}}
-						>
-							<div
-								style={{ display: "flex", flexDirection: "column", gap: "8px" }}
-							>
-								<span style={{ color: "#94a3b8", fontSize: "0.9rem" }}>
-									Live Balance
-								</span>
-								<span
+									</span>
+								</div>
+								<div
 									style={{
-										color: "#facc15",
-										fontWeight: "bold",
-										fontSize: "1.8rem",
+										display: "flex",
+										flexWrap: "wrap",
+										justifyContent: "space-between",
+										gap: "4px",
+										fontSize: "0.8rem",
 									}}
 								>
-									{data.treasuryBnb} BNB
-								</span>
+									<span style={{ color: "#94a3b8" }}>
+										{data.aprPeriodDays
+											? `${data.aprPeriodDays}d Calibrated APR Basis`
+											: "Calibrated APR Basis"}
+									</span>
+									<span style={{ color: "white", fontWeight: "bold" }}>
+										{data.aprCalibratedFeesUsd !== null
+											? `$${data.aprCalibratedFeesUsd.toLocaleString(undefined, {
+													maximumFractionDigits: 2,
+												})}`
+											: "..."}
+									</span>
+								</div>
 							</div>
-						</div>
-						<div
-							className="data-panel health-panel"
-							style={{
-								background: "rgba(34, 197, 94, 0.05)",
-								border: "1px solid rgba(34, 197, 94, 0.2)",
-								borderRadius: "12px",
-								padding: "15px",
-								marginTop: "auto",
-							}}
-						>
-							<div
-								style={{
-									fontSize: "0.75rem",
-									color: "#22c55e",
-									textTransform: "uppercase",
-									marginBottom: "10px",
-									letterSpacing: "1px",
-								}}
-							>
-								Protocol Health
-							</div>
-							<div
-								style={{
-									display: "flex",
-									flexWrap: "wrap",
-									justifyContent: "space-between",
-									gap: "4px",
-									fontSize: "0.85rem",
-									marginBottom: "6px",
-								}}
-							>
-								<span style={{ color: "#94a3b8" }}>Total User Debt</span>
-								<span style={{ color: "#ef4444", fontWeight: "bold" }}>
-									{data.protocolDebt} BNB
-								</span>
-							</div>
-							<div
-								style={{
-									display: "flex",
-									flexWrap: "wrap",
-									justifyContent: "space-between",
-									gap: "4px",
-									fontSize: "0.85rem",
-									marginBottom: "6px",
-								}}
-							>
-								<span style={{ color: "#94a3b8" }}>Utilization Ratio</span>
-								<span style={{ color: "white", fontWeight: "bold" }}>
-									{ratioStr}
-								</span>
-							</div>
-							<div
-								style={{
-									display: "flex",
-									flexWrap: "wrap",
-									justifyContent: "space-between",
-									gap: "4px",
-									fontSize: "0.85rem",
-								}}
-							>
-								<span style={{ color: "#94a3b8" }}>System Status</span>
-								<span style={{ color: statusColor, fontWeight: "bold" }}>
-									{statusStr}
-								</span>
-							</div>
-						</div>
-						<div
-							className="notice-panel"
-							style={{
-								background: "rgba(250, 204, 21, 0.15)",
-								border: "1px solid rgba(250, 204, 21, 0.4)",
-								borderRadius: "12px",
-								padding: "15px",
-								marginTop: "10px",
-								textAlign: "center",
-							}}
-						>
-							<div style={{ fontSize: "0.85rem", color: "#cbd5e1", lineHeight: 1.5 }}>
-								Protocol activity figures and the displayed APR are informational
-								estimates, not guaranteed returns, payout rates or claim quotes.
-							</div>
-						</div>
 
-						{/* NEW TREASURY LINK */}
-						<a
-							href={`https://bscscan.com/address/${TREASURY_WALLET}`}
-							target="_blank"
-							rel="noreferrer"
-							className="verify-link"
+							<a
+								href="https://defillama.com/protocol/arbitrage-inc"
+								target="_blank"
+								rel="noreferrer"
+								className="defillama-btn"
+							>
+								🦙 Open DefiLlama
+							</a>
+						</S.PulseCard>
+						<S.ActionButton
+							href={SWAP_LINK}
 							style={{
-								display: "flex",
-								justifyContent: "center",
-								alignItems: "center",
-								gap: "5px",
-								marginTop: "15px",
+								display: "block",
+								width: "100%",
+								boxSizing: "border-box",
+								padding: "14px",
+								borderRadius: "16px",
+								fontSize: "1rem",
+								background: "linear-gradient(135deg, #22c55e 0%, #3b82f6 100%)",
 							}}
 						>
-							<FaExternalLinkAlt size={10} /> View Treasury Wallet
-						</a>
-					</S.PulseCard>
+							Swap on Aggregator
+						</S.ActionButton>
+					</div>
 				</S.LivePulseSection>
 
 				<S.YieldEngineSection>
-					<h2>Community Points Service</h2>
+					<h2>DeFi Architecture & Revenue Engine</h2>
 					<div className="grid-3">
 						<div className="yield-card">
 							<div className="icon-head">
-								<FaRocket className="icon" />
-								<h3>Trade & Farm</h3>
+								<FaCoins className="icon" />
+								<h3>Automated Holder RevShare</h3>
 							</div>
 							<p>
-								Stack points with every action (<strong>0.5% DEX fee</strong>):{" "}
-								<strong>Swap (100), Zap (150)</strong> or{" "}
-								<strong>Limit Orders (200)</strong>. Every trade fuels the
-								treasury.
+								The <strong>4% token tax</strong> is split 50% directly
+								to qualified ARB INC holders on-chain via RevShare every 24 hours,
+								and 50% to the team for protocol maintenance and operations.
 							</p>
 						</div>
 						<div className="yield-card">
 							<div className="icon-head">
-								<FaCoins className="icon" />
-																<h3>BNB Chain Community Rewards</h3>
+								<FaRocket className="icon" />
+								<h3>DEX Aggregator (0.5% Fee)</h3>
 							</div>
 							<p>
-																Community points may be generated by eligible activity and balances.
-																Qualifying participants may request a BNB claim through the hosted service;
-																claims depend on available reserves, accounting state and service
-																availability.
+								Deep on-chain liquidity routed through KyberSwap aggregator widgets.
+								Enjoy optimal prices, minimal slippage across all BSC DEX pools,
+								and transparent execution.
 							</p>
 						</div>
 						<div className="yield-card">
 							<div className="icon-head">
 								<FaTasks className="icon" style={{ color: "#3b82f6" }} />
-								<h3>Free Point Tasks</h3>
+								<h3>Limit Orders & Bridges</h3>
 							</div>
 							<p>
-									Complete eligible <strong>Free Tasks</strong> and invite friends to
-									participate. Referral attribution may affect points; no income or
-									payout is guaranteed.
+								Decentralized limit orders powered by KyberSwap (0.1% fee) and fast
+								cross-chain transfers powered by Mayan Finance and Wormhole.
 							</p>
 						</div>
 					</div>
@@ -662,28 +566,28 @@ const HomePageClient = () => {
 					<div className="supply-box">
 						<span className="label">Total Supply</span>
 						<span className="value">1 Billion</span>
-						<span className="sub">4% Buy/Sell Tax for Rewards</span>
+						<span className="sub">4% Tax: 50% Holders / 50% Team</span>
 					</div>
 					<div className="spec-grid">
 						<S.SpecCard>
 							<FaChartPie className="icon" />
 							<span className="label">Revenue Routing</span>
-														<span className="value">Mixed Execution</span>
+							<span className="value">Direct On-Chain</span>
 							<span className="desc">
-																On-chain funds, hosted accounting
+								Accumulator pushes direct to holders
 							</span>
 						</S.SpecCard>
 						<S.SpecCard>
 							<FaClock className="icon" />
 							<span className="label">Reward Frequency</span>
-														<span className="value">On Claim</span>
-														<span className="desc">Optional BNB payout</span>
+							<span className="value">Every 24 Hours</span>
+							<span className="desc">Automated direct push</span>
 						</S.SpecCard>
 						<S.SpecCard>
 							<FaBullseye className="icon" />
-							<span className="label">Ranking Precision</span>
-							<span className="value">9 Decimals</span>
-							<span className="desc">Fair & Precise math</span>
+							<span className="label">Min. Holding</span>
+							<span className="value">1M ARB INC</span>
+							<span className="desc">RevShare qualified threshold</span>
 						</S.SpecCard>
 					</div>
 				</S.ProtocolSpecsSection>
@@ -693,32 +597,31 @@ const HomePageClient = () => {
 						<div className="icon-box">
 							<FaMoneyBillWave />
 						</div>
-						<h3>Diversified Revenue</h3>
+						<h3>Direct RevShare</h3>
 						<p>
-							The Treasury is fueled by 3 distinct streams: a{" "}
-							<strong>4% Token Tax</strong> (Buy/Sell), a highly competitive{" "}
-							<strong>0.5% DEX Fee</strong>, and{" "}
-									<strong>Free Task partner fees</strong> where enabled.
-						</p>
-					</S.FeatureCard>
-					<S.FeatureCard>
-						<div className="icon-box">
-							<FaTrophy />
-						</div>
-						<h3>9-Decimal Justice</h3>
-						<p>
-							Our proprietary ranking system ensures rewards are distributed
-							with mathematical precision to the last decimal.
+							The 4% token tax is collected by the Accumulator wallet: 50% is pushed directly
+							to qualified token holders every 24 hours via RevShare, and 50% supports team
+							operations. Completely non-custodial with no intermediary.
 						</p>
 					</S.FeatureCard>
 					<S.FeatureCard>
 						<div className="icon-box">
 							<FaShieldAlt />
 						</div>
-						<h3>Season Reset</h3>
+						<h3>100% Non-Custodial</h3>
 						<p>
-							To keep the competition fresh, the leaderboard and points reset on
-							the <strong>1st and 15th</strong> of every month.
+							Your assets remain in your wallet at all times. Swaps, limit orders, and cross-chain
+							bridges interact directly with audited decentralized contracts.
+						</p>
+					</S.FeatureCard>
+					<S.FeatureCard>
+						<div className="icon-box">
+							<FaChartLine />
+						</div>
+						<h3>Aggregator Routing</h3>
+						<p>
+							KyberSwap integration provides deep liquidity routing across BSC, finding the best
+							execution prices with minimal slippage.
 						</p>
 					</S.FeatureCard>
 				</S.FeatureGrid>

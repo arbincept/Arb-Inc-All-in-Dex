@@ -1,16 +1,12 @@
-import { Redis } from "@upstash/redis";
 import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
-const redis = new Redis({
-	url: process.env.UPSTASH_REDIS_REST_URL || "",
-	token: process.env.UPSTASH_REDIS_REST_TOKEN || "",
-});
-
 const TOKEN_ADDRESS =
 	"0x5EE54869Ecd5E752C31aF095187326D4A4D50e1c".toLowerCase();
+const TOTAL_SUPPLY = 1_000_000_000;
 const REWARD_TAX_PERCENTAGE = 4.0;
+const HOLDER_TAX_SHARE = 0.50; // 50% of the 4% tax goes directly to qualified holders via RevShare
 const APR_CALIBRATION_FACTOR = 3.3;
 const DEFILLAMA_FEES_URL =
 	"https://api.llama.fi/summary/fees/arbitrage-inc?dataType=dailyFees";
@@ -81,33 +77,18 @@ export async function GET() {
 				)
 			: [];
 
-		// 2. ASPIRAPOLVERE VOLUMI: Sommiamo il volume di TUTTE le pools (100% dell'ecosistema)
+		// 2. Total Volume & Participating Capital
 		let totalVolume24hUsd = 0;
 		for (const pair of data.pairs) {
 			totalVolume24hUsd += parseFloat(pair.volume?.h24 || "0");
 		}
 
-		// 3. Recupero portafogli in gara
-		const wallets = await redis.zrange("leaderboard:points", 0, -1);
-		let totalParticipatingTokens = 0;
-
-		if (wallets && wallets.length > 0) {
-			const keys = wallets.map((w) => `rewards:last_holding:${w}`);
-			const holdings = await redis.mget(...keys);
-
-			for (const h of holdings) {
-				if (h && h !== "null" && String(h).trim() !== "") {
-					try {
-						// 5. GIUSTIZIA 9-DECIMALI: Convertiamo i Wei in Token reali
-						totalParticipatingTokens += Number(BigInt(String(h))) / 10 ** 9;
-					} catch (e) {
-						// Protezione contro stringhe corrotte
-					}
-				}
-			}
-		}
-
-		const totalParticipatingUsd = totalParticipatingTokens * tokenPriceUsd;
+		// 3. Circulating Token Capital for Holder Rewards
+		const primaryPair = data.pairs[0];
+		const marketCapUsd = parseFloat(primaryPair?.marketCap || primaryPair?.fdv || "0");
+		const totalParticipatingUsd =
+			marketCapUsd > 0 ? marketCapUsd : TOTAL_SUPPLY * tokenPriceUsd;
+		const totalParticipatingTokens = TOTAL_SUPPLY;
 
 		// 4. Select the strongest available historical window, then annualize it.
 		const availableWindows = APR_WINDOWS_DAYS.filter(
@@ -137,9 +118,9 @@ export async function GET() {
 			aprSource = "DeFiLlama swap fees + DexScreener token volume tax";
 		}
 		// DeFiLlama tracks the 0.5% DEX fee, but not the ARB INC 4% transfer tax
-		// when liquidity is too low. Estimate that separate engine from live token volume.
+		// when liquidity is too low. Holders receive 50% of this 4% tax via RevShare.
 		const tokenTaxFeesUsd =
-			totalVolume24hUsd * (REWARD_TAX_PERCENTAGE / 100) * periodDays;
+			totalVolume24hUsd * (REWARD_TAX_PERCENTAGE / 100) * HOLDER_TAX_SHARE * periodDays;
 		const periodFeesUsd = swapFeesUsd + tokenTaxFeesUsd;
 		const calibratedPeriodFeesUsd =
 			periodFeesUsd / APR_CALIBRATION_FACTOR;
@@ -149,12 +130,12 @@ export async function GET() {
 		// 5. Matematica Finale APR
 		let globalApr = 0;
 		if (totalParticipatingUsd > 0) {
-				globalApr =
-					(yearlyRewardsUsd / totalParticipatingUsd) * 100;
+			globalApr =
+				(yearlyRewardsUsd / totalParticipatingUsd) * 100;
 		} else {
 			return NextResponse.json({
 				apr: "0.00",
-				error: "Capitale Utenti = 0$ (DB Upstash Vuoto)",
+				error: "Zero participating capital",
 			});
 		}
 

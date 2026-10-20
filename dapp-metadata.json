@@ -24,7 +24,7 @@
     "swap_routing_fee_bps": 50,
     "cross_chain_bridge": "Mayan Finance Protocol",
     "bridge_routing_fee_bps": 30,
-    "protocol_fee_recipient": "0xafF5340ECFaf7ce049261cff193f5FED6BDF04E7"
+    "protocol_fee_recipient": "0x0F477f8c88b48E299AcE83B14303157d032382EC"
   },
   "contracts": {
     "token": {

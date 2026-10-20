@@ -2,16 +2,22 @@ import { useEffect, useState } from "react";
 
 export const useProtocolData = (
 	CONTRACT_ADDRESS: string,
-	TREASURY_WALLET: string,
-	ACCUMULATOR_WALLET: string,
+	_TREASURY_WALLET?: string,
+	ACCUMULATOR_WALLET: string = "0x4c1caA917FD012b285Ba35E93535675e5B59806C",
 ) => {
+	// Support both 2-arg (contract, accumulator) and legacy 3-arg calls
+	const accWallet =
+		_TREASURY_WALLET && !_TREASURY_WALLET.toLowerCase().startsWith("0x66bb")
+			? _TREASURY_WALLET
+			: ACCUMULATOR_WALLET;
+
 	const [data, setData] = useState({
 		tokenVolume24h: null as number | null,
 		tokenLiquidity: null as number | null,
 		treasuryBnb: "...",
 		accBnb: "...",
 		accTokens: "...",
-		protocolDebt: "...",
+		protocolDebt: "0.0000",
 		globalApr: "...",
 		aprPeriodDays: null as number | null,
 		aprCalibratedFeesUsd: null as number | null,
@@ -64,34 +70,26 @@ export const useProtocolData = (
 					return { result: "0x0" };
 				};
 
-				const [dT, dAB, dAT] = await Promise.all([
-					fetchRpcWithFallback("eth_getBalance", [TREASURY_WALLET, "latest"]),
-					fetchRpcWithFallback("eth_getBalance", [ACCUMULATOR_WALLET, "latest"]),
+				const [dAB, dAT, aprRes] = await Promise.all([
+					fetchRpcWithFallback("eth_getBalance", [accWallet, "latest"]),
 					fetchRpcWithFallback("eth_call", [
 						{
 							to: CONTRACT_ADDRESS,
 							data:
 								"0x70a08231" +
-								ACCUMULATOR_WALLET.substring(2).padStart(64, "0"),
+								accWallet.substring(2).padStart(64, "0"),
 						},
 						"latest",
 					]),
-				]);
-				const [statsRes, aprRes] = await Promise.all([
-					fetch("/api/stats"),
 					fetch("/api/apr"),
 				]);
 
-				const sData = statsRes.ok ? await statsRes.json() : {};
 				const aData = aprRes.ok ? await aprRes.json() : {};
 
 				setData((prev) => ({
 					...prev,
 					tokenVolume24h: vol,
 					tokenLiquidity: liq,
-					treasuryBnb: dT.result
-						? (Number(BigInt(dT.result)) / 1e18).toFixed(4)
-						: "...",
 					accBnb: dAB.result
 						? (Number(BigInt(dAB.result)) / 1e18).toFixed(4)
 						: "...",
@@ -100,7 +98,6 @@ export const useProtocolData = (
 								maximumFractionDigits: 0,
 							})
 						: "...",
-					protocolDebt: sData.protocolDebt || "0.0000",
 					globalApr: aData.apr ? aData.apr + "%" : "...",
 					aprPeriodDays: aData.metrics?.periodDays || null,
 					aprCalibratedFeesUsd:
@@ -149,7 +146,7 @@ export const useProtocolData = (
 			clearInterval(interval);
 			clearInterval(tInterval);
 		};
-	}, [CONTRACT_ADDRESS, TREASURY_WALLET, ACCUMULATOR_WALLET]);
+	}, [CONTRACT_ADDRESS, accWallet]);
 
 	return data;
 };

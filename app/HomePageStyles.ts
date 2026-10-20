@@ -22,7 +22,17 @@ export const ContractBox = styled.div` background: rgba(255, 255, 255, 0.03); bo
 export const AuditBadgeLink = styled.a` display: inline-flex; align-items: center; gap: 6px; background: rgba(34, 197, 94, 0.08); border: 1px solid rgba(34, 197, 94, 0.2); color: #22c55e; padding: 6px 14px; border-radius: 100px; font-size: 0.8rem; font-weight: bold; text-decoration: none; transition: all 0.2s; &:hover { background: rgba(34, 197, 94, 0.15); transform: translateY(-1px); } `;
 
 /* GRID DATI COMPATTO */
-export const LivePulseSection = styled.div` margin: 20px 0 34px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; align-items: stretch; @media (max-width: 900px) { grid-template-columns: 1fr; } `;
+export const LivePulseSection = styled.div`
+	margin: 20px 0 34px;
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 20px;
+	align-items: stretch;
+
+	@media (max-width: 850px) {
+		grid-template-columns: 1fr;
+	}
+`;
 export const PulseCard = styled.div<{
 	$isProcessing?: boolean;
 }>` background: rgba(17, 14, 31, 0.82); border: 1px solid rgba(148, 163, 184, 0.14); padding: 18px; border-radius: 12px; display: flex; flex-direction: column; gap: 10px; min-width: 0; height: 100%; box-sizing: border-box; overflow-wrap: anywhere; ${(props) => props.$isProcessing && `animation: ${pulse} 2s infinite; border-color: #a855f7;`} .header-row { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 6px; } .label { color: #7f8aa1; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1px; } .value { font-size: 1.6rem; font-weight: 700; color: ${(props) => (props.$isProcessing ? "#c084fc" : "#f8fafc")}; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; } .sub { color: #c084fc; font-size: 0.75rem; font-weight: 600; } .data-panel, .notice-panel { min-width: 0; } .verify-link { display: inline-flex; align-items: center; gap: 6px; color: #a8b1c2; font-size: 0.75rem; text-decoration: none; transition: color 0.2s; &:hover { color: #4ade80; } } .defillama-btn { display: flex; align-items: center; justify-content: center; gap: 6px; background: rgba(34, 197, 94, 0.06); border: 1px solid rgba(34, 197, 94, 0.18); color: #4ade80; padding: 8px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 0.85rem; margin-top: auto; transition: all 0.2s; &:hover { background: rgba(34, 197, 94, 0.12); transform: translateY(-1px); } } `;
