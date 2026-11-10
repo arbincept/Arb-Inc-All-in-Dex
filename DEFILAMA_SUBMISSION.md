@@ -21,22 +21,22 @@
 - Limit-order fee receiver: `0x75F7F06a5C5c440c1aDbd586826CD26253EDE219` (0.1% routing fee) - Confirmed unchanged.
 - Treasury intermediary (`0x66BB...`) is decommissioned.
 - Safe factor is permanently eliminated.
-- Transfer tax (4%) is collected by `TAX_ACCUMULATOR` (`0x4c1caA917FD012b285Ba35E93535675e5B59806C`) and split directly:
-  - `dailyHoldersRevenue`: 50% distributed directly to token holders (holding >= 1,000,000 ARB INC) every 24 hours on-chain via RevShare.
-  - `dailyProtocolRevenue`: 100% of Kyber swap fees + 100% of limit-order fees + 50% of ARB INC token tax.
-  - `dailyFees`: swapFees + limitOrderFees + 100% token tax.
+- Transfer tax (4%) proceeds in native BNB are realized and split directly 50% / 50%:
+  - `dailyHoldersRevenue`: 50% distributed directly to token holders (holding >= 1,000,000 ARB INC) every 24 hours on-chain via RevShare in native BNB.
+  - `dailyProtocolRevenue`: 100% of Kyber swap fees + 100% of limit-order fees + 50% of realized BNB token tax.
+  - `dailyFees`: swapFees + limitOrderFees + 100% realized BNB token tax.
   - `dailyRevenue`: dailyFees.
-  - `dailyVolume`: swapFees / 0.005 + limitOrderFees / 0.001.
+  - `dailyVolume`: swapFees / 0.005 + limitOrderFees / 0.001 (spanning all ERC20 tokens and native BNB).
 
 ## Accounting Formulas (Post-October 20, 2026)
 
 ```text
 swapVolume          = swapFees / 0.005
 limitOrderVolume    = limitOrderFees / 0.001
-tokenTax            = accumulator ARB INC token transfers
-dailyHoldersRevenue = tokenTax * 0.50
-dailyProtocolRevenue = swapFees + limitOrderFees + (tokenTax * 0.50)
-dailyFees           = swapFees + limitOrderFees + tokenTax
+realizedTaxBnb      = treasuryAllocation / 0.50
+dailyHoldersRevenue = treasuryAllocation
+dailyProtocolRevenue = swapFees + limitOrderFees + (realizedTaxBnb * 0.50)
+dailyFees           = swapFees + limitOrderFees + realizedTaxBnb
 dailyRevenue        = dailyFees
 dailyVolume         = swapVolume + limitOrderVolume
 ```

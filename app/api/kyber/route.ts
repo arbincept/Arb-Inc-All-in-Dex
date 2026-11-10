@@ -2,7 +2,9 @@ import { NextResponse } from "next/server";
 
 const KYBER_QUOTE_API_BASE =
 	process.env.KYBER_QUOTE_API_URL ||
-	"https://aggregator-api.kyberswap.com/bsc/api/v1";
+	(process.env.KYBER_API_KEY
+		? "https://api.kyberswap.com/swap/bsc/api/v1"
+		: "https://aggregator-api.kyberswap.com/bsc/api/v1");
 const ADDRESS_PATTERN = /^0x[a-fA-F0-9]{40}$/;
 
 export async function GET(request: Request) {

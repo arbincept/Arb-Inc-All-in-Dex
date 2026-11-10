@@ -2,7 +2,9 @@ import { NextResponse } from "next/server";
 
 const KYBER_API_BASE =
 	process.env.KYBER_AGGREGATOR_API_URL ||
-	"https://api.kyberswap.com/swap/bsc/api/v1";
+	(process.env.KYBER_API_KEY
+		? "https://api.kyberswap.com/swap/bsc/api/v1"
+		: "https://aggregator-api.kyberswap.com/bsc/api/v1");
 const ADDRESS_PATTERN = /^0x[a-fA-F0-9]{40}$/;
 
 const ALLOWED_QUERY_PARAMS = [
@@ -31,12 +33,6 @@ const ALLOWED_QUERY_PARAMS = [
 
 export async function GET(request: Request) {
 	const apiKey = process.env.KYBER_API_KEY;
-	if (!apiKey) {
-		return NextResponse.json(
-			{ error: "Kyber API key is not configured" },
-			{ status: 503 },
-		);
-	}
 
 	const incoming = new URL(request.url).searchParams;
 	const upstream = new URL(`${KYBER_API_BASE}/routes`);
@@ -61,11 +57,13 @@ export async function GET(request: Request) {
 	}
 
 	try {
-		const headers = {
-				Accept: "application/json",
-				"X-Api-Key": apiKey,
-				"x-client-id": "arb-inc",
+		const headers: Record<string, string> = {
+			Accept: "application/json",
+			"x-client-id": "arb-inc",
 		};
+		if (apiKey) {
+			headers["X-Api-Key"] = apiKey;
+		}
 		const routeResponse = await fetch(upstream, {
 			headers,
 			cache: "no-store",
@@ -98,12 +96,21 @@ export async function GET(request: Request) {
 						: value;
 			}
 		}
-		const response = await fetch(`${KYBER_API_BASE}/route/build`, {
+		let response = await fetch(`${KYBER_API_BASE}/route/build`, {
 			method: "POST",
 			headers: { ...headers, "Content-Type": "application/json" },
 			body: JSON.stringify(buildBody),
 			cache: "no-store",
 		});
+		if (response.status === 422 && buildBody.enableGasEstimation) {
+			buildBody.enableGasEstimation = false;
+			response = await fetch(`${KYBER_API_BASE}/route/build`, {
+				method: "POST",
+				headers: { ...headers, "Content-Type": "application/json" },
+				body: JSON.stringify(buildBody),
+				cache: "no-store",
+			});
+		}
 		const body = await response.text();
 		if (response.ok) {
 			try {
