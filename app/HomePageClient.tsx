@@ -413,7 +413,6 @@ const HomePageClient = () => {
 								>
 									<span style={{ fontSize: "0.75rem", color: "#94a3b8" }}>
 										Estimated Holder Rewards APR
-										{data.aprPeriodDays ? ` (${data.aprPeriodDays}d)` : ""}
 									</span>
 									<span
 										style={{
@@ -426,9 +425,7 @@ const HomePageClient = () => {
 										{data.globalApr}
 									</span>
 									<span style={{ fontSize: "0.68rem", color: "#64748b" }}>
-										{data.aprPeriodDays
-											? "Best observed historical fee window"
-											: data.aprSource || "Historical fee estimate"}; not guaranteed.
+										Annualized 24h volume (all pools) / Market Cap
 									</span>
 								</div>
 							</div>
@@ -470,7 +467,7 @@ const HomePageClient = () => {
 									}}
 								>
 									<span style={{ color: "#64748b", textTransform: "uppercase" }}>
-										DeFiLlama Fee Data
+										Token Valuation
 									</span>
 								</div>
 								<div
@@ -483,14 +480,12 @@ const HomePageClient = () => {
 									}}
 								>
 									<span style={{ color: "#94a3b8" }}>
-										{data.aprPeriodDays
-											? `${data.aprPeriodDays}d Calibrated APR Basis`
-											: "Calibrated APR Basis"}
+										Market Cap (FDV)
 									</span>
 									<span style={{ color: "white", fontWeight: "bold" }}>
-										{data.aprCalibratedFeesUsd !== null
-											? `$${data.aprCalibratedFeesUsd.toLocaleString(undefined, {
-													maximumFractionDigits: 2,
+										{data.marketCap !== null
+											? `$${data.marketCap.toLocaleString(undefined, {
+													maximumFractionDigits: 0,
 												})}`
 											: "..."}
 									</span>

@@ -14,13 +14,12 @@ export const useProtocolData = (
 	const [data, setData] = useState({
 		tokenVolume24h: null as number | null,
 		tokenLiquidity: null as number | null,
+		marketCap: null as number | null,
 		treasuryBnb: "...",
 		accBnb: "...",
 		accTokens: "...",
 		protocolDebt: "0.0000",
 		globalApr: "...",
-		aprPeriodDays: null as number | null,
-		aprCalibratedFeesUsd: null as number | null,
 		aprSource: "",
 		timerDisplay: "...",
 		isProcessing: false,
@@ -34,16 +33,28 @@ export const useProtocolData = (
 				);
 				const dataDex = await resDex.json();
 				let vol = 0,
-					liq = 0;
-				if (dataDex.pairs) {
+					liq = 0,
+					mCap = 0;
+				if (dataDex.pairs && dataDex.pairs.length > 0) {
 					vol = dataDex.pairs.reduce(
-						(acc: number, pair: any) => acc + (pair.volume?.h24 || 0),
+						(acc: number, pair: any) =>
+							acc + (parseFloat(pair.volume?.h24 || "0") || 0),
 						0,
 					);
 					liq = dataDex.pairs.reduce(
-						(acc: number, pair: any) => acc + (pair.liquidity?.usd || 0),
+						(acc: number, pair: any) =>
+							acc + (parseFloat(pair.liquidity?.usd || "0") || 0),
 						0,
 					);
+					const sorted = [...dataDex.pairs].sort(
+						(a: any, b: any) =>
+							(parseFloat(b.liquidity?.usd || "0") || 0) -
+							(parseFloat(a.liquidity?.usd || "0") || 0),
+					);
+					const primary = sorted[0];
+					mCap =
+						parseFloat(primary?.marketCap || primary?.fdv || "0") ||
+						1_000_000_000 * (parseFloat(primary?.priceUsd || "0") || 0);
 				}
 
 				const fetchRpcWithFallback = async (method: string, params: any[]) => {
@@ -90,6 +101,7 @@ export const useProtocolData = (
 					...prev,
 					tokenVolume24h: vol,
 					tokenLiquidity: liq,
+					marketCap: mCap || aData.metrics?.marketCapUsd || null,
 					accBnb: dAB.result
 						? (Number(BigInt(dAB.result)) / 1e18).toFixed(4)
 						: "...",
@@ -99,10 +111,9 @@ export const useProtocolData = (
 							})
 						: "...",
 					globalApr: aData.apr ? aData.apr + "%" : "...",
-					aprPeriodDays: aData.metrics?.periodDays || null,
-					aprCalibratedFeesUsd:
-						aData.metrics?.calibratedPeriodFeesUsd || null,
-					aprSource: aData.metrics?.aprSource || "",
+					aprSource:
+						aData.metrics?.aprSource ||
+						"DexScreener multi-pool 24h volume / market cap",
 				}));
 			} catch (e) {
 				console.error("Data fetch error:", e);
