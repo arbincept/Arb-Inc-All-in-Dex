@@ -40,7 +40,11 @@ Following feedback from maintainers (@bheluga), this PR streamlines and refactor
 3. **Accurate Active Fee Receiver Wallets**:
    - **Dedicated Swap Fee Receiver**: `0x0F477f8c88b48E299AcE83B14303157d032382EC` (0.5% fee rate / 50 BPS).
    - **Dedicated Limit Order Fee Receiver**: `0x75F7F06a5C5c440c1aDbd586826CD26253EDE219` (0.1% fee rate / 10 BPS).
-   - **Legacy Swap Fee Receiver** (pre-October 1, 2026): `0xafF5340ECFaf7ce049261cff193f5FED6BDF04E7` (0.1% fee rate).
+   - **Developer Wallets (50% / 50% Protocol Allocation)**:
+     - Developer 1 (50%): `0xafF5340ECFaf7ce049261cff193f5FED6BDF04E7` (also served as legacy swap receiver prior to Oct 1, 2026).
+     - Developer 2 (50%): `0x3B523ec5AC7f37A151142b756040301729061348`.
+   - **Bridge Note**: Cross-chain bridge powered by Mayan Finance is tracked separately on Mayan's dashboard and omitted from this BSC aggregator adapter.
+   - **Holders Revenue Note**: Zero holders revenue reported at this time (`dailyHoldersRevenue` omitted while RevShare is on hold). All collected fees are protocol revenue.
 
 4. **Transparent Volume Derivation**:
    - `dailyVolume` = `(swapFees / 0.005) + (limitOrderFees / 0.001)`.
@@ -64,8 +68,12 @@ const SWAP_FEE_RECEIVER = "0x0F477f8c88b48E299AcE83B14303157d032382EC";
 // - LIMIT_ORDER_FEE_RECEIVER: Dedicated BSC limit-order fee receiver (0.1% fee rate)
 const LIMIT_ORDER_FEE_RECEIVER = "0x75F7F06a5C5c440c1aDbd586826CD26253EDE219";
 
-// Legacy receiver used before the October 1, 2026 migration (0.1% fee rate)
-const LEGACY_SWAP_FEE_RECEIVER = "0xafF5340ECFaf7ce049261cff193f5FED6BDF04E7";
+// Developer commission wallets (50% / 50% allocation of aggregator developer fees):
+// - Developer 1 (50%): 0xafF5340ECFaf7ce049261cff193f5FED6BDF04E7 (legacy swap fee receiver pre-Oct 1, 2026)
+const DEV_WALLET_1 = "0xafF5340ECFaf7ce049261cff193f5FED6BDF04E7";
+// - Developer 2 (50%): 0x3B523ec5AC7f37A151142b756040301729061348
+const DEV_WALLET_2 = "0x3B523ec5AC7f37A151142b756040301729061348";
+
 const RECEIVER_MIGRATION_TIMESTAMP = 1790812800; // 2026-10-01 00:00:00 UTC
 
 const SWAP_FEE_RATE = 0.005; // 0.5%
@@ -79,7 +87,7 @@ const fetch = async (options: FetchOptions) => {
 	if (timestamp <= RECEIVER_MIGRATION_TIMESTAMP) {
 		const dailyFees = await addTokensReceived({
 			options,
-			targets: [LEGACY_SWAP_FEE_RECEIVER],
+			targets: [DEV_WALLET_1],
 		});
 		const dailyVolume = dailyFees.clone(1 / LEGACY_FEE_RATE);
 
