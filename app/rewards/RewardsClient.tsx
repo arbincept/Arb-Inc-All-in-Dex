@@ -89,11 +89,10 @@ export default function RewardsClient() {
 						lineHeight: "1.6",
 					}}
 				>
-					Rewards for ARB INC holders are fully automated with a 50% holders / 50% team split.
-					The intermediary treasury has been eliminated: the 4% token tax is split 50% directly
-					to qualified token holders (≥ 1,000,000 ARB) every 24 hours via RevShare in native BNB,
-					and 50% to the team for ongoing protocol development and liquidity operations.
-					No manual claims, no gas fees, and zero locking required.
+					ARB INC protocol revenue routing is 100% automated on-chain via RevShare. 
+					Currently, distribution is configured at 100% split 50/50 across the two core developer wallets 
+					until RevShare finalizes upstream support for the 50% holder distribution push.
+					No manual claims or gas fees required.
 				</p>
 
 				<div

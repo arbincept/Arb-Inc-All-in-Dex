@@ -6,7 +6,7 @@ export async function POST() {
 	return NextResponse.json(
 		{
 			success: false,
-			message: "Manual claiming is deprecated. ARB INC rewards are now automatically pushed on-chain every 24 hours to qualified holders via RevShare (Min. 1,000,000 ARB). Visit https://app.revshare.ltd/token/0x5EE54869Ecd5E752C31aF095187326D4A4D50e1c",
+			message: "Manual claiming is deprecated. ARB INC token tax is automated on-chain via RevShare. Currently routed 100% split 50/50 across the two core dev wallets pending RevShare upstream holder distribution fix. Visit https://app.revshare.ltd/token/0x5EE54869Ecd5E752C31aF095187326D4A4D50e1c",
 		},
 		{ status: 200 },
 	);

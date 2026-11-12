@@ -101,7 +101,7 @@ const HomePageClient = () => {
 								fontWeight: "bold",
 							}}
 						>
-							<FaCoins /> 4% Tax (50% Holders / 50% Team)
+							<FaCoins /> 4% Tax (100% Dev Split 50/50 - Temporary RevShare Mode)
 						</div>
 						<div
 							style={{
@@ -207,7 +207,7 @@ const HomePageClient = () => {
 								{data.timerDisplay}
 							</span>
 							<span className="sub" style={{ marginBottom: "15px" }}>
-								Automated on-chain BNB push (50% to qualified holders via RevShare)
+								Automated on-chain distribution (Currently 100% split 50/50 across 2 dev wallets while RevShare resolves holder distribution)
 							</span>
 
 							<div
@@ -231,13 +231,10 @@ const HomePageClient = () => {
 										gap: "5px",
 									}}
 								>
-									<FaCalendarAlt /> 100% Automated Distribution (50/50 Split)
+									<FaCalendarAlt /> 100% Automated Distribution (Dev 50/50 Split Mode)
 								</div>
 								<div style={{ fontSize: "0.85rem", color: "white" }}>
-									Every 24 hours, the 4% token tax is distributed: 50% is pushed
-									directly to qualified token holders' wallets on-chain via
-									RevShare (min. 1,000,000 ARB INC), and 50% supports team operations.
-									No manual claim, no locking, zero gas required from holders.
+									The 4% token tax is distributed automatically on-chain via RevShare. Currently routed 100% to dev operations split 50/50 between the two core developer wallets pending RevShare platform upstream resolution for holder push.
 								</div>
 							</div>
 
@@ -561,7 +558,7 @@ const HomePageClient = () => {
 					<div className="supply-box">
 						<span className="label">Total Supply</span>
 						<span className="value">1 Billion</span>
-						<span className="sub">4% Tax: 50% Holders / 50% Team</span>
+						<span className="sub">4% Tax: 100% Dev Split 50/50 (Temporary RevShare routing)</span>
 					</div>
 					<div className="spec-grid">
 						<S.SpecCard>
