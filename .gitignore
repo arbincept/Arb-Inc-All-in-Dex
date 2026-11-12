@@ -4,6 +4,7 @@ dev.log
 *.log
 .env
 .env.local
+.env*.local
 .DS_Store
 test-results/
 playwright-report/
@@ -20,9 +21,20 @@ scripts/.env
 scripts/log.txt
 *.bak
 *.backup
-.env.local
-.env*.local
-tsconfig.tsbuildinfo
-defillama-adapters/
-tests/defillama-*.mjs
+*.pdf
+*.docx
+*.tmp
+__pycache__/
+scratch/
 
+# Legacy scripts, Redis and PM2 (no longer used)
+scripts/
+scripts_pagamenti/
+ecosystem.config.js
+ecosystem.config.cjs
+pm2.config.js
+*.pm2
+redis.conf
+dump.rdb
+appendonly.aof
+.pm2/
