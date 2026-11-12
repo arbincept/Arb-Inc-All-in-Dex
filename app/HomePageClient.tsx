@@ -207,7 +207,7 @@ const HomePageClient = () => {
 								{data.timerDisplay}
 							</span>
 							<span className="sub" style={{ marginBottom: "15px" }}>
-								24h automated BNB push (50% to qualified holders)
+								Automated on-chain BNB push (50% to qualified holders via RevShare)
 							</span>
 
 							<div

@@ -123,28 +123,64 @@ export const useProtocolData = (
 		fetchData();
 		const interval = setInterval(fetchData, 60000);
 
-		const ANCHOR_TIME = new Date("2026-09-17T04:35:00-03:00").getTime();
-		const INTERVAL = 24 * 60 * 60 * 1000;
+		// Synchronize live countdown with exact RevShare epoch
+		let targetPayoutMs: number | null = null;
+		let serverTimeOffset = 0; // serverTime - localTime
+
+		const fetchRevshareEpoch = async () => {
+			try {
+				const res = await fetch("/api/revshare/epoch");
+				if (res.ok) {
+					const epochData = await res.json();
+					if (epochData.targetNextPayoutMs) {
+						targetPayoutMs = epochData.targetNextPayoutMs;
+						serverTimeOffset = (epochData.serverTimeMs || Date.now()) - Date.now();
+						if (epochData.isProcessing) {
+							setData((prev) => ({
+								...prev,
+								isProcessing: true,
+								timerDisplay: "Processing...",
+							}));
+						}
+					}
+				}
+			} catch (e) {
+				console.error("Error fetching revshare epoch:", e);
+			}
+		};
+
+		fetchRevshareEpoch();
+		const epochInterval = setInterval(fetchRevshareEpoch, 60000);
+
+		// Fallback baseline if API hasn't resolved yet
+		const FALLBACK_LAST_PAYOUT = new Date("2026-11-11T01:22:51Z").getTime();
+		const INTERVAL = 7000 * 60 * 1000; // 7,000 minutes RevShare cycle (~4.86 days)
 
 		const tInterval = setInterval(() => {
-			const now = new Date().getTime();
-			const elapsed = now - ANCHOR_TIME;
-			const cycles = Math.floor(elapsed / INTERVAL);
-			const lastPayout = ANCHOR_TIME + cycles * INTERVAL;
-			const nextPayout = lastPayout + INTERVAL;
-			const timeSinceLast = now - lastPayout;
+			const now = Date.now() + serverTimeOffset;
+			let nextPayout = targetPayoutMs;
 
-			if (timeSinceLast >= 0 && timeSinceLast <= 120000) {
+			if (!nextPayout) {
+				const elapsed = now - FALLBACK_LAST_PAYOUT;
+				const cycles = Math.floor(elapsed / INTERVAL);
+				nextPayout = FALLBACK_LAST_PAYOUT + (cycles + 1) * INTERVAL;
+			}
+
+			const diff = nextPayout - now;
+
+			if (diff <= 0 && diff >= -300000) {
 				setData((prev) => ({
 					...prev,
 					isProcessing: true,
 					timerDisplay: "Processing...",
 				}));
 			} else {
-				const diff = nextPayout - now;
-				const h = Math.floor(diff / 3600000);
-				const m = Math.floor((diff % 3600000) / 60000);
-				const s = Math.floor((diff % 60000) / 1000);
+				const effectiveDiff = diff < 0 ? 0 : diff;
+				const totalSec = Math.floor(effectiveDiff / 1000);
+				const h = Math.floor(totalSec / 3600);
+				const m = Math.floor((totalSec % 3600) / 60);
+				const s = Math.floor(totalSec % 60);
+
 				setData((prev) => ({
 					...prev,
 					isProcessing: false,
@@ -155,6 +191,7 @@ export const useProtocolData = (
 
 		return () => {
 			clearInterval(interval);
+			clearInterval(epochInterval);
 			clearInterval(tInterval);
 		};
 	}, [CONTRACT_ADDRESS, accWallet]);
