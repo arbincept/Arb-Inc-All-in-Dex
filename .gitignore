@@ -26,3 +26,15 @@ scripts/log.txt
 *.tmp
 __pycache__/
 scratch/
+
+# Legacy scripts, Redis and PM2 (no longer used)
+scripts/
+scripts_pagamenti/
+ecosystem.config.js
+ecosystem.config.cjs
+pm2.config.js
+*.pm2
+redis.conf
+dump.rdb
+appendonly.aof
+.pm2/
