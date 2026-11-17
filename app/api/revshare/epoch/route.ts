@@ -9,14 +9,17 @@ export async function GET() {
 		const [tokenRes, distRes, timeRes] = await Promise.all([
 			fetch(`https://app.revshare.ltd/api/token/${CONTRACT_ADDRESS}`, {
 				headers: { "User-Agent": "Mozilla/5.0" },
-				next: { revalidate: 60 },
+				signal: AbortSignal.timeout(6000),
+				next: { revalidate: 30 },
 			}),
 			fetch(`https://app.revshare.ltd/api/token/${CONTRACT_ADDRESS}/distributions`, {
 				headers: { "User-Agent": "Mozilla/5.0" },
-				next: { revalidate: 60 },
+				signal: AbortSignal.timeout(6000),
+				next: { revalidate: 30 },
 			}),
 			fetch("https://app.revshare.ltd/api/current-time", {
 				headers: { "User-Agent": "Mozilla/5.0" },
+				signal: AbortSignal.timeout(4000),
 				cache: "no-store",
 			}),
 		]);
@@ -27,17 +30,13 @@ export async function GET() {
 
 		const tokenData = await tokenRes.json();
 		const distData = await distRes.json();
-
-		let currentTimeMs = Date.now();
-		if (timeRes.ok) {
-			const timeData = await timeRes.json();
-			if (timeData?.current_date) {
-				currentTimeMs = new Date(timeData.current_date).getTime();
-			}
-		}
+		const timeData = timeRes.ok ? await timeRes.json() : null;
 
 		const token = tokenData?.token || tokenData;
-		const distributionIntervalMinutes = parseInt(token?.distributionInterval || "7000", 10);
+		const distributionIntervalMinutes = parseInt(
+			token?.distributionInterval || token?.distribution_interval || "5003",
+			10,
+		);
 
 		if (!Array.isArray(distData) || distData.length === 0) {
 			return NextResponse.json({
@@ -46,58 +45,73 @@ export async function GET() {
 			});
 		}
 
-		// Sort to find latest distribution
+		// Sort descending to find latest distribution
 		const sorted = [...distData].sort(
 			(a: any, b: any) =>
 				new Date(b.date_added || b.dateAdded).getTime() -
 				new Date(a.date_added || a.dateAdded).getTime(),
 		);
 		const latest = sorted[0];
-		const lastDistributionMs = new Date(latest.date_added || latest.dateAdded).getTime();
 
-		const intervalMs = distributionIntervalMinutes * 60 * 1000;
-		const elapsedSinceLast = currentTimeMs - lastDistributionMs;
+		// Align 1:1 with RevShare client algorithm
+		const t = timeData?.current_date ? new Date(timeData.current_date) : new Date();
+		const r = new Date(latest.date_added || latest.dateAdded);
+		const l = new Date(r.getTime() + 60 * distributionIntervalMinutes * 1000);
 
-		let targetNextPayoutMs: number;
+		let remainingMs = 0;
 		let isProcessing = false;
 
-		if (elapsedSinceLast < intervalMs) {
-			targetNextPayoutMs = lastDistributionMs + intervalMs;
-		} else {
-			const overtime = elapsedSinceLast - intervalMs;
-			if (overtime < 300000) {
+		if (l.getTime() < t.getTime()) {
+			if (t.getTime() - l.getTime() < 300000) {
 				isProcessing = true;
-				targetNextPayoutMs = lastDistributionMs + intervalMs;
 			} else {
-				const cycles = Math.floor(elapsedSinceLast / intervalMs);
-				targetNextPayoutMs = lastDistributionMs + (cycles + 1) * intervalMs;
+				const e = Math.floor(
+					Math.floor((t.getTime() - r.getTime()) / 60000) / distributionIntervalMinutes,
+				);
+				const rem =
+					new Date(
+						r.getTime() + (e + 1) * distributionIntervalMinutes * 60000,
+					).getTime() - t.getTime();
+				if (rem <= 0) {
+					isProcessing = true;
+				} else {
+					remainingMs = rem;
+				}
 			}
+		} else {
+			remainingMs = l.getTime() - t.getTime();
 		}
+
+		const nowMs = Date.now();
+		const targetNextPayoutMs = nowMs + remainingMs;
 
 		return NextResponse.json({
 			success: true,
 			distributionIntervalMinutes,
-			lastDistributionDate: new Date(lastDistributionMs).toISOString(),
+			lastDistributionDate: latest.date_added || latest.dateAdded,
 			nextPayoutDate: new Date(targetNextPayoutMs).toISOString(),
+			remainingMs,
 			targetNextPayoutMs,
-			serverTimeMs: currentTimeMs,
+			serverTimeMs: nowMs,
 			isProcessing,
 		});
 	} catch (error: any) {
 		console.error("Error in RevShare epoch API:", error);
-		// Resilient fallback: 7000-minute cycle anchored to latest confirmed distribution
-		const fallbackLastMs = new Date("2026-11-11T01:22:51Z").getTime();
-		const intervalMs = 7000 * 60 * 1000;
+		// Resilient fallback: 5003-minute cycle anchored to latest confirmed distribution
+		const fallbackLastMs = new Date("2026-11-15T22:05:18Z").getTime();
+		const intervalMs = 5003 * 60 * 1000;
 		const now = Date.now();
 		const elapsed = now - fallbackLastMs;
 		const cycles = Math.floor(elapsed / intervalMs);
 		const targetNextPayoutMs = fallbackLastMs + (cycles + 1) * intervalMs;
+		const remainingMs = Math.max(0, targetNextPayoutMs - now);
 
 		return NextResponse.json({
 			success: true,
-			distributionIntervalMinutes: 7000,
-			lastDistributionDate: "2026-11-11T01:22:51.000Z",
+			distributionIntervalMinutes: 5003,
+			lastDistributionDate: "2026-11-15 22:05:18",
 			nextPayoutDate: new Date(targetNextPayoutMs).toISOString(),
+			remainingMs,
 			targetNextPayoutMs,
 			serverTimeMs: now,
 			isProcessing: false,

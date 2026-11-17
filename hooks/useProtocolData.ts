@@ -125,23 +125,22 @@ export const useProtocolData = (
 
 		// Synchronize live countdown with exact RevShare epoch
 		let targetPayoutMs: number | null = null;
-		let serverTimeOffset = 0; // serverTime - localTime
 
 		const fetchRevshareEpoch = async () => {
 			try {
 				const res = await fetch("/api/revshare/epoch");
 				if (res.ok) {
 					const epochData = await res.json();
-					if (epochData.targetNextPayoutMs) {
+					if (epochData.isProcessing) {
+						setData((prev) => ({
+							...prev,
+							isProcessing: true,
+							timerDisplay: "Processing...",
+						}));
+					} else if (epochData.remainingMs !== undefined) {
+						targetPayoutMs = Date.now() + epochData.remainingMs;
+					} else if (epochData.targetNextPayoutMs) {
 						targetPayoutMs = epochData.targetNextPayoutMs;
-						serverTimeOffset = (epochData.serverTimeMs || Date.now()) - Date.now();
-						if (epochData.isProcessing) {
-							setData((prev) => ({
-								...prev,
-								isProcessing: true,
-								timerDisplay: "Processing...",
-							}));
-						}
 					}
 				}
 			} catch (e) {
@@ -150,14 +149,14 @@ export const useProtocolData = (
 		};
 
 		fetchRevshareEpoch();
-		const epochInterval = setInterval(fetchRevshareEpoch, 60000);
+		const epochInterval = setInterval(fetchRevshareEpoch, 30000);
 
 		// Fallback baseline if API hasn't resolved yet
-		const FALLBACK_LAST_PAYOUT = new Date("2026-11-11T01:22:51Z").getTime();
-		const INTERVAL = 7000 * 60 * 1000; // 7,000 minutes RevShare cycle (~4.86 days)
+		const FALLBACK_LAST_PAYOUT = new Date("2026-11-15T22:05:18Z").getTime();
+		const INTERVAL = 5003 * 60 * 1000; // 5,003 minutes RevShare cycle (~3.47 days)
 
 		const tInterval = setInterval(() => {
-			const now = Date.now() + serverTimeOffset;
+			const now = Date.now();
 			let nextPayout = targetPayoutMs;
 
 			if (!nextPayout) {
