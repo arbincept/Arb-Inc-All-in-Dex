@@ -113,7 +113,7 @@ export const useProtocolData = (
 					globalApr: aData.apr ? aData.apr + "%" : "...",
 					aprSource:
 						aData.metrics?.aprSource ||
-						"DexScreener multi-pool 24h volume / market cap",
+						"DexScreener multi-pool 24h volume / market cap (50% holders share)",
 				}));
 			} catch (e) {
 				console.error("Data fetch error:", e);

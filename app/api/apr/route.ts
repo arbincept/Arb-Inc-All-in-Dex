@@ -62,10 +62,11 @@ export async function GET() {
 			parseFloat(primaryPair?.marketCap || primaryPair?.fdv || "0") ||
 			TOTAL_SUPPLY * tokenPriceUsd;
 
-		// 4. Calcolo APR Annualizzato: (Volume 24h tutte le pool * 365 / Market Cap) * 100
+		// 4. Calcolo APR Annualizzato Holders: ((Volume 24h tutte le pool * 365 / Market Cap) * 100) / 2
+		// Ripartizione del 50% spettante agli holders (50% holders / 25/25 devs)
 		let globalApr = 0;
 		if (marketCapUsd > 0) {
-			globalApr = ((totalVolume24hUsd * 365) / marketCapUsd) * 100;
+			globalApr = (((totalVolume24hUsd * 365) / marketCapUsd) * 100) / 2;
 		}
 
 		// Protezione anti-overflow (max 9,999,999%)
@@ -82,7 +83,8 @@ export async function GET() {
 				marketCapUsd,
 				tokenPriceUsd,
 				poolCount: data.pairs.length,
-				aprSource: "DexScreener multi-pool 24h volume / market cap",
+				holderSharePercentage: 50,
+				aprSource: "DexScreener multi-pool 24h volume / market cap (50% holders share)",
 			},
 		});
 	} catch (error: any) {

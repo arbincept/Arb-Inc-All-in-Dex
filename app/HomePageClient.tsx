@@ -412,7 +412,7 @@ const HomePageClient = () => {
 									}}
 								>
 									<span style={{ fontSize: "0.75rem", color: "#94a3b8" }}>
-										Estimated Holder Rewards APR
+										Estimated Holders APR
 									</span>
 									<span
 										style={{
@@ -425,7 +425,7 @@ const HomePageClient = () => {
 										{data.globalApr}
 									</span>
 									<span style={{ fontSize: "0.68rem", color: "#64748b" }}>
-										Annualized 24h volume (all pools) / Market Cap
+										Annualized volume / Market Cap (50% Holders share)
 									</span>
 								</div>
 							</div>
