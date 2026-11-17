@@ -60,7 +60,7 @@ The limit-order interface is powered by KyberSwap on BNB Smart Chain. It uses Ky
 
 ### Token Holder Rewards
 
-ARB INC token holder rewards are distributed directly on-chain under a 50% holders / 50% team model. Transfer-tax tokens collected by the accumulator wallet are converted to native BNB, with 50% pushed directly to qualified token holders (holding a minimum of 1,000,000 ARB INC) every 24 hours via RevShare, and 50% allocated to protocol operations. Payouts are automated and non-custodial: no manual claim transactions, staking, or locking are required from holders.
+ARB INC token holder rewards are distributed directly on-chain under a 50% holders / 25/25 devs model. Transfer-tax tokens collected by the accumulator wallet are converted to native BNB, with 50% pushed directly to qualified token holders (holding a minimum of 1,000,000 ARB INC) every 24 hours via RevShare, and 25% / 25% allocated to the developer wallets for protocol operations. Payouts are automated and non-custodial: no manual claim transactions, staking, or locking are required from holders.
 
 This service is tied to public on-chain distributions. It is not a bank account, deposit, investment product or guarantee of income. Live distributions, holder counts, and payout history are tracked transparently on the public RevShare platform.
 

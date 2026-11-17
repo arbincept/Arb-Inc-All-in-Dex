@@ -89,10 +89,11 @@ export default function RewardsClient() {
 						lineHeight: "1.6",
 					}}
 				>
-					ARB INC protocol revenue routing is 100% automated on-chain via RevShare. 
-					Currently, distribution is configured at 100% split 50/50 across the two core developer wallets 
-					until RevShare finalizes upstream support for the 50% holder distribution push.
-					No manual claims or gas fees required.
+					Rewards for ARB INC holders are fully automated with a 50% holders / 25/25 devs split.
+					The intermediary treasury has been eliminated: the 4% token tax is split 50% directly
+					to qualified token holders (≥ 1,000,000 ARB) every 24 hours via RevShare in native BNB,
+					and 25% / 25% to the two developer wallets for ongoing protocol development and operations.
+					No manual claims, no gas fees, and zero locking required.
 				</p>
 
 				<div
@@ -190,10 +191,10 @@ export default function RewardsClient() {
 						RevShare Split
 					</div>
 					<div style={{ fontSize: "20px", fontWeight: "800", color: "#c084fc", margin: "6px 0 2px" }}>
-						50% / 50%
+						50% / 25% / 25%
 					</div>
 					<div style={{ fontSize: "12px", color: "#64748b" }}>
-						50% Holders / 50% Team
+						50% Holders / 25/25 Devs
 					</div>
 				</div>
 
@@ -478,9 +479,9 @@ export default function RewardsClient() {
 							What is the RevShare revenue split?
 						</div>
 						<div style={{ color: "#94a3b8", fontSize: "14px", lineHeight: "1.5" }}>
-							The 4% ARB INC token transfer tax is split 50% / 50%: 50% is distributed directly to
+							The 4% ARB INC token transfer tax is split 50% holders / 25/25 devs: 50% is distributed directly to
 							qualified token holders (≥ 1,000,000 ARB) every 24 hours on-chain in native BNB,
-							and 50% is allocated to the team for development, operations, and protocol maintenance.
+							and 50% is allocated equally between the two developer wallets (25% / 25% devs) for development, operations, and protocol maintenance.
 							DEX aggregator fees (0.5%) and limit-order fees (0.1%) remain separate protocol revenues.
 						</div>
 					</div>

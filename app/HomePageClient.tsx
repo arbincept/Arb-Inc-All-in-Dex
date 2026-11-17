@@ -101,7 +101,7 @@ const HomePageClient = () => {
 								fontWeight: "bold",
 							}}
 						>
-							<FaCoins /> 4% Tax (100% Dev Split 50/50 - Temporary RevShare Mode)
+							<FaCoins /> 4% Tax (50% Holders / 25/25 Devs)
 						</div>
 						<div
 							style={{
@@ -207,7 +207,7 @@ const HomePageClient = () => {
 								{data.timerDisplay}
 							</span>
 							<span className="sub" style={{ marginBottom: "15px" }}>
-								Automated on-chain distribution (Currently 100% split 50/50 across 2 dev wallets while RevShare resolves holder distribution)
+								24h automated BNB push (50% to qualified holders / 25/25 Devs)
 							</span>
 
 							<div
@@ -231,10 +231,13 @@ const HomePageClient = () => {
 										gap: "5px",
 									}}
 								>
-									<FaCalendarAlt /> 100% Automated Distribution (Dev 50/50 Split Mode)
+									<FaCalendarAlt /> 100% Automated Distribution (50% Holders / 25/25 Devs)
 								</div>
 								<div style={{ fontSize: "0.85rem", color: "white" }}>
-									The 4% token tax is distributed automatically on-chain via RevShare. Currently routed 100% to dev operations split 50/50 between the two core developer wallets pending RevShare platform upstream resolution for holder push.
+									Every 24 hours, the 4% token tax is distributed: 50% is pushed
+									directly to qualified token holders' wallets on-chain via
+									RevShare (min. 1,000,000 ARB INC), and 50% is allocated to the developer wallets (25% / 25% devs split).
+									No manual claim, no locking, zero gas required from holders.
 								</div>
 							</div>
 
@@ -524,9 +527,9 @@ const HomePageClient = () => {
 								<h3>Automated Holder RevShare</h3>
 							</div>
 							<p>
-								The <strong>4% token tax</strong> is split 50% directly
+								The <strong>4% token tax</strong> is allocated 50% directly
 								to qualified ARB INC holders on-chain via RevShare every 24 hours,
-								and 50% to the team for protocol maintenance and operations.
+								and 25% / 25% to the two developer wallets for protocol maintenance and operations.
 							</p>
 						</div>
 						<div className="yield-card">
@@ -558,7 +561,7 @@ const HomePageClient = () => {
 					<div className="supply-box">
 						<span className="label">Total Supply</span>
 						<span className="value">1 Billion</span>
-						<span className="sub">4% Tax: 100% Dev Split 50/50 (Temporary RevShare routing)</span>
+						<span className="sub">4% Tax: 50% Holders / 25/25 Devs</span>
 					</div>
 					<div className="spec-grid">
 						<S.SpecCard>
@@ -592,8 +595,8 @@ const HomePageClient = () => {
 						<h3>Direct RevShare</h3>
 						<p>
 							The 4% token tax is collected by the Accumulator wallet: 50% is pushed directly
-							to qualified token holders every 24 hours via RevShare, and 50% supports team
-							operations. Completely non-custodial with no intermediary.
+							to qualified token holders every 24 hours via RevShare, and 25% / 25% supports the developers.
+							Completely non-custodial with no intermediary.
 						</p>
 					</S.FeatureCard>
 					<S.FeatureCard>
