@@ -72,7 +72,7 @@ The test command covers financial math and Web3 security logic. These commands a
 ## How it fits together
 
 - **Wallet-based trading:** the frontend connects a user's wallet to non-custodial swap, bridge, and limit-order integrations.
-- **Automated RevShare:** 50% of the 4% ARB INC token transfer tax is pushed automatically on-chain every 24 hours to qualified holders (>= 1,000,000 ARB), while 50% is allocated to protocol operations. No manual claiming or server hot-wallet signers are used.
+- **Automated RevShare:** 50% of the 4% ARB INC token transfer tax is pushed automatically on-chain every 24 hours to qualified holders (>= 2,500,000 ARB), while 50% is allocated to protocol operations. No manual claiming or server hot-wallet signers are used.
 - **Monitoring:** [scripts](scripts/README.md) contain operational tooling; [API documentation](docs/API.md) describes the companion endpoints.
 
 ## Fees and deployment notes

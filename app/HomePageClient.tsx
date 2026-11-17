@@ -236,7 +236,7 @@ const HomePageClient = () => {
 								<div style={{ fontSize: "0.85rem", color: "white" }}>
 									Every 24 hours, the 4% token tax is distributed: 50% is pushed
 									directly to qualified token holders' wallets on-chain via
-									RevShare (min. 1,000,000 ARB INC), and 50% is allocated to the developer wallets (25% / 25% devs split).
+									RevShare (min. 2,500,000 ARB INC), and 50% is allocated to the developer wallets (25% / 25% devs split).
 									No manual claim, no locking, zero gas required from holders.
 								</div>
 							</div>
@@ -581,7 +581,7 @@ const HomePageClient = () => {
 						<S.SpecCard>
 							<FaBullseye className="icon" />
 							<span className="label">Min. Holding</span>
-							<span className="value">1M ARB INC</span>
+							<span className="value">2.5M ARB INC</span>
 							<span className="desc">RevShare qualified threshold</span>
 						</S.SpecCard>
 					</div>

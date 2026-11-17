@@ -60,7 +60,7 @@ The limit-order interface is powered by KyberSwap on BNB Smart Chain. It uses Ky
 
 ### Token Holder Rewards
 
-ARB INC token holder rewards are distributed directly on-chain under a 50% holders / 25/25 devs model. Transfer-tax tokens collected by the accumulator wallet are converted to native BNB, with 50% pushed directly to qualified token holders (holding a minimum of 1,000,000 ARB INC) every 24 hours via RevShare, and 25% / 25% allocated to the developer wallets for protocol operations. Payouts are automated and non-custodial: no manual claim transactions, staking, or locking are required from holders.
+ARB INC token holder rewards are distributed directly on-chain under a 50% holders / 25/25 devs model. Transfer-tax tokens collected by the accumulator wallet are converted to native BNB, with 50% pushed directly to qualified token holders (holding a minimum of 2,500,000 ARB INC) every 24 hours via RevShare, and 25% / 25% allocated to the developer wallets for protocol operations. Payouts are automated and non-custodial: no manual claim transactions, staking, or locking are required from holders.
 
 This service is tied to public on-chain distributions. It is not a bank account, deposit, investment product or guarantee of income. Live distributions, holder counts, and payout history are tracked transparently on the public RevShare platform.
 
@@ -104,7 +104,7 @@ Depending on the route and feature used, users may encounter:
 - third-party protocol fees, spread, slippage and execution costs;
 - the ARB INC transfer tax when the token contract applies it.
 
-The ARB INC transfer tax (4%) is accumulated on-chain by the accumulator wallet (`0x4c1caA917FD012b285Ba35E93535675e5B59806C`) and distributed directly: 50% is pushed to token holders holding at least 1,000,000 ARB INC via RevShare every 24 hours, and 50% is allocated to the team for ongoing platform development, maintenance, and operational management. The previous intermediate transfer through a separate treasury wallet has been eliminated in favor of direct automated push.
+The ARB INC transfer tax (4%) is accumulated on-chain by the accumulator wallet (`0x4c1caA917FD012b285Ba35E93535675e5B59806C`) and distributed directly: 50% is pushed to token holders holding at least 2,500,000 ARB INC via RevShare every 24 hours, and 50% is allocated to the team for ongoing platform development, maintenance, and operational management. The previous intermediate transfer through a separate treasury wallet has been eliminated in favor of direct automated push.
 
 DEX aggregator fees (0.5%) and limit-order fees (0.1%) remain separate, fueling aggregator liquidity and platform development.
 

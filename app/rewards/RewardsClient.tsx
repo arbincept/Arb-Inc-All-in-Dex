@@ -91,7 +91,7 @@ export default function RewardsClient() {
 				>
 					Rewards for ARB INC holders are fully automated with a 50% holders / 25/25 devs split.
 					The intermediary treasury has been eliminated: the 4% token tax is split 50% directly
-					to qualified token holders (≥ 1,000,000 ARB) every 24 hours via RevShare in native BNB,
+					to qualified token holders (≥ 2,500,000 ARB) every 24 hours via RevShare in native BNB,
 					and 25% / 25% to the two developer wallets for ongoing protocol development and operations.
 					No manual claims, no gas fees, and zero locking required.
 				</p>
@@ -169,7 +169,7 @@ export default function RewardsClient() {
 						Holding Threshold
 					</div>
 					<div style={{ fontSize: "22px", fontWeight: "800", color: "#f8fafc", margin: "6px 0 2px" }}>
-						1,000,000 ARB
+						2,500,000 ARB
 					</div>
 					<div style={{ fontSize: "12px", color: "#64748b" }}>
 						Hold in self-custody wallet
@@ -333,7 +333,7 @@ export default function RewardsClient() {
 						</div>
 						<div>
 							<div style={{ fontWeight: "700", fontSize: "16px", marginBottom: "4px" }}>
-								Hold at Least 1,000,000 ARB INC
+								Hold at Least 2,500,000 ARB INC
 							</div>
 							<div style={{ color: "#94a3b8", fontSize: "14px", lineHeight: "1.5" }}>
 								Keep your tokens in any self-custody Web3 wallet (MetaMask, Trust Wallet,
@@ -480,7 +480,7 @@ export default function RewardsClient() {
 						</div>
 						<div style={{ color: "#94a3b8", fontSize: "14px", lineHeight: "1.5" }}>
 							The 4% ARB INC token transfer tax is split 50% holders / 25/25 devs: 50% is distributed directly to
-							qualified token holders (≥ 1,000,000 ARB) every 24 hours on-chain in native BNB,
+							qualified token holders (≥ 2,500,000 ARB) every 24 hours on-chain in native BNB,
 							and 50% is allocated equally between the two developer wallets (25% / 25% devs) for development, operations, and protocol maintenance.
 							DEX aggregator fees (0.5%) and limit-order fees (0.1%) remain separate protocol revenues.
 						</div>

@@ -34,7 +34,7 @@ alter contract behavior. Verify this by reading the ABI on BSCScan.
 
 ### Continuous Mathematical Testing & Accounting Model
 - Continuous automated invariant tests in `tests/financial-math.test.mjs` verifying financial formulas and data integrity.
-- **Current Era (October 20, 2026 onward):** 50% of the 4% ARB INC token transfer tax is pushed automatically on-chain to qualified holders (>= 1M ARB) via RevShare, and 50% is allocated to protocol operations. Manual claims, intermediate treasury wallets, and the legacy safe factor have been permanently decommissioned.
+- **Current Era (October 20, 2026 onward):** 50% of the 4% ARB INC token transfer tax is pushed automatically on-chain to qualified holders (>= 2.5M ARB) via RevShare, and 50% is allocated to protocol operations. Manual claims, intermediate treasury wallets, and the legacy safe factor have been permanently decommissioned.
 - **Historical Era (prior to Oct 20, 2026):** Solvency models (`SAFE_FACTOR = 0.73` and utilization boundary checks) verified legacy treasury reserve allocations and are retained for regression testing.
 
 ### Manual Audit Disclosure

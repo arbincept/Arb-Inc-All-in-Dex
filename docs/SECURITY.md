@@ -36,7 +36,7 @@ Arbitrage Inception operates on a fully decentralized, non-custodial model with 
 ```
 
 1. **Non-Custodial Swaps & Bridge:** All token swaps, multi-hop routing, and cross-chain bridging are executed client-side via user wallet signatures (MetaMask, Rabby, WalletConnect) directly interacting with audited smart contracts (KyberSwap Aggregator, PancakeSwap routers, and Mayan Finance Wormhole contracts). The platform never takes custody of, holds, or has access to user private keys or trading principal.
-2. **Automated On-Chain RevShare (Decommissioned Hot Signers):** Following the October 2026 protocol upgrade, manual claiming contracts and server-side hot signers were permanently decommissioned. Token holder rewards are automatically distributed on-chain every 24 hours to qualified holders (>= 1,000,000 ARB) via RevShare. This eliminates all server-held private key attack surfaces, manual claim risks, and centralized custody.
+2. **Automated On-Chain RevShare (Decommissioned Hot Signers):** Following the October 2026 protocol upgrade, manual claiming contracts and server-side hot signers were permanently decommissioned. Token holder rewards are automatically distributed on-chain every 24 hours to qualified holders (>= 2,500,000 ARB) via RevShare. This eliminates all server-held private key attack surfaces, manual claim risks, and centralized custody.
 
 ---
 

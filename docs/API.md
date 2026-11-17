@@ -8,7 +8,7 @@ This document outlines the public HTTP REST endpoints provided by the Arbitrage 
 
 The Arbitrage Inception platform operates on a decentralized, non-custodial model:
 * **DEX & Cross-Chain Execution (Non-Custodial):** Token swaps and cross-chain bridging execute client-side directly between the user's Web3 wallet and on-chain protocol smart contracts (KyberSwap Aggregator, PancakeSwap V2/V3, Mayan Finance / Wormhole).
-* **Automated On-Chain RevShare (No Custody / No Hot Signers):** 50% of the ARB INC token transfer tax is pushed automatically on-chain to qualified holders (>= 1,000,000 ARB) every 24 hours. The platform does not use server-side hot signers, custody private keys, or maintain manual claiming contracts.
+* **Automated On-Chain RevShare (No Custody / No Hot Signers):** 50% of the ARB INC token transfer tax is pushed automatically on-chain to qualified holders (>= 2,500,000 ARB) every 24 hours. The platform does not use server-side hot signers, custody private keys, or maintain manual claiming contracts.
 * **Companion Telemetry API (Read-Only):** The endpoints below manage read-only leaderboard metrics, APR calculations, partner offers, and operational telemetry.
 
 ---
@@ -135,4 +135,4 @@ Manual reward claiming has been permanently deprecated following the migration t
   "revshare_url": "https://app.revshare.ltd/token/0x5EE54869Ecd5E752C31aF095187326D4A4D50e1c"
 }
 ```
-* **Architecture Note:** In accordance with the October 20, 2026 protocol update, server-held hot signers and manual claiming were decommissioned. 50% of the token transfer tax is directly distributed on-chain to qualified holders holding at least 1,000,000 ARB. Real-time distributions can be verified at [app.revshare.ltd](https://app.revshare.ltd/token/0x5EE54869Ecd5E752C31aF095187326D4A4D50e1c).
+* **Architecture Note:** In accordance with the October 20, 2026 protocol update, server-held hot signers and manual claiming were decommissioned. 50% of the token transfer tax is directly distributed on-chain to qualified holders holding at least 2,500,000 ARB. Real-time distributions can be verified at [app.revshare.ltd](https://app.revshare.ltd/token/0x5EE54869Ecd5E752C31aF095187326D4A4D50e1c).
